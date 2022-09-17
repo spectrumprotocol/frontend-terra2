@@ -1,0 +1,184 @@
+<div [ngClass]="{'min-asset-card': isGrid}" class="card asset-card hover-shadow">
+  <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="position-absolute">
+    <div class="badge-deposited text-white">Deposited</div>
+  </span>
+  <span *ngIf="vault.disabled" class="position-absolute grid-badge mb-1">
+    <div class="badge-deposit-disabled">Deposit Disabled</div>
+  </span>
+  <span *ngIf="vault.poolInfo?.highlight" class="position-absolute grid-badge mb-1">
+    <div class="badge-deposit-disabled">New</div>
+  </span>
+  <div class="card-body pt-15">
+    <div (click)="openModal()" *ngIf="!isGrid" class="row asset-card-info">
+      <div class="col-12 col-md-6">
+        <div class="row">
+          <div class="col-12 col-sm-8 text-center no-padding">
+            <div *ngIf="vault.poolInfo.farmType === 'LP'" class="p-2 bulk-name-container">
+              <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
+              <img [src]="vault.denomSymbol | url:'icon'"
+                   class="img-fluid rounded-circle assetIcon mt-2 float-start token-denom">
+              <div class="name-detail">
+                <h6 class="m-0"> {{vault.name}}
+                  <img *ngIf="vault.poolInfo.dex === 'Astroport'" alt="Astroport DEX" class="dex-logo"
+                       src="./assets/logo-astroport.svg" title="Astroport DEX">
+                  <img *ngIf="vault.poolInfo.dex === 'Terraswap'" alt="Terraswap DEX" class="dex-logo"
+                       src="./assets/logo-terraswap.svg" title="Terraswap DEX">
+                </h6>
+                <p class="m-0">
+                  <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4 mt-1">
+            <div class="f-12 sub-topic">TVL</div>
+            <div class="fs-6 fw-bold">{{+vault.pairStat?.tvl / UNIT || 0 | shortNum }} USD</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="row">
+          <div class="col-12 col-sm-5 mt-1">
+            <div class="f-12 sub-topic">
+              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
+                APR
+              </ng-container>
+              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
+                APY
+              </ng-container>
+            </div>
+            <div class="f-14">
+              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
+                <span class="fs-6 fw-bold text-primary"> {{vault.poolAprTotal | percent}}</span>
+              </ng-container>
+              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
+              <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
+                <span class="sub-topic text-decoration-line-through text-primary">
+                  <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
+                </span>
+              </span>
+                <span class="fs-6 fw-bold text-primary"> {{vault.pairStat.poolApy | percent}}</span>
+              </ng-container>
+            </div>
+          </div>
+          <div class="col-12 col-sm-3 mt-1">
+            <div class="f-12 sub-topic">
+              Daily
+            </div>
+            <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}</div>
+          </div>
+          <div *ngIf="vault.poolInfo.farmType === 'LP'" class="col-12 col-sm-4 mt-1 text-end">
+            <div class="f-12">LP Balance</div>
+            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="f-14-600 text-primary">
+              {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+              <span class="small text-muted">
+                (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
+                info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+            </div>
+            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
+              <div class="f-14">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div (click)="openModal()" *ngIf="isGrid" class="row asset-card-info grid-container pt-3">
+      <div class="col-12 d-flex justify-content-center no-padding">
+        <div *ngIf="vault.poolInfo.farmType === 'LP'" class="pt-2 p-l-0 bulk-name-container">
+          <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+          <img [src]="vault.denomSymbol | url:'icon'"
+               class="img-fluid rounded-circle assetIcon float-start token-denom">
+          <div class="name-detail">
+            <h6 class="m-0">{{vault.name}}
+              <ng-container *ngIf="vault.poolInfo.farmType == 'LP'">
+                <img *ngIf="vault.poolInfo.dex === 'Astroport'" alt="Astroport DEX" class="dex-logo"
+                     src="./assets/logo-astroport.svg" title="Astroport DEX">
+                <img *ngIf="vault.poolInfo.dex === 'Terraswap'" alt="Terraswap DEX" class="dex-logo"
+                     src="./assets/logo-terraswap.svg" title="Terraswap DEX">
+              </ng-container>
+            </h6>
+            <p class="m-0">
+              <span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="dot-line"></div>
+      </div>
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="f-12 sub-topic">TVL</div>
+              </div>
+              <div>
+                <div class="f-14 fw-bold">{{+vault.pairStat?.tvl / UNIT || 0 | shortNum }} USD</div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="f-12 sub-topic">
+                  <ng-container *ngIf="vault.poolInfo.farm === 'Spectrum'">
+                    APR
+                  </ng-container>
+                  <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+                    APY
+                  </ng-container>
+                </div>
+              </div>
+              <div>
+                <div class="f-14 fw-bold">
+                  <ng-container *ngIf="vault.poolInfo.farm === 'Spectrum'">
+                    <span class="text-primary"> {{vault.poolAprTotal | percent}}</span>
+                  </ng-container>
+                  <ng-container *ngIf="vault.poolInfo.farm !== 'Spectrum'">
+                    <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
+                      <span class="sub-topic text-decoration-line-through text-primary">
+                        <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
+                      </span>
+                    </span>
+                    <span class="text-primary"> {{vault.pairStat.poolApy | percent}}</span>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="f-12 sub-topic">Daily</div>
+              </div>
+              <div>
+                <div class="f-14 fw-bold">{{vault.pairStat?.dpr || 0 | percent: '1.4-4'}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 text-center p-2">
+            <div class="card card-deposit card-grey box-left height-53">
+              <div class="card-body p-2">
+                <div *ngIf="vault.poolInfo.farmType === 'LP'" class="d-flex justify-content-between">
+                  <div>
+                    <div class="f-12 sub-topic">LP Balance</div>
+                  </div>
+                  <div>
+                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10"
+                         class="f-14-600 text-primary">{{
+                      info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+                      <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10"
+                            class="f-12 text-muted small">
+                        (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
+                        info : config: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+                    </div>
+                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
+                      <div class="f-14">-</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

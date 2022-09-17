@@ -1,0 +1,80 @@
+<div class="modal-header">
+    <div *ngIf="loading">
+        <div aria-hidden="true" class="spinner-border" role="status"></div>
+        <h4 class="modal-title">{{ loadingMsg }}</h4>
+    </div>
+    <div *ngIf="failed">
+        <i class="fas fa-5x fa-times-circle text-danger"></i>
+        <h4 class="modal-title">Failed</h4>
+    </div>
+    <div *ngIf="!loading && !failed">
+        <div *ngIf="!executed">
+            <i class="fas fa-5x fa-info-circle text-info"></i>
+            <h4 class="modal-title">Please confirm your transaction</h4>
+        </div>
+        <div *ngIf="executed">
+            <i class="fas fa-5x fa-check text-success"></i>
+            <h4 class="modal-title">Success</h4>
+        </div>
+
+    </div>
+</div>
+<div class="modal-body">
+    <div *ngIf="failed">
+        {{ failMsg }}
+    </div>
+    <div *ngIf="!failed && !executed && signMsg">
+        <div class="row">
+            <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
+            <div class="col-6 text-end small">
+                <span>{{ fee | unit }} </span>
+                <span>{{ selectedCoin | currency }}</span>
+                <span><br />({{ feeUSD | unit }} USD)</span>
+            </div>
+        </div>
+        <div class="row mt-2 mb-1">
+            <div class="col-3 small gas">Gas Buffer <i class="fas fa-info-circle info-icon"
+                    mdbTooltip="Gas buffer prevents failed transaction as the actual gas usage might be slightly higher than the estimated gas fee"></i>
+            </div>
+            <div class="col-7">
+                <div class="gas-slider-adjustment">
+                    <ngx-slider (userChange)="calculateFee()" *ngIf="!loading" [(value)]="gasBuffer" [options]="ngx_slider_option"></ngx-slider>
+                </div>
+            </div>
+            <div class="col-2 small gas">{{ gasBuffer }}%</div>
+        </div>
+    </div>
+    <div *ngIf="!failed && !executed && !loading && signMsg" class="row">
+        <div class="col-3"></div>
+        <div class="col-7">
+            <span *ngIf="gasBuffer < 20" class="small text-warning"><i class="fas fa-exclamation-triangle"></i>
+                Transaction could fail on low buffer <br /></span>
+            <span *ngIf="!isEnoughFee" class="small text-danger"><i class="fas fa-exclamation-triangle"></i> You do not
+                have enough coin </span>
+        </div>
+        <div class="col-2"></div>
+    </div>
+    <div *ngIf="txhash">
+        <div class="row">
+            <div class="col-6 small">Transaction Id</div>
+            <div class="col-6 text-end small">
+                <a [href]="link" target="_blank">{{txhash | truncate}}</a>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="confirmMsg && !failed" class="row mt-3">
+        <div class="col-12">
+            <input [(ngModel)]="confirmCheck" class="form-check-input" mdbCheckbox type="checkbox"><span
+                [innerHTML]="confirmMsg"></span>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button (click)="cancel()" *ngIf="!executed || failed" [disabled]="loading" class="relative waves-light btn btn-secondary"
+        type="button">Cancel</button>
+    <button (click)="execute()" *ngIf="!executed && !failed" [disabled]="loading || (confirmMsg && !confirmCheck) || !isEnoughFee" class="relative waves-light btn btn-primary"
+        type="button">Confirm</button>
+    <button (click)="done()" *ngIf="executed && !failed" class="relative waves-light btn btn-primary"
+        type="button">Done</button>
+</div>
