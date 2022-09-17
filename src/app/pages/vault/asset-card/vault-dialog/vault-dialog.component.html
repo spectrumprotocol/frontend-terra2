@@ -37,13 +37,13 @@
           <p class="card-text sub-topic">
             <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
               APR <i
-              [mdbTooltip]="'APR (Annual Percentage Rate) is the rate of return in one year from earning '+ rewardSymbolsPrint"
-              class="fas fa-info-circle info-icon super"></i>
+                    [mdbTooltip]="'APR (Annual Percentage Rate) is the rate of return in one year from earning '+ rewardSymbolsPrint"
+                    class="fas fa-info-circle info-icon super"></i>
             </ng-container>
             <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
               APY <i
-              [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with hourly compound interest in one year from '+ rewardSymbolsPrint"
-              class="fas fa-info-circle info-icon super"></i>
+                    [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with hourly compound interest in one year from '+ rewardSymbolsPrint"
+                    class="fas fa-info-circle info-icon super"></i>
             </ng-container>
           </p>
           <h3 class="card-title">
@@ -122,7 +122,7 @@
                       <span class="visually-hidden">Loading...</span>
                     </span>
                     <span
-                      class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }} {{ vault.baseSymbol }}</span>
+                            class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }} {{ vault.baseSymbol }}</span>
                   </div>
                   <div class="input-group">
                     <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
@@ -159,13 +159,13 @@
                       <span class="visually-hidden">Loading...</span>
                     </span>
                     <span
-                      class="text-white">{{ info.tokenBalances[vault.poolInfo.denomTokenContract] | unit : vault.denomDecimals }}
+                            class="text-white">{{ info.tokenBalances[vault.poolInfo.denomTokenContract] | unit : vault.denomDecimals }}
                       {{ vault.denomSymbol }}</span>
                   </div>
                   <div class="input-group">
                     <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"><img
-                      [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle me-1"
-                      height="24" width="24">{{vault.denomSymbol}}</span>
+                            [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle me-1"
+                            height="24" width="24">{{vault.denomSymbol}}</span>
                     <input #depositTokenBAmtTokenTokenCtl="ngModel"
                            (focusin)="focusInDepositTokenABAmtTokenToken('B')"
                            (focusout)="focusOutDepositTokenABAmtTokenToken('B')"
@@ -186,13 +186,13 @@
                 <div class="d-flex">
                   <div class="form-check form-switch free-token-ratio-switch">
                     <input
-                      (change)="onFreeRatioChanged($event)"
-                      [(ngModel)]="freeTokenTokenRatio"
-                      [ngModelOptions] ="{standalone: true}"
-                      class="form-check-input"
-                      id="freeRatioToggle"
-                      mdbCheckbox
-                      type="checkbox"
+                            (change)="onFreeRatioChanged($event)"
+                            [(ngModel)]="freeTokenTokenRatio"
+                            [ngModelOptions] ="{standalone: true}"
+                            class="form-check-input"
+                            id="freeRatioToggle"
+                            mdbCheckbox
+                            type="checkbox"
                     />
                     <label class="form-check-label" for="freeRatioToggle">
                       Free Ratio
@@ -256,8 +256,8 @@
                   <div class="small p-2">
                     <i class="fas fa-info-circle info-icon"></i> Already have LP token? Deposit
                     here or <a
-                    [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex"
-                    target="_blank">provide/withdraw {{vault.poolInfo.dex}} LP</a>
+                          [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex"
+                          target="_blank">provide/withdraw {{vault.poolInfo.dex}} LP</a>
                   </div>
                 </div>
               </div>
@@ -271,7 +271,7 @@
                 <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
                   <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
                   <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
-                  {{vault.unitDisplay}}
+                  &nbsp;{{ vault.shortUnitDisplay }}
                 </span>
                 <input #depositLPAmtLPCtl="ngModel" (input)="depositLPChanged(false, $event)"
                        [(ngModel)]="depositLPAmtLP"
@@ -318,7 +318,7 @@
                 </div>
                 <div *ngIf="shouldShowAPRFromAstroportData" class="row">
                   <div class="col">APR from Astroport data <a
-                    href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a>
+                          href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a>
                   </div>
                   <div class="col text-end"></div>
                 </div>
@@ -363,7 +363,7 @@
               <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
-                {{ vault.unitDisplay }}
+                &nbsp;{{ vault.shortUnitDisplay }}
               </span>
               <input #withdrawAmtCtl="ngModel" (input)="withdrawAmtChanged()" [(ngModel)]="withdrawAmt"
                      [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
@@ -375,13 +375,13 @@
               </button>
             </div>
             <span
-              *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
-              class="invalid-feedback-custom">
+                    *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                    class="invalid-feedback-custom">
               Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
             </span>
             <span
-              *ngIf="withdrawAmt > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
-              class="invalid-feedback-custom">
+                    *ngIf="withdrawAmt > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                    class="invalid-feedback-custom">
               You do not have any {{ vault.unitDisplay }} deposited
             </span>
             <span *ngIf="withdrawAmtCtl.errors?.pattern" class="invalid-feedback-custom">
@@ -434,8 +434,8 @@
                 {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
                 <small class="text-muted">
                   (${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
-                  info.poolResponses[info.SPEC_KEY] |
-                  unit: 6 : '1.0-2' }})
+                        info.poolResponses[info.SPEC_KEY] |
+                        unit: 6 : '1.0-2' }})
                 </small>
               </div>
             </div>
