@@ -51,6 +51,16 @@ export const lp_balance_transform = (lp: any, info: InfoService, config: ConfigS
   }
   const stableCoinDenoms = config.STABLE_COIN_DENOMS;
 
+  if (poolResponse.assets[0].info.native_token?.['denom'] === info.terrajs.settings.axlUsdcToken && poolResponse.assets[1].info.native_token?.['denom'] === info.terrajs.settings.axlUsdtToken){
+    const amount1 = new BigNumber(lp)
+        .times(poolResponse.assets[0].amount)
+        .div(poolResponse.total_share);
+    const amount2 = new BigNumber(lp)
+        .times(poolResponse.assets[1].amount)
+        .div(poolResponse.total_share);
+    return amount1.plus(amount2).toString();
+  }
+
   if (stableCoinDenoms.has(poolResponse.assets[0].info.native_token?.['denom'])) {
     return new BigNumber(lp)
       .times(poolResponse.assets[0].amount)

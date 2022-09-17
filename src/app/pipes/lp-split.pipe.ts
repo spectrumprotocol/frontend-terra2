@@ -29,7 +29,9 @@ export class LpSplitPipe implements PipeTransform {
       .times(poolResponse.assets[1].amount)
       .div(poolResponse.total_share)
       .toString();
-    if (poolResponse.assets[0].info.native_token) {
+    if (poolResponse.assets[0].info.native_token?.['denom'] === this.terrajs.settings.axlUsdcToken && poolResponse.assets[1].info.native_token?.['denom'] === this.terrajs.settings.axlUsdtToken) {
+      return `${this.unitPipe.transform(amount1, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
+    } else if (poolResponse.assets[0].info.native_token) {
       return `${this.unitPipe.transform(amount2, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
     } else {
       return `${this.unitPipe.transform(amount1, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
