@@ -392,7 +392,7 @@
                 <div>Receive</div>
                 <div class="margin-left-auto">
                   <ng-container *ngIf="withdrawMode === 'tokentoken'">
-                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault.baseSymbol: vault.denomSymbol: vault.baseDecimals: null: vault.denomDecimals: null }}
+                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
                   </ng-container>
                   <ng-container *ngIf="withdrawMode === 'lp'">
                     {{ withdrawAmt | number }} {{vault.unitDisplay}}

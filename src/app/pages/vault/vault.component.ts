@@ -9,6 +9,7 @@ import {PairInfo} from '../../services/api/terraswap_factory/pair_info';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
+import { AssetInfo } from '../../services/api/astroport_pair/pair_info';
 
 export interface Vault {
   baseSymbol: string;
@@ -16,10 +17,10 @@ export interface Vault {
   rewardSymbols: Set<string>;
   baseDecimals: number;
   baseUnit: number;
-  baseAssetInfo: object;
+  baseAssetInfo: AssetInfo;
   denomDecimals: number;
   denomUnit: number;
-  denomAssetInfo: object;
+  denomAssetInfo: AssetInfo;
   lpToken: string;
   pairInfo: PairInfo;
   poolInfo: PoolInfo;

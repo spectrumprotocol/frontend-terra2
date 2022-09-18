@@ -15,7 +15,8 @@ import {
   PairStat,
   PoolAPR,
   PoolInfo,
-  RewardInfoResponseItem
+  RewardInfoResponseItem,
+  FarmConfig
 } from './farm_info/farm-info.service';
 import {fromEntries} from '../libs/core';
 import {PairInfo} from './api/astroport_pair/pair_info';
@@ -212,10 +213,6 @@ export class InfoService {
     }
   }
 
-  get ASTRO_KEY() {
-    return `Astroport|${this.terrajs.settings.astroToken}|${this.terrajs.settings.axlUsdcToken}`;
-  }
-
   get SPEC_KEY() {
     return `Astroport|${this.terrajs.settings.specToken}|${this.terrajs.settings.axlUsdcToken}`;
   }
@@ -296,7 +293,7 @@ export class InfoService {
         continue;
       }
       const key = farmInfo.farmType === 'LP' ? `${farmInfo.dex}|${farmInfo.baseTokenContract}|${farmInfo.denomTokenContract}` : `${farmInfo.baseTokenContract}`;
-      let farmConfig;
+      let farmConfig: FarmConfig;
       if (farmInfo.getConfig) {
         farmConfig = await farmInfo.getConfig();
       } else {
@@ -559,9 +556,9 @@ export class InfoService {
       if (!farmInfo.farmContract) {
         continue;
       }
-      let task;
+      let task: Promise<void>;
       if (BUNDLER_BLACKLIST.has(farmInfo.farmContract)) {
-        task = await farmInfo.queryReward().then((reward) => processRewards(farmInfo, reward));
+        task = farmInfo.queryReward().then((reward) => processRewards(farmInfo, reward));
       } else {
         task = bundler.query(farmInfo.farmContract, {
           reward_info: {
@@ -698,7 +695,7 @@ export class InfoService {
       if (!rewardInfo) {
         continue;
       }
-      let bond_amount;
+      let bond_amount: number;
       if (vault.poolInfo.farmType === 'LP') {
         bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, this.config, vault.poolInfo.key);
       }
@@ -786,7 +783,7 @@ export class InfoService {
       const poolAprTotal = shouldSetAprZero ? 0 : this.getPoolAprTotal(pairStat);
 
       const disabled = poolInfo.disabled;
-      let score;
+      let score: number;
       if (poolInfo.farm === 'Spectrum') {
         score = 2000000;
       } else if (disabled) {

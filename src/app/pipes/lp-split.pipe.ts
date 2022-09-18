@@ -1,9 +1,20 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import BigNumber from 'bignumber.js';
 import {CONFIG} from '../consts/config';
-import {PoolResponse} from '../services/api/terraswap_pair/pool_response';
+import {AssetInfo, PoolResponse} from '../services/api/terraswap_pair/pool_response';
 import {UnitPipe} from './unit.pipe';
-import {TerrajsService} from '../services/terrajs.service';
+import { InfoService } from '../services/info.service';
+
+interface LpSplitData {
+  baseSymbol: string;
+  denomSymbol: string;
+  baseDecimals: number;
+  baseUnit: number;
+  baseAssetInfo: AssetInfo;
+  denomDecimals: number;
+  denomUnit: number;
+  denomAssetInfo: AssetInfo;
+}
 
 @Pipe({
   name: 'lpSplit'
@@ -12,11 +23,11 @@ export class LpSplitPipe implements PipeTransform {
 
   constructor(
     private unitPipe: UnitPipe,
-    private terrajs: TerrajsService
+    private info: InfoService,
   ) {
   }
 
-  transform(lp: number, poolResponse: PoolResponse, baseSymbol: string, denomSymbol: string, baseDecimals?: number, baseDigitsInfo?: string, denomDecimals?: number, denomDigitsInfo?: string): string {
+  transform(lp: number, poolResponse: PoolResponse, data: LpSplitData, digitsInfo?: string): string {
     if (typeof lp !== 'number' || !poolResponse) {
       return undefined;
     }
@@ -29,12 +40,12 @@ export class LpSplitPipe implements PipeTransform {
       .times(poolResponse.assets[1].amount)
       .div(poolResponse.total_share)
       .toString();
-    if (poolResponse.assets[0].info.native_token?.['denom'] === this.terrajs.settings.axlUsdcToken && poolResponse.assets[1].info.native_token?.['denom'] === this.terrajs.settings.axlUsdtToken) {
-      return `${this.unitPipe.transform(amount1, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
-    } else if (poolResponse.assets[0].info.native_token) {
-      return `${this.unitPipe.transform(amount2, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount1, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
+    const asset0Token = poolResponse.assets[0].info.token?.['contract_addr'] || poolResponse.assets[0].info.native_token?.['denom'];
+    const baseToken = data.baseAssetInfo.token?.['contract_addr'] || data.baseAssetInfo.native_token?.['denom'];
+    if (asset0Token === baseToken) {
+      return `${this.unitPipe.transform(amount1, data.baseDecimals, digitsInfo)} ${data.baseSymbol} + ${this.unitPipe.transform(amount2, data.denomDecimals, digitsInfo)} ${data.denomSymbol}`;
     } else {
-      return `${this.unitPipe.transform(amount1, baseDecimals, baseDigitsInfo)} ${baseSymbol} + ${this.unitPipe.transform(amount2, denomDecimals, denomDigitsInfo)} ${denomSymbol}`;
+      return `${this.unitPipe.transform(amount2, data.baseDecimals, digitsInfo)} ${data.baseSymbol} + ${this.unitPipe.transform(amount1, data.denomDecimals, digitsInfo)} ${data.denomSymbol}`;
     }
   }
 

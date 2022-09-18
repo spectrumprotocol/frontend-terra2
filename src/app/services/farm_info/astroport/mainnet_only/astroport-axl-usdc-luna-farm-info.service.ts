@@ -53,7 +53,7 @@ export class AstroportAxlUsdcLunaFarmInfoService implements FarmInfoService {
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
         lp_token: pairInfos[key].liquidity_token,
-        user: this.terrajs.settings.astroportStakingProxy
+        user: this.farmContract
       }
     });
     const pairs: Record<string, PairStat> = {};

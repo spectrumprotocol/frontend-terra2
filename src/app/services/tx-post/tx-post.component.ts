@@ -1,15 +1,15 @@
-import {HttpClient} from '@angular/common/http';
-import {Component, OnInit} from '@angular/core';
-import {CreateTxOptions, Fee, Msg, SignerOptions, Tx} from '@terra-money/terra.js';
-import {CONFIG} from '../../consts/config';
-import {TerrajsService} from '../terrajs.service';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
-import {InfoService} from '../info.service';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { CreateTxOptions, Fee, Msg, SignerOptions, Tx } from '@terra-money/terra.js';
+import { CONFIG } from '../../consts/config';
+import { TerrajsService } from '../terrajs.service';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
+import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
-import {Denom} from '../../consts/denom';
-import {BalancePipe} from '../../pipes/balance.pipe';
-import {times} from "../../libs/math";
+import { Denom } from '../../consts/denom';
+import { BalancePipe } from '../../pipes/balance.pipe';
+import { times } from "../../libs/math";
 
 @Component({
   selector: 'app-tx-post',
@@ -96,7 +96,7 @@ export class TxPostComponent implements OnInit {
 
       // simulate
       this.loadingMsg = 'Simulating...';
-      const singerOptions: SignerOptions[] = [{address: this.terrajs.address}];
+      const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
         feeDenoms: [Denom.LUNA],
@@ -160,13 +160,7 @@ export class TxPostComponent implements OnInit {
       this.executed = true;
 
       this.loadingMsg = 'Waiting for result...';
-      // let firstPolling = true;
       do {
-        // if (firstPolling) {
-        //   // TODO different wait time for testnet and mainnet?
-        //   await new Promise(resolve => setTimeout(resolve, 6000));
-        //   firstPolling = false;
-        // }
         const res2 = await this.httpClient.get<any>(`${this.terrajs.settings.lcd}/cosmos/tx/v1beta1/txs/${this.txhash}`,
           {
             observe: 'response',
@@ -174,7 +168,7 @@ export class TxPostComponent implements OnInit {
           .toPromise().catch(e => e);
         if (res2.ok) {
           if (res2.body?.code || res2.body?.error) {
-            throw {message: 'Transaction failed', data: res2.body.code || res2.body.error};
+            throw { message: 'Transaction failed', data: res2.body.code || res2.body.error };
           }
           break;
         } else {
