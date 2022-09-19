@@ -35,6 +35,7 @@ import {StateInfo} from './api/gov/state_info';
 import {QueryBundler} from './querier-bundler';
 import {WasmService} from './api/wasm.service';
 import {ConfigService} from './config.service';
+import {fromBase64} from '../libs/base64';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -139,6 +140,7 @@ export class InfoService {
   poolInfos: Record<string, PoolInfo>;
   pairInfos: Record<string, PairInfo> = {};
   tokenInfos: Record<string, TokenInfo> = {};
+  ampStablePairs: Record<string, string> = {};
   stat: Stat;
   circulation: string;
   marketCap: number;
@@ -201,6 +203,10 @@ export class InfoService {
         if (tokenInfoJson) {
           this.tokenInfos = JSON.parse(tokenInfoJson);
         }
+        const ampStablePairsJson = localStorage.getItem('ampStablePairs');
+        if (ampStablePairsJson) {
+          this.ampStablePairs = JSON.parse(ampStablePairsJson);
+        }
       } else {
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
@@ -208,6 +214,7 @@ export class InfoService {
         localStorage.removeItem('poolResponses');
         localStorage.removeItem('rewardInfos');
         localStorage.removeItem('tokenInfos');
+        localStorage.removeItem('ampStablePairs');
       }
     } catch (e) {
     }
@@ -368,6 +375,33 @@ export class InfoService {
       bundler.flush();
       await Promise.all(tasks);
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    }
+  }
+
+  async ensureAmpStablePairs(){
+    const pairInfoKeys = Object.keys(this.pairInfos);
+    const tasks: Promise<any>[] = [];
+    const bundler = new QueryBundler(this.wasm);
+    for (const pairInfoKey of pairInfoKeys){
+      const pairInfo = this.pairInfos[pairInfoKey];
+      if (pairInfo.pair_type?.['stable']){
+        const task = bundler.query(pairInfo.contract_addr, {
+          config: {}
+        }).then(value => {
+          try {
+            const params = fromBase64<any>(value.params);
+            this.ampStablePairs[pairInfoKey] = params.amp;
+          } catch (e){
+            console.error('ensureAmpStablePairs', pairInfo, e);
+          }
+        });
+        tasks.push(task);
+      }
+    }
+    if (tasks.length) {
+      bundler.flush();
+      await Promise.all(tasks);
+      localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
     }
   }
 
@@ -619,6 +653,7 @@ export class InfoService {
   @memoize(1000)
   async refreshPoolResponses() {
     await this.ensurePairInfos();
+    await this.ensureAmpStablePairs();
     const poolResponses: Record<string, PoolResponse> = {};
     const bundler = new QueryBundler(this.wasm);
     const poolTasks: Promise<any>[] = [];
@@ -730,7 +765,7 @@ export class InfoService {
   async retrieveCachedStat(skipPoolResponses = false) {
     try {
       const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.ulunaUSDPrice || !data.infoSchemaVersion) {
+      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.ulunaUSDPrice || !data.ampStablePairs) {
         throw (data);
       }
       this.tokenInfos = data.tokenInfos;
@@ -740,16 +775,17 @@ export class InfoService {
       this.circulation = data.circulation;
       this.marketCap = data.marketCap;
       this.ulunaUSDPrice = data.ulunaUSDPrice;
+      this.ampStablePairs = data.ampStablePairs;
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+      localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
       if (!skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
       }
-
       // no more fallback
     } catch (ex) {
       // fallback if api die
