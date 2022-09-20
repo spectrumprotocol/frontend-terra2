@@ -1,5 +1,5 @@
-export function getStablePrice(offerPool: number, askPool: number) {
-    const leverage = 2000; // amp 1000 * coin 2
+export function getStablePrice(offerPool: number, askPool: number, amp: number) {
+    const leverage = amp * 200;
     const newAskPool = askPool - 1000000;
     const d = computeD(leverage, offerPool, askPool);
     const newOfferPool = computeNewBalance(leverage, newAskPool, d);

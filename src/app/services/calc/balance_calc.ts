@@ -75,7 +75,8 @@ export const lp_balance_transform = (lp: any, info: InfoService, config: ConfigS
       info.poolResponses[`${dex}|${asset1Token}|${nativeToken}`] || info.poolResponses[`${dex}|${nativeToken}|${asset1Token}`]);
     if (token1Price) {
       if (info.pairInfos[key].pair_type?.['stable']) {
-        const asset0Price = getStablePrice(+poolResponse.assets[0].amount, +poolResponse.assets[1].amount);
+        const amp = info.ampStablePairs[key];
+        const asset0Price = getStablePrice(+poolResponse.assets[0].amount, +poolResponse.assets[1].amount, +amp);
         const asset0Swap = new BigNumber(lp)
           .times(poolResponse.assets[0].amount)
           .div(poolResponse.total_share)
@@ -104,7 +105,8 @@ export const lp_balance_transform = (lp: any, info: InfoService, config: ConfigS
       info.poolResponses[`${dex}|${asset0Token}|${nativeToken}`] || info.poolResponses[`${dex}|${nativeToken}|${asset0Token}`]);
     if (token0Price) {
       if (info.pairInfos[key].pair_type?.['stable']) {
-        const asset1Price = getStablePrice(+poolResponse.assets[1].amount, +poolResponse.assets[0].amount);
+        const amp = info.ampStablePairs[key];
+        const asset1Price = getStablePrice(+poolResponse.assets[1].amount, +poolResponse.assets[0].amount, +amp);
         const asset1Swap = new BigNumber(lp)
           .times(poolResponse.assets[1].amount)
           .div(poolResponse.total_share)

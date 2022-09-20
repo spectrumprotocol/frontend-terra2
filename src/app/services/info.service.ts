@@ -472,7 +472,7 @@ export class InfoService {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
         }
-        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, this.ulunaUSDPrice);
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, this.ulunaUSDPrice, this.ampStablePairs);
         const keys = Object.keys(pairStats);
         for (const key of keys) {
           const farmConfig = this.poolInfos[key]?.farmConfig || defaultFarmConfig;

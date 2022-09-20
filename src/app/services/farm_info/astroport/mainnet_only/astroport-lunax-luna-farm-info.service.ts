@@ -49,7 +49,7 @@ export class AstroportLunaxLunaFarmInfoService implements FarmInfoService {
   }
 
   // no LP APR calculation, return 0 to use Astroport API
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number, ampStablePairs: Record<string, string>): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.baseTokenContract}|${this.denomTokenContract}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
@@ -81,7 +81,8 @@ export class AstroportLunaxLunaFarmInfoService implements FarmInfoService {
     if (!ulunaAsset) {
       return;
     }
-    const lunaXPrice = getStablePrice(+lunaXAsset.amount, +ulunaAsset.amount);
+    const amp = ampStablePairs[key];
+    const lunaXPrice = getStablePrice(+lunaXAsset.amount, +ulunaAsset.amount, +amp);
     const lunaXSwap = new BigNumber(depositAmount)
       .times(lunaXAsset.amount)
       .div(p.total_share)
