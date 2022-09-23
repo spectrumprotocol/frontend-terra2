@@ -103,7 +103,7 @@ export const networks: Record<string, ISettings> = {
     querier: '',
     specAPI: 'https://spec-api.azurefd.net/api',
     chainID: 'phoenix-1',
-    finder: 'https://finder.terra.money',
+    finder: 'https://terrasco.pe',
     astroport_gql: 'astroport_mainnet'
   },
   testnet: {
