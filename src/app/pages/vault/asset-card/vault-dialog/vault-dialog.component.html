@@ -199,10 +199,17 @@
                     </label>
                   </div>
                   <div class="row">
-                    <ng-container *ngIf="showFreeRatioMessage && vault.poolInfo.poolType === 'xyk'">
+                    <ng-container *ngIf="showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
                       Spectrum will auto
-                      <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
-                      <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
+<!--                      TODO temp fix until proper solution-->
+                      <ng-container *ngIf="vault.poolInfo.key === info.USDC_LUNA_KEY">
+                        <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.denomSymbol}} to {{return_b_amount | unit}} {{vault.baseSymbol}} </ng-container>
+                        <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.baseSymbol}} to {{return_a_amount | unit}} {{vault.denomSymbol}} </ng-container>
+                      </ng-container>
+                      <ng-container *ngIf="vault.poolInfo.key !== info.USDC_LUNA_KEY">
+                        <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
+                        <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
+                      </ng-container>
                       to keep 1:1 ratio required to create LP.
                     </ng-container>
                     <ng-container *ngIf="!showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">

@@ -300,10 +300,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   fillZeroInputTokenABAmtTokenToken() {
-    if (!this.depositTokenAAmtTokenTokenIsFocus && (this.depositTokenAAmtTokenToken === undefined || this.depositTokenAAmtTokenToken === null)) {
+    if (!this.depositTokenAAmtTokenTokenIsFocus && (this.depositTokenAAmtTokenToken === undefined || this.depositTokenAAmtTokenToken === null || isNaN(this.depositTokenAAmtTokenToken))) {
       this.depositTokenAAmtTokenToken = 0;
     }
-    if (!this.depositTokenBAmtTokenTokenIsFocus && (this.depositTokenBAmtTokenToken === undefined || this.depositTokenBAmtTokenToken === null)) {
+    if (!this.depositTokenBAmtTokenTokenIsFocus && (this.depositTokenBAmtTokenToken === undefined || this.depositTokenBAmtTokenToken === null || isNaN(this.depositTokenBAmtTokenToken))) {
       this.depositTokenBAmtTokenToken = 0;
     }
   }
@@ -667,23 +667,26 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private async refreshDataTokenToken(inputFromA: boolean) {
-    const pool = this.info.poolResponses[this.vault.poolInfo.key];
     const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
     let amountBase: BigNumber;
     let amountDenom: BigNumber;
     const denomUnit = this.vault.denomUnit;
     if (inputFromA) {
-      if (!this.freeTokenTokenRatio) {
+      if (!this.freeTokenTokenRatio && this.depositTokenAAmtTokenToken > 0) {
         amountBase = new BigNumber(this.depositTokenAAmtTokenToken).times(this.vault.baseUnit);
         amountDenom = amountBase.times(assetDenom.amount).div(assetBase.amount).integerValue();
-        this.depositTokenBAmtTokenToken = amountDenom.div(denomUnit).toNumber();
+        this.depositTokenBAmtTokenToken = amountDenom.div(denomUnit)?.toNumber() || 0;
       }
     } else {
-      if (!this.freeTokenTokenRatio) {
+      if (!this.freeTokenTokenRatio && this.depositTokenBAmtTokenToken > 0) {
         amountDenom = new BigNumber(this.depositTokenBAmtTokenToken).times(denomUnit);
         amountBase = amountDenom.times(assetBase.amount).div(assetDenom.amount).integerValue();
-        this.depositTokenAAmtTokenToken = amountBase.div(this.vault.baseUnit).toNumber();
+        this.depositTokenAAmtTokenToken = amountBase.div(this.vault.baseUnit)?.toNumber() || 0;
       }
+    }
+
+    if (!this.freeTokenTokenRatio && !(this.depositTokenAAmtTokenToken && this.depositTokenBAmtTokenToken)){
+      return;
     }
 
     assetBase.amount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
