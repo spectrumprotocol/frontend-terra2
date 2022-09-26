@@ -84,13 +84,13 @@
           <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title text-primary">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
-              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
               <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
             <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
               +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
-              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
             </h6>
           </h3>
         </div>

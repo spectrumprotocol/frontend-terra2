@@ -72,8 +72,7 @@
             <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="f-14-600 text-primary">
               {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
               <span class="small text-muted">
-                (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-                info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+                (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
             </div>
             <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
               <div class="f-14">-</div>
@@ -166,8 +165,7 @@
                       info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
                       <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10"
                             class="f-12 text-muted small">
-                        (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance:
-                        info : config: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
+                        (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
                     </div>
                     <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
                       <div class="f-14">-</div>

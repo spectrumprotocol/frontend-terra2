@@ -21,7 +21,6 @@ import {
 import {fromEntries} from '../libs/core';
 import {PairInfo} from './api/astroport_pair/pair_info';
 import {BalancePipe} from '../pipes/balance.pipe';
-import {LpBalancePipe} from '../pipes/lp-balance.pipe';
 import {Vault} from '../pages/vault/vault.component';
 import {HttpClient} from '@angular/common/http';
 import {memoize} from 'utils-decorators';
@@ -36,6 +35,7 @@ import {QueryBundler} from './querier-bundler';
 import {WasmService} from './api/wasm.service';
 import {ConfigService} from './config.service';
 import {fromBase64} from '../libs/base64';
+import { lp_balance_transform } from './calc/balance_calc';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -167,7 +167,6 @@ export class InfoService {
     private astroportFactory: AstroportFactoryService,
     private token: TokenService,
     private balancePipe: BalancePipe,
-    private lpBalancePipe: LpBalancePipe,
     private httpClient: HttpClient,
     private wallet: WalletService,
     private apollo: Apollo,
@@ -732,7 +731,7 @@ export class InfoService {
       }
       let bond_amount: number;
       if (vault.poolInfo.farmType === 'LP') {
-        bond_amount = +this.lpBalancePipe.transform(rewardInfo.bond_amount, this, this.config, vault.poolInfo.key);
+        bond_amount = +lp_balance_transform(rewardInfo.bond_amount, this, this.config, vault.poolInfo.key);
       }
       bond_amount = bond_amount / CONFIG.UNIT || 0;
       if (!portfolio.farms.get(vault.poolInfo.farm)) {
