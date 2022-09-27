@@ -658,11 +658,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private buildRewardSymbolsPrint() {
     let isFirst = true;
-    this.vault.rewardSymbols.forEach(rewardSymbol => {
+    this.vault.poolInfo.rewardTokenContracts.forEach(rewardTokenContract => {
       if (!isFirst) {
         this.rewardSymbolsPrint += ', ';
       }
-      this.rewardSymbolsPrint += rewardSymbol;
+      this.rewardSymbolsPrint += this.info.tokenInfos[rewardTokenContract].symbol;
       isFirst = false;
     });
   }

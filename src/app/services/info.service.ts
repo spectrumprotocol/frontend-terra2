@@ -312,7 +312,7 @@ export class InfoService {
         farmContract: farmInfo.farmContract,
         baseTokenContract: farmInfo.baseTokenContract,
         denomTokenContract: farmInfo.denomTokenContract,
-        rewardTokenContracts: Array.from(farmInfo.rewardTokenContracts.values()),
+        rewardTokenContracts: this.poolAprsToRewardTokenContracts(farmInfo.poolAprs),
         forceDepositType,
         auditWarning: farmInfo.auditWarning,
         farmType: farmInfo.farmType ?? 'LP',
@@ -329,6 +329,10 @@ export class InfoService {
 
     localStorage.setItem('poolInfos', JSON.stringify(poolInfos));
     this.poolInfos = poolInfos;
+  }
+
+  poolAprsToRewardTokenContracts(poolAprs: PoolAPR[]){
+    return poolAprs.map(poolApr => poolApr.rewardContract);
   }
 
   async ensurePairInfos() {
@@ -827,14 +831,9 @@ export class InfoService {
         score = (poolInfo.highlight ? 1000000 : 0) + (pairStat?.multiplier || 0);
       }
 
-      const rewardSymbols = new Set<string>();
-      rewardTokenContracts.forEach(rewardToken => {
-        rewardSymbols.add(this.tokenInfos[rewardToken]?.symbol);
-      });
       const vault: Vault = {
         baseSymbol,
         denomSymbol,
-        rewardSymbols, // TODO rewardSymbols maybe redundant
         baseDecimals: isNativeToken(baseTokenContract) ? CONFIG.DIGIT : this.tokenInfos[baseTokenContract]?.decimals,
         baseUnit: isNativeToken(baseTokenContract) ? CONFIG.UNIT : this.tokenInfos[baseTokenContract]?.unit,
         denomDecimals: isNativeToken(denomTokenContract) ? CONFIG.DIGIT : this.tokenInfos[denomTokenContract]?.decimals,

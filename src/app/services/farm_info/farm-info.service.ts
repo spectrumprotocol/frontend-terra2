@@ -76,7 +76,7 @@ export interface FarmInfoService {
 
   farmContract: string;
   compoundProxyContract: string;
-  rewardTokenContracts: Set<string>;
+  poolAprs: PoolAPR[];
 
   // unaudit notice
   readonly auditWarning?: boolean;

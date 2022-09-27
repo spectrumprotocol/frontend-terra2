@@ -14,7 +14,6 @@ import { AssetInfo } from '../../services/api/astroport_pair/pair_info';
 export interface Vault {
   baseSymbol: string;
   denomSymbol: string;
-  rewardSymbols: Set<string>;
   baseDecimals: number;
   baseUnit: number;
   baseAssetInfo: AssetInfo;
