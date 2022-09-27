@@ -76,17 +76,20 @@ import {
 } from './services/farm_info/astroport/mainnet_only/astroport-astro-axl-usdc-farm-info.service';
 import {
   AstroportAxlUsdcAxlUsdtFarmInfoService
-} from "./services/farm_info/astroport/mainnet_only/astroport-axl-usdc-axl-usdt-farm-info.service";
+} from './services/farm_info/astroport/mainnet_only/astroport-axl-usdc-axl-usdt-farm-info.service';
 import {
   AstroportAxlUsdcLunaFarmInfoService
-} from "./services/farm_info/astroport/mainnet_only/astroport-axl-usdc-luna-farm-info.service";
+} from './services/farm_info/astroport/mainnet_only/astroport-axl-usdc-luna-farm-info.service';
 import {
   AstroportLunaxLunaFarmInfoService
-} from "./services/farm_info/astroport/mainnet_only/astroport-lunax-luna-farm-info.service";
+} from './services/farm_info/astroport/mainnet_only/astroport-lunax-luna-farm-info.service';
 import {
   AstroportVkrAxlUsdcFarmInfoService
-} from "./services/farm_info/astroport/mainnet_only/astroport-vkr-axl-usdc-farm-info.service";
-import {AirdropComponent} from "./pages/airdrop/airdrop.component";
+} from './services/farm_info/astroport/mainnet_only/astroport-vkr-axl-usdc-farm-info.service';
+import {AirdropComponent} from './pages/airdrop/airdrop.component';
+import {
+  AstroportTptLunaFarmInfoService
+} from './services/farm_info/astroport/mainnet_only/astroport-tpt-luna-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -170,6 +173,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportAxlUsdcLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportLunaxLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrAxlUsdcFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportTptLunaFarmInfoService, multi: true},
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},

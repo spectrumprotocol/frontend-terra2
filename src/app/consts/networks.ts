@@ -17,6 +17,7 @@ export interface ISettings {
   axlUsdcToken: string;
   axlUsdtToken: string;
   lunaXToken: string;
+  tptToken: string;
   astroportGov: string;
   astroportGenerator: string;
   // MAINNET ONLY
@@ -30,6 +31,8 @@ export interface ISettings {
   astroportLunaXLunaFarmCompoundProxy: string;
   astroportVkrAxlUsdcFarm: string;
   astroportVkrAxlUsdcFarmCompoundProxy: string;
+  astroportTptLunaFarm: string;
+  astroportTptLunaFarmCompoundProxy: string;
   // MAINNET ONLY
   // TESTNET ONLY
   astroportAstroLunaFarm: string;
@@ -72,6 +75,7 @@ export const networks: Record<string, ISettings> = {
     axlUsdcToken: 'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4',
     axlUsdtToken: 'ibc/CBF67A2BCF6CAE343FDF251E510C8E18C361FC02B23430C121116E0811835DEF',
     lunaXToken: 'terra14xsm2wzvu7xaf567r693vgfkhmvfs08l68h4tjj5wjgyn5ky8e2qvzyanh',
+    tptToken: 'terra13j2k5rfkg0qhk58vz63cze0uze4hwswlrfnm0fa4rnyggjyfrcnqcrs5z2',
     astroportGov: '',
     astroportGenerator: 'terra1vf9ceekuxx8kycm7yv6hs96hgwsmrzt4la6s84skrgvfu7t09huqqdg09d', // 'terra1ksvlfex49desf4c452j6dewdjs6c48nafemetuwjyj6yexd7x3wqvwa7j9',
     // MAINNET ONLY
@@ -85,6 +89,8 @@ export const networks: Record<string, ISettings> = {
     astroportLunaXLunaFarmCompoundProxy: 'terra190rnel2k0nmt9qmqh57rfnaxf9x5a24e2xeg3tn94vdg9mwf2pws55jmw6',
     astroportVkrAxlUsdcFarm: 'terra1ha4yvzqnq4mpu205wcd430m6m7wjklpquwn87dq89g9zersuvryses7rua', // pair : terra1alzkrc6hkvs8g5a064cukfxnv0jj4l3l8vhgfypfxvysk78v6dgqsymgmv, lp :terra18mcmlf4v23ehukkh7qxgpf5tznzg6893fxmf9ffmdt9phgf365zqvmlug6
     astroportVkrAxlUsdcFarmCompoundProxy: 'terra1pkuf6adp9gjmqvjlwkgvjrn3w09gfe7gukdevr5lqnltvna6c4rqa3rpf6',
+    astroportTptLunaFarm: '', // pair: terra15l5pqlp8q5d4z8tvermadvp429d8pfctg4j802t8edzkf8aavp7q59t7er lp: terra1ces6k6jp7qzkjpwsl6xg4f7zfwre0u23cglg69hhj3g20fhygtpsu24dsy
+    astroportTptLunaFarmCompoundProxy: '',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: '',
@@ -125,6 +131,7 @@ export const networks: Record<string, ISettings> = {
     axlUsdcToken: '',
     axlUsdtToken: '',
     lunaXToken: '',
+    tptToken: '',
     astroportGov: '',
     astroportGenerator: 'terra1pplp2s7u3h9cn3qddm7yfw7stajl8fqlu7tzr097697jx3ahtkqsnzvedu', // 'terra1gc4d4v82vjgkz0ag28lrmlxx3tf6sq69tmaujjpe7jwmnqakkx0qm28j2l',
     // MAINNET ONLY
@@ -138,6 +145,8 @@ export const networks: Record<string, ISettings> = {
     astroportLunaXLunaFarmCompoundProxy: '',
     astroportVkrAxlUsdcFarm: '',
     astroportVkrAxlUsdcFarmCompoundProxy: '',
+    astroportTptLunaFarm: '',
+    astroportTptLunaFarmCompoundProxy: '',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: 'terra1e9xfd3zxnra963meea5e7vvdm89dwd2tgvg4cq96q33c2s204cuqgl3wxq',
