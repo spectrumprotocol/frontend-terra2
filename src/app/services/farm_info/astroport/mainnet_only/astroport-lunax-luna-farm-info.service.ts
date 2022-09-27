@@ -29,7 +29,7 @@ export class AstroportLunaxLunaFarmInfoService implements FarmInfoService {
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
-  readonly poolType = 'xyk';
+  readonly poolType = 'stable';
 
   constructor(
     private farmService: SpectrumAstroportGenericFarmService,

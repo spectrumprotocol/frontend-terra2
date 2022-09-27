@@ -2,7 +2,7 @@ import { AfterViewInit, Component } from '@angular/core';
 import { fade } from '../../consts/animations';
 import { LegendPosition, ViewDimensions } from '@swimlane/ngx-charts';
 import { HttpClient } from '@angular/common/http';
-import { CONFIG } from 'src/app/consts/config';
+import { CONFIG } from '../../consts/config';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ShortNumPipe } from '../../pipes/short-num.pipe';
 import {TerrajsService} from '../../services/terrajs.service';

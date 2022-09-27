@@ -84,13 +84,13 @@
           <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title text-primary">
             {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
             <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
-              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
               <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
             <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
               +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
-              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: info : config : vault.poolInfo.key | unit: 6: '1.0-2' }})
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
             </h6>
           </h3>
         </div>
@@ -201,29 +201,22 @@
                   <div class="row">
                     <ng-container *ngIf="showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
                       Spectrum will auto
-<!--                      TODO temp fix until proper solution-->
-                      <ng-container *ngIf="vault.poolInfo.key === info.USDC_LUNA_KEY">
-                        <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.denomSymbol}} to {{return_b_amount | unit}} {{vault.baseSymbol}} </ng-container>
-                        <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.baseSymbol}} to {{return_a_amount | unit}} {{vault.denomSymbol}} </ng-container>
-                      </ng-container>
-                      <ng-container *ngIf="vault.poolInfo.key !== info.USDC_LUNA_KEY">
-                        <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
-                        <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
-                      </ng-container>
+                      <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
+                      <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
                       to keep 1:1 ratio required to create LP.
                     </ng-container>
                     <ng-container *ngIf="!showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
                       You can input {{vault.baseSymbol}} and {{vault.denomSymbol}} amount not bound to 1:1 ratio freely
                     </ng-container>
-                    <ng-container *ngIf="!showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'stable'">
-                      You can input {{vault.baseSymbol}} and {{vault.denomSymbol}} amount not bound to 1:1 ratio freely, Spectrum will not swap excess token and will provide as is because this is a stable pool.
+                    <ng-container *ngIf="freeTokenTokenRatio && vault.poolInfo.poolType === 'stable'">
+                      You can input {{vault.baseSymbol}} and {{vault.denomSymbol}} amount not bound to 1:1 ratio freely
                     </ng-container>
                   </div>
                 </div>
               </div>
 
               <div *ngIf="depositTokenAAmtTokenToken || depositTokenBAmtTokenToken" @fade class="mt-1 pool-info">
-                <div class="row">
+                <div class="row" *ngIf="vault.poolInfo.poolType !== 'stable'">
                   <div class="col">{{vault.baseSymbol}} Price</div>
                   <div class="col text-end">{{vault.poolInfo.key | price | number }} {{ vault.denomSymbol }}</div>
                 </div>

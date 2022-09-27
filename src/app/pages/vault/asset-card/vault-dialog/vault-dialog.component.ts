@@ -22,13 +22,14 @@ import {AstroportService} from '../../../../services/api/astroport.service';
 import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
 import {PercentPipe} from '@angular/common';
 import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
-import {RewardInfoPipe} from 'src/app/pipes/reward-info.pipe';
-import {LpSplitPipe} from 'src/app/pipes/lp-split.pipe';
+import {RewardInfoPipe} from '../../../../pipes/reward-info.pipe';
+import {LpSplitPipe} from '../../../../pipes/lp-split.pipe';
 import {LpEarningPipe} from '../../../../pipes/lp-earning.pipe';
 import {ConfigService} from '../../../../services/config.service';
 import {Decimal} from '../../../../services/api/astroport_router/execute_msg';
 import {FarmExecuteMsg} from '../../../../services/api/spectrum_astroport_farm/execute_msg';
 import {SpectrumCompoundProxyService} from '../../../../services/api/spectrum-compound-proxy.service';
+import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -300,10 +301,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   fillZeroInputTokenABAmtTokenToken() {
-    if (!this.depositTokenAAmtTokenTokenIsFocus && (this.depositTokenAAmtTokenToken === undefined || this.depositTokenAAmtTokenToken === null || isNaN(this.depositTokenAAmtTokenToken))) {
+    if (!this.depositTokenAAmtTokenTokenIsFocus && !this.depositTokenAAmtTokenToken) {
       this.depositTokenAAmtTokenToken = 0;
     }
-    if (!this.depositTokenBAmtTokenTokenIsFocus && (this.depositTokenBAmtTokenToken === undefined || this.depositTokenBAmtTokenToken === null || isNaN(this.depositTokenBAmtTokenToken))) {
+    if (!this.depositTokenBAmtTokenTokenIsFocus && !this.depositTokenBAmtTokenToken) {
       this.depositTokenBAmtTokenToken = 0;
     }
   }
@@ -667,7 +668,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   private async refreshDataTokenToken(inputFromA: boolean) {
-    const [assetBase, assetDenom] = this.findAssetBaseAndDenom();
+    const [assetBase, assetDenom, isAssetABase] = this.findAssetBaseAndDenom();
     let amountBase: BigNumber;
     let amountDenom: BigNumber;
     const denomUnit = this.vault.denomUnit;
@@ -692,25 +693,35 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     assetBase.amount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
     assetDenom.amount = times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);
 
-    const compoundSimulationResponse = await this.spectrumCompoundProxyService.query(this.vault.poolInfo.compoundProxyContract, {
+    const response = await this.spectrumCompoundProxyService.query(this.vault.poolInfo.compoundProxyContract, {
       compound_simulation: {
         rewards: [assetBase, assetDenom]
       }
     });
-    this.grossLpTokenToken = compoundSimulationResponse.lp_amount;
+    this.grossLpTokenToken = response.lp_amount;
     if (this.vault.poolInfo.poolType === 'xyk') {
-      [this.swap_asset_a_amount, this.swap_asset_b_amount, this.return_a_amount, this.return_b_amount] = [compoundSimulationResponse.swap_asset_a_amount, compoundSimulationResponse.swap_asset_b_amount, compoundSimulationResponse.return_a_amount, compoundSimulationResponse.return_b_amount];
+      if (isAssetABase) {
+        this.swap_asset_a_amount = response.swap_asset_a_amount;
+        this.swap_asset_b_amount = response.swap_asset_b_amount;
+        this.return_a_amount = response.return_a_amount;
+        this.return_b_amount = response.return_b_amount;
+      } else {
+        this.swap_asset_a_amount = response.swap_asset_b_amount;
+        this.swap_asset_b_amount = response.swap_asset_a_amount;
+        this.return_a_amount = response.return_b_amount;
+        this.return_b_amount = response.return_a_amount;
+      }
     }
   }
 
-  private findAssetBaseAndDenom() {
+  private findAssetBaseAndDenom(): [Asset, Asset, boolean] {
     const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
     const asset0Token: string = poolResponse.assets[0].info.token
       ? poolResponse.assets[0].info.token?.['contract_addr']
       : poolResponse.assets[0].info.native_token?.['denom'];
     return asset0Token === this.vault.poolInfo.baseTokenContract
-      ? [poolResponse.assets[0], poolResponse.assets[1]]
-      : [poolResponse.assets[1], poolResponse.assets[0]];
+      ? [poolResponse.assets[0], poolResponse.assets[1], true]
+      : [poolResponse.assets[1], poolResponse.assets[0], false];
   }
 
   private toContractPrice(price: string, offer_decimals: number, ask_decimals: number) {

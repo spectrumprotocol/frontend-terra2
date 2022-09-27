@@ -8,10 +8,13 @@ import {ConfigService} from "../services/config.service";
 })
 export class LpBalancePipe implements PipeTransform {
 
-  constructor() {
+  constructor(
+    private info: InfoService,
+    private config: ConfigService,
+  ) {
   }
 
-  transform(lp: any, info: InfoService, config: ConfigService, key: string): string {
-    return lp_balance_transform(lp, info, config, key);
+  transform(lp: any, key: string): string {
+    return lp_balance_transform(lp, this.info, this.config, key);
   }
 }

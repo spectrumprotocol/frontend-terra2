@@ -27,10 +27,16 @@ export class PricePipe implements PipeTransform {
       : poolResponse.assets[1].info.native_token?.['denom'];
     const asset0Decimals = this.config.NATIVE_TOKEN_DENOMS.has(asset0Token) ? 6 : this.info.tokenInfos[asset0Token]?.decimals || 6;
     const asset1Decimals = this.config.NATIVE_TOKEN_DENOMS.has(asset1Token) ? 6 : this.info.tokenInfos[asset1Token]?.decimals || 6;
-    return this.toUIPrice(div(poolResponse.assets[1].amount, poolResponse.assets[0].amount),
+    const baseToken = key.split('|')[1];
+    if (asset0Token === baseToken) {
+      return this.toUIPrice(div(poolResponse.assets[1].amount, poolResponse.assets[0].amount),
         asset1Decimals,
         asset0Decimals);
-
+    } else {
+      return this.toUIPrice(div(poolResponse.assets[0].amount, poolResponse.assets[1].amount),
+        asset0Decimals,
+        asset1Decimals);
+    }
   }
 
   private toUIPrice(price: string, offer_decimals: number, ask_decimals: number) {
