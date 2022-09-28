@@ -90,7 +90,6 @@ import {AirdropComponent} from './pages/airdrop/airdrop.component';
 import {
   AstroportTptLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-tpt-luna-farm-info.service';
-import {PercentSuperscriptPipe} from './pipes/percent-superscript.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -134,7 +133,6 @@ registerLocaleData(locale, 'en');
     DashboardComponent,
     CurrencyPipe,
     AirdropComponent,
-    PercentSuperscriptPipe
   ],
   imports: [
     ApolloModule,
@@ -187,7 +185,6 @@ registerLocaleData(locale, 'en');
     BalancePipe,
     LpBalancePipe,
     ShortNumPipe,
-    PercentSuperscriptPipe,
     PercentPipe,
     {provide: LOCALE_ID, useValue: 'en'},
   ],
