@@ -44,6 +44,10 @@ export class UrlPipe implements PipeTransform {
             return `https://astroport.fi/astro_logo.png`;
           case 'Stader':
             return `/assets/lunax.png`;
+          case 'TPT':
+            return `/assets/tpt.svg`;
+          case 'Terrapoker':
+            return `/assets/tpt.svg`;
           default:
             return null;
         }

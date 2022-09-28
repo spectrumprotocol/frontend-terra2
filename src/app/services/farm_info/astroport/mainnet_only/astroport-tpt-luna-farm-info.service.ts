@@ -18,11 +18,12 @@ import {WasmService} from '../../../api/wasm.service';
 import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
+import {Denom} from '../../../../consts/denom';
 
 @Injectable()
-export class AstroportAxlUsdcAxlUsdtFarmInfoService implements FarmInfoService {
-  readonly farm = 'Astroport';
-  readonly farmColor = '#463df6';
+export class AstroportTptLunaFarmInfoService implements FarmInfoService {
+  readonly farm = 'Terrapoker';
+  readonly farmColor = '#34346f';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
   readonly dex: DEX = 'Astroport';
@@ -35,7 +36,7 @@ export class AstroportAxlUsdcAxlUsdtFarmInfoService implements FarmInfoService {
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
-  readonly poolType = 'stable';
+  readonly poolType = 'xyk';
 
   constructor(
     private farmService: SpectrumAstroportGenericFarmService,
@@ -46,15 +47,21 @@ export class AstroportAxlUsdcAxlUsdtFarmInfoService implements FarmInfoService {
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = this.terrajs.settings.axlUsdcToken;
-    this.denomTokenContract = this.terrajs.settings.axlUsdtToken;
-    this.poolAprs = [{
+    this.baseTokenContract = this.terrajs.settings.tptToken;
+    this.denomTokenContract = Denom.LUNA;
+    this.poolAprs =  [{
+      apr: 0,
+      rewardSymbol: SYMBOLS.TPT,
+      rewardContract: this.terrajs.settings.tptToken
+    },
+    {
       apr: 0,
       rewardSymbol: SYMBOLS.ASTRO,
       rewardContract: this.terrajs.settings.astroToken
-    }];
-    this.farmContract = this.terrajs.settings.astroportAxlUsdcAxlUsdtFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportAxlUsdcAxlUsdtFarmCompoundProxy;
+    }
+    ];
+    this.farmContract = this.terrajs.settings.astroportTptLunaFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportTptLunaFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
@@ -72,7 +79,10 @@ export class AstroportAxlUsdcAxlUsdtFarmInfoService implements FarmInfoService {
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-
+    const uluna = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
+    if (!uluna) {
+      return;
+    }
     pairs[key] = {
       poolAprs: this.poolAprs,
       poolApy: 0,
@@ -81,14 +91,13 @@ export class AstroportAxlUsdcAxlUsdtFarmInfoService implements FarmInfoService {
       vaultFee: 0
     };
     const pair = pairs[key];
-    const amount1 = new BigNumber(depositAmount)
-      .times(p.assets[0].amount)
-      .div(p.total_share);
-    const amount2 = new BigNumber(depositAmount)
-      .times(p.assets[1].amount)
-      .div(p.total_share);
-    pair.tvl = amount1.plus(amount2).toString();
-    // based on USDC and USDT value is equal to USD
+    pair.tvl = new BigNumber(uluna.amount)
+      .times(depositAmount)
+      .times(ulunaPrice)
+      .times(2)
+      .div(p.total_share)
+      .toString();
+
     return pairs;
   }
 

@@ -30,6 +30,7 @@ import {Decimal} from '../../../../services/api/astroport_router/execute_msg';
 import {FarmExecuteMsg} from '../../../../services/api/spectrum_astroport_farm/execute_msg';
 import {SpectrumCompoundProxyService} from '../../../../services/api/spectrum-compound-proxy.service';
 import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
+import {UiUtilsService} from '../../../../services/ui-utils.service';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -107,7 +108,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private lpSplitPipe: LpSplitPipe,
     public lpEarningPipe: LpEarningPipe,
     public config: ConfigService,
-    private spectrumCompoundProxyService: SpectrumCompoundProxyService
+    private spectrumCompoundProxyService: SpectrumCompoundProxyService,
+    public uiUtil: UiUtilsService
   ) {
   }
 
@@ -193,7 +195,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.pairStat?.poolApy > 0) {
       html += `<div class="d-flex">
                     <div>Compound APY (incl. fee)</div>
-                    <div class="margin-left-auto">${this.percentPipe.transform(this.vault.pairStat?.poolApy)}</div>
+                    <div class="margin-left-auto">${this.uiUtil.transformPercentSuperscript(this.vault.pairStat?.poolApy)}</div>
             </div>`;
     }
     return html;
@@ -658,11 +660,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private buildRewardSymbolsPrint() {
     let isFirst = true;
-    this.vault.rewardSymbols.forEach(rewardSymbol => {
+    this.vault.poolInfo.rewardTokenContracts.forEach(rewardTokenContract => {
       if (!isFirst) {
         this.rewardSymbolsPrint += ', ';
       }
-      this.rewardSymbolsPrint += rewardSymbol;
+      this.rewardSymbolsPrint += this.info.tokenInfos[rewardTokenContract].symbol;
       isFirst = false;
     });
   }

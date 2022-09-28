@@ -2,7 +2,15 @@ import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
 import {RewardInfoResponseItem} from '../../../api/spectrum_astroport_farm/reward_info_response';
 import {TerrajsService} from '../../../terrajs.service';
-import {DEX, FARM_TYPE_ENUM, FarmInfoService, NETWORK_NAME_ENUM, PairStat, PoolInfo} from '../../farm-info.service';
+import {
+  DEX,
+  FARM_TYPE_ENUM,
+  FarmInfoService,
+  NETWORK_NAME_ENUM,
+  PairStat,
+  PoolAPR,
+  PoolInfo
+} from '../../farm-info.service';
 import {PoolResponse} from '../../../api/astroport_pair/pool_response';
 import {VaultsResponse} from '../../../api/gov/vaults_response';
 import {SpectrumAstroportGenericFarmService} from '../../../api/spectrum-astroport-generic-farm.service';
@@ -22,7 +30,7 @@ export class AstroportStblStbFarmInfoService implements FarmInfoService {
   denomTokenContract: string;
   readonly highlight = false;
   readonly notUseAstroportGqlApr = false;
-  rewardTokenContracts: Set<string>;
+  poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['testnet']);
@@ -40,7 +48,11 @@ export class AstroportStblStbFarmInfoService implements FarmInfoService {
   refreshContractOnNetwork() {
     this.baseTokenContract = this.terrajs.settings.stblToken;
     this.denomTokenContract = this.terrajs.settings.stbToken;
-    this.rewardTokenContracts = new Set([this.terrajs.settings.astroToken]);
+    this.poolAprs = [{
+      apr: 0,
+      rewardSymbol: SYMBOLS.ASTRO,
+      rewardContract: this.terrajs.settings.astroToken
+    }];
     this.farmContract = this.terrajs.settings.astroportStblStbFarm;
     this.compoundProxyContract = this.terrajs.settings.astroportStblStbFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
@@ -62,11 +74,7 @@ export class AstroportStblStbFarmInfoService implements FarmInfoService {
     const p = poolResponses[key];
 
     pairs[key] = {
-      poolAprs: [{
-        apr: 0,
-        rewardSymbol: SYMBOLS.ASTRO,
-        rewardContract: this.terrajs.settings.astroToken
-      }],
+      poolAprs: this.poolAprs,
       poolApy: 0,
       tvl: '0',
       multiplier: 0,

@@ -2,7 +2,15 @@ import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
 import {RewardInfoResponseItem} from '../../../api/spectrum_astroport_farm/reward_info_response';
 import {TerrajsService} from '../../../terrajs.service';
-import {DEX, FARM_TYPE_ENUM, FarmInfoService, NETWORK_NAME_ENUM, PairStat, PoolInfo} from '../../farm-info.service';
+import {
+  DEX,
+  FARM_TYPE_ENUM,
+  FarmInfoService,
+  NETWORK_NAME_ENUM,
+  PairStat,
+  PoolAPR,
+  PoolInfo
+} from '../../farm-info.service';
 import {PoolResponse} from '../../../api/astroport_pair/pool_response';
 import {VaultsResponse} from '../../../api/gov/vaults_response';
 import {Denom} from '../../../../consts/denom';
@@ -24,7 +32,7 @@ export class AstroportVkrLunaFarmInfoService implements FarmInfoService {
   denomTokenContract: string;
   readonly highlight = false;
   readonly notUseAstroportGqlApr = false;
-  rewardTokenContracts: Set<string>;
+  poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['testnet']);
@@ -42,7 +50,11 @@ export class AstroportVkrLunaFarmInfoService implements FarmInfoService {
   refreshContractOnNetwork() {
     this.baseTokenContract = this.terrajs.settings.valkyrieToken;
     this.denomTokenContract = Denom.LUNA;
-    this.rewardTokenContracts = new Set([this.terrajs.settings.valkyrieToken]);
+    this.poolAprs = [{
+      apr: 0,
+      rewardSymbol: SYMBOLS.VKR,
+      rewardContract: this.terrajs.settings.valkyrieToken
+    }];
     this.farmContract = this.terrajs.settings.astroportVkrLunaFarm;
     this.compoundProxyContract = this.terrajs.settings.astroportVkrLunaFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
@@ -67,11 +79,7 @@ export class AstroportVkrLunaFarmInfoService implements FarmInfoService {
       return;
     }
     pairs[key] = {
-      poolAprs: [{
-        apr: 0,
-        rewardSymbol: SYMBOLS.VKR,
-        rewardContract: this.terrajs.settings.valkyrieToken
-      }],
+      poolAprs: this.poolAprs,
       poolApy: 0,
       tvl: '0',
       multiplier: 0,
