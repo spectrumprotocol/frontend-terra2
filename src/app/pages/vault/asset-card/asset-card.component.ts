@@ -8,7 +8,8 @@ import {VaultDialogComponent} from './vault-dialog/vault-dialog.component';
 import {MdbModalRef, MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {CONFIG} from '../../../consts/config';
 import {TerrajsService} from '../../../services/terrajs.service';
-import {ConfigService} from "../../../services/config.service";
+import {ConfigService} from '../../../services/config.service';
+import {UiUtilsService} from '../../../services/ui-utils.service';
 
 @Component({
   selector: 'app-asset-card',
@@ -30,7 +31,8 @@ export class AssetCardComponent implements OnInit {
     public info: InfoService,
     private terrajs: TerrajsService,
     private modalService: MdbModalService,
-    public config: ConfigService
+    public config: ConfigService,
+    public uiUtil: UiUtilsService
   ) {
   }
 

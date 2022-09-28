@@ -21,7 +21,7 @@ import {JsonValidator} from './directives/json.directive';
 import {TruncatePipe} from './pipes/truncate.pipe';
 import {TimeagoPipe} from './pipes/timeago.pipe';
 import {ShortNumPipe} from './pipes/short-num.pipe';
-import {DecimalPipe, NumberFormatStyle, NumberSymbol, registerLocaleData} from '@angular/common';
+import {DecimalPipe, NumberFormatStyle, NumberSymbol, PercentPipe, registerLocaleData} from '@angular/common';
 import {PrettyJsonModule} from 'angular2-prettyjson';
 import {JsonParsePipe} from './pipes/json-parse.pipe';
 import {TxPostComponent} from './services/tx-post/tx-post.component';
@@ -90,6 +90,7 @@ import {AirdropComponent} from './pages/airdrop/airdrop.component';
 import {
   AstroportTptLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-tpt-luna-farm-info.service';
+import {PercentSuperscriptPipe} from './pipes/percent-superscript.pipe';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -132,7 +133,8 @@ registerLocaleData(locale, 'en');
     LpEarningPipe,
     DashboardComponent,
     CurrencyPipe,
-    AirdropComponent
+    AirdropComponent,
+    PercentSuperscriptPipe
   ],
   imports: [
     ApolloModule,
@@ -185,6 +187,8 @@ registerLocaleData(locale, 'en');
     BalancePipe,
     LpBalancePipe,
     ShortNumPipe,
+    PercentSuperscriptPipe,
+    PercentPipe,
     {provide: LOCALE_ID, useValue: 'en'},
   ],
   bootstrap: [AppComponent]
