@@ -41,8 +41,8 @@
                     class="fas fa-info-circle info-icon super"></i>
             </ng-container>
             <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
-              APY <i
-                    [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with hourly compound interest in one year from '+ rewardSymbolsPrint"
+              APY <i [html]="true"
+                    [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with daily compound interest in one year from '+ rewardSymbolsPrint + '.</br>Fees are already subtracted from displayed APY.'"
                     class="fas fa-info-circle info-icon super"></i>
             </ng-container>
           </p>
