@@ -72,7 +72,7 @@
                   <span class="cur-title text-white"> USD</span>
                   <a (click)="openYourTVL()" *ngIf="!loading && terrajs.isConnected"
                      class="margin-left-auto text-light small"
-                     role="button"><img alt="Portfolio allocation" class="float-end mg-18"
+                     role="button"><img alt="Portfolio allocation" class="float-end mg-18" width="32" height="32"
                                         src="../../../assets/Icon_PieChart.svg" title="Portfolio allocation"></a>
                 </h3>
               </div>
@@ -96,10 +96,10 @@
               <div>
                 <div class="d-none d-sm-block">
                   <a (click)="setIsGrid(true)" style="cursor:pointer">
-                    <img [src]="isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg'">
+                    <img width="32" height="32" [src]="isGrid ? '../../../assets/Icon-grid-white.svg' : '../../../assets/Icon-grid-grey.svg'">
                   </a>
                   <a (click)="setIsGrid(false)" style="cursor:pointer">
-                    <img [src]="!isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg'">
+                    <img width="32" height="32" [src]="!isGrid ? '../../../assets/Icon-list-white.svg' : '../../../assets/Icon-list-grey.svg'">
                   </a>
                 </div>
               </div>
