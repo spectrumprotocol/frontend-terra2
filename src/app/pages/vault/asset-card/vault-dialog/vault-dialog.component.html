@@ -47,10 +47,10 @@
             </ng-container>
           </p>
           <h3 class="card-title">
-            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" [html]="true" [mdbTooltip]="getAPRAPYTooltipHTML()">
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
               <span class="fs-6 fw-bold text-primary" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat.poolApy)"></span>
             </div>
-            <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="getAPRAPYTooltipHTML()">
+            <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
               <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
                 <span class="sub-topic text-decoration-line-through text-primary">
                   <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>

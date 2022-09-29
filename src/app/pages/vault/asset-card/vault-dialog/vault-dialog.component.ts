@@ -92,6 +92,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositTokenAAmtTokenTokenIsFocus = false;
   depositTokenBAmtTokenTokenIsFocus = false;
   private heightChanged: Subscription;
+  APRAPYTooltipHTML = '';
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -163,7 +164,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.refreshData();
   }
 
-  getAPRAPYTooltipHTML() {
+  refreshAPRAPYTooltipHTML() {
     let html = '<div class="apyapr-tooltip">';
     this.vault.pairStat.poolAprs.forEach(poolApr => {
       if (poolApr.apr > 0) {
@@ -198,7 +199,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
                     <div class="margin-left-auto">${this.uiUtil.transformPercentSuperscript(this.vault.pairStat?.poolApy)}</div>
             </div>`;
     }
-    return html;
+    this.APRAPYTooltipHTML = html;
   }
 
   async refreshData() {
@@ -206,6 +207,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
     this.refreshLpBalanceInfo();
+    this.refreshAPRAPYTooltipHTML();
   }
 
   async refreshLpBalanceInfo() {
