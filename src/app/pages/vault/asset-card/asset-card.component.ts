@@ -32,7 +32,6 @@ export class AssetCardComponent implements OnInit {
     private terrajs: TerrajsService,
     private modalService: MdbModalService,
     public config: ConfigService,
-    public uiUtil: UiUtilsService
   ) {
   }
 

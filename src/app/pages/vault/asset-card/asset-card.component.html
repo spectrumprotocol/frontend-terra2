@@ -57,7 +57,7 @@
                   <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                 </span>
               </span>
-                <span class="fs-6 fw-bold text-primary" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat.poolApy)"></span>
+                <span class="fs-6 fw-bold text-primary" [innerHTML]="vault.pairStat.poolApy | percentsuperscript"></span>
               </ng-container>
             </div>
           </div>
@@ -138,7 +138,7 @@
                         <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
                       </span>
                     </span>
-                    <span class="text-primary" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat.poolApy)"></span>
+                    <span class="text-primary" [innerHTML]="vault.pairStat.poolApy | percentsuperscript"></span>
                   </ng-container>
                 </div>
               </div>

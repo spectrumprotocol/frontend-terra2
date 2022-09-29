@@ -48,7 +48,7 @@
           </p>
           <h3 class="card-title">
             <div *ngIf="vault.poolInfo.farm === 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
-              <span class="fs-6 fw-bold text-primary" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat.poolApy)"></span>
+              <span class="fs-6 fw-bold text-primary" [innerHTML]="vault.pairStat.poolApy | percentsuperscript"></span>
             </div>
             <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
               <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
@@ -57,7 +57,7 @@
                 </span>
                 <i class="fas fa-info-circle info-icon super card-text sub-topic"></i>
               </span>
-              <span class="fs-6 fw-bold text-primary" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat.poolApy)"></span>
+              <span class="fs-6 fw-bold text-primary" [innerHTML]="vault.pairStat.poolApy  | percentsuperscript"></span>
             </div>
           </h3>
         </div>
@@ -328,7 +328,7 @@
                 </div>
                 <div *ngIf="vault.pairStat?.poolApy > 0" class="row">
                   <div class="col">APY from auto compound</div>
-                  <div class="col text-end" [innerHTML]="uiUtil.transformPercentSuperscript(vault.pairStat?.poolApy || 0)"></div>
+                  <div class="col text-end" [innerHTML]="vault.pairStat?.poolApy || 0 | percentsuperscript"></div>
                 </div>
               </div>
 

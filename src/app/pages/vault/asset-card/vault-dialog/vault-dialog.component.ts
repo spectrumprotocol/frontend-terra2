@@ -31,6 +31,7 @@ import {FarmExecuteMsg} from '../../../../services/api/spectrum_astroport_farm/e
 import {SpectrumCompoundProxyService} from '../../../../services/api/spectrum-compound-proxy.service';
 import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
 import {UiUtilsService} from '../../../../services/ui-utils.service';
+import {PercentSuperscriptPipe} from '../../../../pipes/percent-superscript.pipe';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -40,7 +41,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe, PercentSuperscriptPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -110,7 +111,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public lpEarningPipe: LpEarningPipe,
     public config: ConfigService,
     private spectrumCompoundProxyService: SpectrumCompoundProxyService,
-    public uiUtil: UiUtilsService
+    public uiUtil: UiUtilsService,
+    private percentSuperscriptPipe: PercentSuperscriptPipe
   ) {
   }
 
@@ -196,7 +198,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.vault.pairStat?.poolApy > 0) {
       html += `<div class="d-flex">
                     <div>Compound APY (incl. fee)</div>
-                    <div class="margin-left-auto">${this.uiUtil.transformPercentSuperscript(this.vault.pairStat?.poolApy)}</div>
+                    <div class="margin-left-auto">${this.percentSuperscriptPipe.transform(this.vault.pairStat?.poolApy)}</div>
             </div>`;
     }
     this.APRAPYTooltipHTML = html;
