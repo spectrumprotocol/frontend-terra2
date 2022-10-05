@@ -14,7 +14,7 @@ export class BankService {
 
   async balances(address?: string, pagination?: Partial<PaginationOptions & APIParams>): Promise<Coins> {
     // tslint:disable-next-line:prefer-const
-    let [coins, pager] = await this.terrajs.lcdClient.bank.balance(address || this.terrajs.address, pagination);
+    let [coins, pager] = await this.terrajs.lcdClient.bank.spendableBalances(address || this.terrajs.address, pagination);
     if (pager.next_key) {
       const next_coins = await this.balances(address, { 'pagination.key': pager.next_key });
       coins = coins.add(next_coins);
