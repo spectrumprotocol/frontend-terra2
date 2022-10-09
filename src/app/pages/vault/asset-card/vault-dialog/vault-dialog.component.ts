@@ -8,7 +8,7 @@ import {div, floor18Decimal, floorSixDecimal, times} from '../../../../libs/math
 import {TerrajsService} from '../../../../services/terrajs.service';
 import {Vault} from '../../vault.component';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {InfoService} from '../../../../services/info.service';
+import {CompoundStat, InfoService} from '../../../../services/info.service';
 import {Subscription} from 'rxjs';
 import BigNumber from 'bignumber.js';
 import {debounce} from 'utils-decorators';
@@ -32,6 +32,7 @@ import {SpectrumCompoundProxyService} from '../../../../services/api/spectrum-co
 import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
 import {UiUtilsService} from '../../../../services/ui-utils.service';
 import {PercentSuperscriptPipe} from '../../../../pipes/percent-superscript.pipe';
+import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -41,7 +42,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe, PercentSuperscriptPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe, PercentSuperscriptPipe, TimeagoPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -92,6 +93,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   return_b_amount: string;
   depositTokenAAmtTokenTokenIsFocus = false;
   depositTokenBAmtTokenTokenIsFocus = false;
+  compoundStat: CompoundStat;
+  lastCompound: string;
   private heightChanged: Subscription;
   APRAPYTooltipHTML = '';
 
@@ -112,7 +115,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public config: ConfigService,
     private spectrumCompoundProxyService: SpectrumCompoundProxyService,
     public uiUtil: UiUtilsService,
-    private percentSuperscriptPipe: PercentSuperscriptPipe
+    private percentSuperscriptPipe: PercentSuperscriptPipe,
+    private timeagoPipe: TimeagoPipe,
   ) {
   }
 
@@ -210,6 +214,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     this.refreshLpBalanceInfo();
     this.refreshAPRAPYTooltipHTML();
+    this.refreshLastCompound();
   }
 
   async refreshLpBalanceInfo() {
@@ -224,6 +229,18 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         '1.0-2'
       );
       this.lpBalanceInfo += `(${lpSplitText})`;
+    }
+  }
+
+  async refreshLastCompound() {
+    this.compoundStat = this.info.compoundStat[this.vault.poolInfo.farmContract];
+    if (this.compoundStat) {
+      const lastCompoundTime = new Date(this.compoundStat.txTimestamp).getTime();
+      if (lastCompoundTime / 1000 > this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_time) {
+        this.lastCompound = this.timeagoPipe.transform(lastCompoundTime);
+      } else {
+        this.lastCompound = 'Pending';
+      }
     }
   }
 
