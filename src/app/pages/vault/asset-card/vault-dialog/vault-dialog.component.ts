@@ -235,7 +235,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   async refreshLastCompound() {
     const depositTime = +this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_time;
-    this.compoundStat = this.info.compoundStat[this.vault.poolInfo.farmContract];
+    this.compoundStat = this.info.compoundStat?.[this.vault.poolInfo.farmContract];
     if (this.compoundStat) {
       const lastCompoundTime = new Date(this.compoundStat.txTimestamp).getTime();
       if (lastCompoundTime / 1000 > depositTime) {
