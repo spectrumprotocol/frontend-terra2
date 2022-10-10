@@ -413,14 +413,14 @@
               </div>
             </div>
             <div class="d-grid mt-3">
-              <div *ngIf="false"
-                   class="card card-blue mt-3 mb-3">
+              <div *ngIf="earlyWithdrawal"
+                   class="card card-warning mt-3 mb-3">
                 <div class="card-body">
-                  <div class="card-text small mb-1">
+                  <div class="card-text small">
                     <div class="bulk-name-container">
                       <i class="fas fa-exclamation-triangle"></i>
                       <div class="name-detail">
-                        SOME NOTICE
+                        The deposit time is less than 24 hours. If you withdraw early, LP gain from compounding will not be fully realized.
                       </div>
                     </div>
                   </div>

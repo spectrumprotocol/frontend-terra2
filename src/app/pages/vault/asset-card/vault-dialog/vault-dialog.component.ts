@@ -95,6 +95,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositTokenBAmtTokenTokenIsFocus = false;
   compoundStat: CompoundStat;
   lastCompound: string;
+  earlyWithdrawal: boolean = false;
   private heightChanged: Subscription;
   APRAPYTooltipHTML = '';
 
@@ -233,15 +234,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshLastCompound() {
+    const depositTime = +this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_time;
     this.compoundStat = this.info.compoundStat[this.vault.poolInfo.farmContract];
     if (this.compoundStat) {
       const lastCompoundTime = new Date(this.compoundStat.txTimestamp).getTime();
-      if (lastCompoundTime / 1000 > this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_time) {
+      if (lastCompoundTime / 1000 > depositTime) {
         this.lastCompound = this.timeagoPipe.transform(lastCompoundTime);
       } else {
         this.lastCompound = 'Pending';
       }
     }
+    this.earlyWithdrawal = (new Date().getTime() / 1000) - depositTime < 86400;
   }
 
   ngOnDestroy() {
