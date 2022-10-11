@@ -216,6 +216,10 @@ export class InfoService {
         if (ampStablePairsJson) {
           this.ampStablePairs = JSON.parse(ampStablePairsJson);
         }
+        const compoundStatJson = localStorage.getItem('compoundStat');
+        if (compoundStatJson) {
+          this.compoundStat = JSON.parse(compoundStatJson);
+        }
       } else {
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
@@ -224,6 +228,7 @@ export class InfoService {
         localStorage.removeItem('rewardInfos');
         localStorage.removeItem('tokenInfos');
         localStorage.removeItem('ampStablePairs');
+        localStorage.removeItem('compoundStat');
       }
     } catch (e) {
     }
@@ -796,6 +801,7 @@ export class InfoService {
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
       localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
+      localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
       if (!skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
