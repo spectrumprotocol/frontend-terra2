@@ -77,7 +77,7 @@ export type TokenInfo = {
 };
 
 export type CompoundStat = {
-  txId: string,
+  id: string,
   txHash: string,
   txTimestamp: string,
 }
