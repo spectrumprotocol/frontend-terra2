@@ -48,6 +48,10 @@ export class UrlPipe implements PipeTransform {
             return `/assets/tpt.svg`;
           case 'Terrapoker':
             return `/assets/tpt.svg`;
+          case 'ampLUNA':
+            return `/assets/ampLuna.png`;
+          case 'Eris':
+            return `/assets/eris.png`;
           default:
             return null;
         }

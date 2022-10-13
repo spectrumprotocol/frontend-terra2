@@ -24,7 +24,7 @@ import {SYMBOLS} from '../../../../consts/symbol';
 @Injectable()
 export class AstroportAmpLunaLunaFarmInfoService implements FarmInfoService {
   readonly farm = 'Eris';
-  readonly farmColor = '#d924c5'; //TODO
+  readonly farmColor = '#f27539';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
   readonly dex: DEX = 'Astroport';
