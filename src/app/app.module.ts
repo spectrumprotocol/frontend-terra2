@@ -91,6 +91,9 @@ import {
   AstroportTptLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-tpt-luna-farm-info.service';
 import {PercentSuperscriptPipe} from './pipes/percent-superscript.pipe';
+import {
+  AstroportAmpLunaLunaFarmInfoService
+} from './services/farm_info/astroport/mainnet_only/astroport-ampluna-luna-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -176,6 +179,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportLunaxLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrAxlUsdcFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportTptLunaFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportAmpLunaLunaFarmInfoService, multi: true},
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
