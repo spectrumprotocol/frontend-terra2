@@ -19,7 +19,7 @@
 </div>
 <div class="modal-body">
   <div class="row g-1">
-    <div class="col-12 col-md-5">
+    <div class="col-12 col-md-4">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -63,7 +63,7 @@
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-4">
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-    <div class="col col-mb">
+    <div class="col">
       <div class="card box-left">
         <div class="card-body">
           <p class="card-text sub-topic">
@@ -88,10 +88,22 @@
               <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
             </span>
-            <h6 *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="card-subtitle text-success">
+            <span *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="text-success">
               +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
               (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
-            </h6>
+            </span>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4" *ngIf="compoundStat && +info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10">
+      <div class="card box-left">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">Last Compound</ng-container>
+          </p>
+          <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title">
+            {{ lastCompound }}
           </h3>
         </div>
       </div>
@@ -401,14 +413,14 @@
               </div>
             </div>
             <div class="d-grid mt-3">
-              <div *ngIf="false"
-                   class="card card-blue mt-3 mb-3">
+              <div *ngIf="earlyWithdrawal"
+                   class="card card-warning mt-3 mb-3">
                 <div class="card-body">
-                  <div class="card-text small mb-1">
+                  <div class="card-text small">
                     <div class="bulk-name-container">
                       <i class="fas fa-exclamation-triangle"></i>
                       <div class="name-detail">
-                        SOME NOTICE
+                        The deposit time is less than 24 hours. If you withdraw early, LP gain from compounding will not be fully realized.
                       </div>
                     </div>
                   </div>

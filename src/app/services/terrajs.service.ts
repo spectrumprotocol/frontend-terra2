@@ -10,7 +10,7 @@ import {
   WalletController,
   WalletInfo,
   WalletStates,
-  WalletStatus
+  WalletStatus,
 } from '@terra-money/wallet-provider';
 import {ModalService} from './modal.service';
 import {throttleAsync} from 'utils-decorators';
@@ -126,7 +126,7 @@ export class TerrajsService implements OnDestroy {
   }
 
   async initLcdClient() {
-    const gasPrices = await this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`).toPromise();
+    const gasPrices = await firstValueFrom(this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`));
     this.lcdClient = new LCDClient({
       URL: this.settings.lcd,
       chainID: this.settings.chainID,
@@ -166,8 +166,8 @@ export class TerrajsService implements OnDestroy {
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
         data: {types}
       });
-      connectCallbackData = await ref.onClose.toPromise();
-      if (!connectCallbackData.type) {
+      connectCallbackData = await firstValueFrom(ref.onClose);
+      if (!connectCallbackData?.type) {
         throw new Error('Nothing selected');
       }
     }
@@ -255,10 +255,10 @@ export class TerrajsService implements OnDestroy {
   }
 
   async getFCD(path: string, params?: Record<string, string>, headers?: Record<string, string>) {
-    const res = await this.httpClient.get<GetResponse>(`${this.settings.fcd}/${path}`, {
+    const res = await firstValueFrom(this.httpClient.get<GetResponse>(`${this.settings.fcd}/${path}`, {
       params,
       headers,
-    }).toPromise();
+    }));
     return res as any;
   }
 
@@ -277,7 +277,7 @@ export class TerrajsService implements OnDestroy {
           confirmMsg
         }
       });
-      const result = await ref.onClose.toPromise();
+      const result = await firstValueFrom(ref.onClose);
       if (!result) {
         throw new Error('Transaction canceled');
       }

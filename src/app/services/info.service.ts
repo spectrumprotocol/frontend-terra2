@@ -76,6 +76,12 @@ export type TokenInfo = {
   unit: number;
 };
 
+export type CompoundStat = {
+  id: string,
+  txHash: string,
+  txTimestamp: string,
+}
+
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 const ASTROPORT_PRICE_GQL = gql`
         query price($address: String!) {
@@ -156,6 +162,10 @@ export class InfoService {
   portfolio: Portfolio;
   astroportPoolsData: any;
   ulunaUSDPrice: number; // to get testnet uluna/usd price
+  compoundStat: Record<string, CompoundStat> = {};
+
+  DISABLED_VAULTS: Set<string> = new Set([]);
+  
   private loadedNetwork: string;
 
   constructor(
@@ -206,6 +216,10 @@ export class InfoService {
         if (ampStablePairsJson) {
           this.ampStablePairs = JSON.parse(ampStablePairsJson);
         }
+        const compoundStatJson = localStorage.getItem('compoundStat');
+        if (compoundStatJson) {
+          this.compoundStat = JSON.parse(compoundStatJson);
+        }
       } else {
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
@@ -214,6 +228,7 @@ export class InfoService {
         localStorage.removeItem('rewardInfos');
         localStorage.removeItem('tokenInfos');
         localStorage.removeItem('ampStablePairs');
+        localStorage.removeItem('compoundStat');
       }
     } catch (e) {
     }
@@ -779,12 +794,14 @@ export class InfoService {
       this.marketCap = data.marketCap;
       this.ulunaUSDPrice = data.ulunaUSDPrice;
       this.ampStablePairs = data.ampStablePairs;
+      this.compoundStat = data.compoundStat;
       localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
       localStorage.setItem('stat', JSON.stringify(this.stat));
       localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
       localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
       localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
       localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
+      localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
       if (!skipPoolResponses) {
         this.poolResponses = data.poolResponses;
         localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
