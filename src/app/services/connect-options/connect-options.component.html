@@ -20,5 +20,30 @@
              [mdbTooltip]="'If installed, please turn on Prioritise XDEFI to allow connection'"></i>
         </a>
       </ng-container>
+        <div class="input-group">
+            <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress">
+<!--            <button (click)="connectViewOnly()" class="btn last" type="button">-->
+<!--                View-->
+<!--            </button>-->
+            <div #dropdownConnectView
+                 class="dropdown w-100 btn-group"
+                 mdbDropdown>
+                <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
+                    <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">View</span>
+                    <span class="text-end filter">
+                  </span>
+                </button>
+                <ul class="dropdown-menu" mdbDropdownMenu>
+                    <li>
+                        <a (click)="connectViewOnly('mainnet')"
+                           class="dropdown-item">Mainnet</a>
+                    </li>
+                    <li>
+                        <a (click)="connectViewOnly('testnet')"
+                           class="dropdown-item">Testnet</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
