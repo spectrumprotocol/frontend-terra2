@@ -106,8 +106,8 @@ export class TerrajsService implements OnDestroy {
   }
 
   async getConnectTypes() {
-    return firstValueFrom((await this.getWalletController()).availableConnectTypes());
-  }
+    const types = firstValueFrom((await this.getWalletController()).availableConnectTypes());
+    return (await types).filter(t => t !== 'READONLY');  }
 
   @throttleAsync(1) // to prevent first time getHeight from calling API tendermint.blockInfo() simultaneously
   async getHeight(force?: boolean): Promise<number> {
@@ -140,9 +140,8 @@ export class TerrajsService implements OnDestroy {
       return;
     }
     let terra_extension_router_session: any;
-    // let address: string;
     const connectTypes = await this.getConnectTypes();
-    if (auto) {
+    if (auto) { // AUTO CONNECT AFTER APP INIT
       const terra_extension_router_session_raw = localStorage.getItem('__terra_extension_router_session__');
       const connect = localStorage.getItem('connect');
       if (!connect) {
@@ -161,13 +160,12 @@ export class TerrajsService implements OnDestroy {
         };
         this.isReadOnly = true;
         await this.finalConnectStep(connectCallbackData.stateReadOnly, connectCallbackData.type);
-      } else if (connectCallbackData && connect !== 'READONLY_CUSTOM_IMP'){
+      } else {
         terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
         connectCallbackData = terra_extension_router_session;
         connectCallbackData.type = connect;
       }
-      // address = localStorage.getItem('address');
-    } else {
+    } else { // CLICK CONNECT
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
@@ -184,6 +182,7 @@ export class TerrajsService implements OnDestroy {
         return;
       }
     }
+    // STEP 2
     if (!connectTypes.includes(connectCallbackData.type as ConnectType)) {
       if (auto) {
         return;
@@ -194,27 +193,7 @@ export class TerrajsService implements OnDestroy {
       await this.walletController.connect(connectCallbackData.type, connectCallbackData.identifier);
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
-      .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED)));
-    // let wallet: WalletInfo;
-    // if (state.wallets.length === 0) {
-    //   this.modal.alert('No wallet, please setup wallet first', {iconType: 'danger'});
-    //   throw new Error('No wallet');
-    // }
-    // else if (state.wallets.length === 1) {
-    //   wallet = state.wallets[0];
-    // } else {
-    //   if (address) {
-    //     wallet = state.wallets.find(it => it.terraAddress === address);
-    //   }
-    //   if (!wallet) {
-    //     const modal = await import('./wallet-options/wallet-options.component');
-    //     const ref = this.modalService.open(modal.WalletOptionsComponent, {
-    //       data: {
-    //         wallets: state.wallets
-    //       }
-    //     });
-    //   }
-    // }
+      .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED))); // ONLY EXTENSION AND WALLET CONNECT, NOT CUSTOM READ ONLY
     await this.finalConnectStep(state, connectCallbackData.type);
   }
 
@@ -230,7 +209,6 @@ export class TerrajsService implements OnDestroy {
     this.networkName = networkNameFromWallet;
 
     localStorage.setItem('connect', connectType);
-    // localStorage.setItem('address', this.address);
     if (this.isReadOnly){
       localStorage.setItem('readonly_state', JSON.stringify(state));
     }
@@ -270,6 +248,7 @@ export class TerrajsService implements OnDestroy {
     localStorage.removeItem('rewardInfos');
     localStorage.removeItem('connect');
     localStorage.removeItem('address');
+    localStorage.removeItem('readonly_state');
     location.reload();
   }
 

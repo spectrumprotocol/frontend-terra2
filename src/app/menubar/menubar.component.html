@@ -35,7 +35,7 @@
     <div #dropdown *ngIf="terrajs.address" class="dropdown" mdbDropdown>
       <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
         <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
-        <span *ngIf="terrajs.networkName !== 'mainnet'" class="text-danger"> ({{terrajs.networkName}})</span>&nbsp;|&nbsp;</span>
+        <span *ngIf="terrajs.networkName !== 'mainnet'" class="text-danger"> ({{terrajs.networkName}})</span><span *ngIf="terrajs.isReadOnly" class="text-danger"> (View Only)</span>&nbsp;|&nbsp;</span>
         {{info.tokenBalances['uluna'] | unit: 6 | number : '1.0-2'}} LUNA
       </button>
       <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
