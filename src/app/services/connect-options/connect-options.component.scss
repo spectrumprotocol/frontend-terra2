@@ -3,3 +3,10 @@
         width: 40px;
     }
 }
+
+//TODO due to bug autoprefixer: Replace color-adjust to print-color-adjust. The color-adjust shorthand is currently deprecated. cannot put in global styles.scss
+::placeholder {
+    color: #fff9;
+    font-size: 12px;
+    font-weight: 400;
+}

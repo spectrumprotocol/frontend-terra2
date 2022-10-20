@@ -20,18 +20,12 @@
              [mdbTooltip]="'If installed, please turn on Prioritise XDEFI to allow connection'"></i>
         </a>
       </ng-container>
-        <div class="input-group">
-            <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress">
-<!--            <button (click)="connectViewOnly()" class="btn last" type="button">-->
-<!--                View-->
-<!--            </button>-->
-            <div #dropdownConnectView
-                 class="dropdown w-100 btn-group"
+        <mdb-form-control>
+            <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress" class="form-control fix-border" placeholder="Input Terra Address" pattern="^terra1[a-z0-9]{38}$">
+            <div class="dropdown btn-group"
                  mdbDropdown>
-                <button aria-expanded="false" class="btn p-0" mdbDropdownToggle type="button">
-                    <span class="text-dropdown d-none d-md-inline ps-2 sub-topic">View</span>
-                    <span class="text-end filter">
-                  </span>
+                <button aria-expanded="false" class="btn btn-max last" mdbDropdownToggle type="button">
+                    View
                 </button>
                 <ul class="dropdown-menu" mdbDropdownMenu>
                     <li>
@@ -44,6 +38,6 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </mdb-form-control>
     </div>
 </div>
