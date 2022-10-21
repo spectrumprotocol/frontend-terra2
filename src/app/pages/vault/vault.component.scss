@@ -146,20 +146,6 @@
     289deg, #1121b8, $primary);
   }
 
-
-.placeholder-white::placeholder {
-  color: #fff9;
-  font-size: 12px;
-  font-weight: 400;
-
-}
-
-.placeholder-white:-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #fff9;
-  font-size: 12px;
-  font-weight: 400;
-}
-
 .text-dropdown {
   font-size: 12px;
   font-weight: 400;
@@ -169,6 +155,13 @@
   .filter {
     display: none;
   }
+}
+
+//TODO due to bug autoprefixer: Replace color-adjust to print-color-adjust. The color-adjust shorthand is currently deprecated. cannot put in global styles.scss
+::placeholder {
+  color: #fff9;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 @media screen and (max-width: 385px) {

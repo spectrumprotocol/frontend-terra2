@@ -136,6 +136,9 @@ export class TxPostComponent implements OnInit {
         }));
       } catch (e) {
       }
+      if (this.terrajs.isReadOnly){
+        throw { message: 'Wallet connected in read only mode.', data: null };
+      }
       this.loading = true;
       this.loadingMsg = 'Broadcasting...';
       const postMsg: CreateTxOptions = {
