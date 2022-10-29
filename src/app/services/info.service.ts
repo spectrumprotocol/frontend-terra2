@@ -185,7 +185,7 @@ export class InfoService {
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
-      if (infoSchemaVersion && +infoSchemaVersion >= 2) {
+      if (infoSchemaVersion && +infoSchemaVersion >= 1) {
         const poolJson = localStorage.getItem('poolInfos');
         if (poolJson) {
           this.poolInfos = JSON.parse(poolJson);
