@@ -33,6 +33,7 @@ import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
 import {UiUtilsService} from '../../../../services/ui-utils.service';
 import {PercentSuperscriptPipe} from '../../../../pipes/percent-superscript.pipe';
 import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
+import {UnitPipe} from '../../../../pipes/unit.pipe';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -42,7 +43,7 @@ export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
   templateUrl: './vault-dialog.component.html',
   styleUrls: ['./vault-dialog.component.scss'],
   animations: [fade],
-  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe, PercentSuperscriptPipe, TimeagoPipe]
+  providers: [LpBalancePipe, PercentPipe, RewardInfoPipe, LpSplitPipe, LpEarningPipe, PercentSuperscriptPipe, TimeagoPipe, UnitPipe]
 })
 export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
@@ -64,6 +65,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositUSDAmtSingleToken: number;
   tokenAToBeStatic = true;
   lpBalanceInfo: string;
+  iLInfo: string;
   depositType: 'compound' | 'speclp';
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
   withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
@@ -118,6 +120,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public uiUtil: UiUtilsService,
     private percentSuperscriptPipe: PercentSuperscriptPipe,
     private timeagoPipe: TimeagoPipe,
+    private unitPipe: UnitPipe
   ) {
   }
 
@@ -214,8 +217,24 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.depositType = this.vault.poolInfo.forceDepositType as any;
     }
     this.refreshLpBalanceInfo();
+    this.refreshiLInfo();
     this.refreshAPRAPYTooltipHTML();
     this.refreshLastCompound();
+  }
+
+  async refreshiLInfo() {
+    const deposit_costs = this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_costs;
+    const gainedLp = +this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount - +this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_amount;
+    if (deposit_costs && gainedLp){
+      const total_share = this.info.poolResponses[this.vault.poolInfo.key].total_share;
+      const token0FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[0].amount).div(total_share).toNumber();
+      const token1FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[1].amount).div(total_share).toNumber();
+      const token0Change = token0FromGainedLp - +deposit_costs[0];
+      const token1Change = token1FromGainedLp - +deposit_costs[1];
+      const token0ChangeUnit = this.unitPipe.transform(token0Change, this.vault.baseDecimals);
+      const token1ChangeUnit = this.unitPipe.transform(token1Change, this.vault.denomDecimals);
+      this.iLInfo = `${token0ChangeUnit} ${this.vault.baseSymbol} ${token1ChangeUnit} ${this.vault.denomSymbol}`;
+    }
   }
 
   async refreshLpBalanceInfo() {
@@ -224,12 +243,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.lpBalanceInfo += `${this.rewardInfoPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key])} `;
     }
     if (this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount) {
+      const lpAmount = this.unitPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount)
       const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
         this.info.poolResponses[this.vault.poolInfo.key], 
         this.vault,
         '1.0-2'
       );
-      this.lpBalanceInfo += `(${lpSplitText})`;
+      this.lpBalanceInfo += `${lpAmount} LP (${lpSplitText})`;
     }
   }
 
