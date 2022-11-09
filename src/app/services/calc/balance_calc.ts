@@ -4,24 +4,28 @@ import { PoolResponse } from '../api/terraswap_pair/pool_response';
 import { getStablePrice } from '../../libs/stable';
 import { InfoService } from '../info.service';
 import { ConfigService } from "../config.service";
+import {Denom} from '../../consts/denom';
 
-export const balance_transform = (stableCoinDenoms: Set<string>, value: any, poolResponse: PoolResponse, poolResponseB?: PoolResponse) => {
+export const balance_transform = (config: ConfigService, value: any, poolResponse: PoolResponse, poolResponseB?: PoolResponse) => {
   if (typeof value !== 'string' && typeof value !== 'number' || !poolResponse) {
     return undefined;
   }
-  if (stableCoinDenoms.has(poolResponse.assets[0].info.native_token?.['denom'])) {
+  const asset0IsStableCoin = config.terrajs.isMainnet ? config.STABLE_COIN_DENOMS.has(poolResponse.assets[0].info.native_token?.['denom']) : config.STABLE_COIN_DENOMS.has(poolResponse.assets[0].info.token?.['contract_addr']);
+  const asset1IsStableCoin = config.terrajs.isMainnet ? config.STABLE_COIN_DENOMS.has(poolResponse.assets[1].info.native_token?.['denom']) : config.STABLE_COIN_DENOMS.has(poolResponse.assets[1].info.token?.['contract_addr']);
+
+  if (asset0IsStableCoin) {
     return new BigNumber(value)
       .times(poolResponse.assets[0].amount)
       .div(poolResponse.assets[1].amount)
       .toString();
-  } else if (stableCoinDenoms.has(poolResponse.assets[1].info.native_token?.['denom'])) {
+  } else if (asset1IsStableCoin) {
     return new BigNumber(value)
       .times(poolResponse.assets[1].amount)
       .div(poolResponse.assets[0].amount)
       .toString();
   } else if (poolResponseB) {
-    const basePrice = balance_transform(stableCoinDenoms, '1', poolResponseB);
-    const baseAsset = poolResponseB.assets.find(asset => !stableCoinDenoms.has(asset.info.native_token?.['denom']));
+    const basePrice = balance_transform(config, '1', poolResponseB);
+    const baseAsset = poolResponseB.assets.find(asset => !config.STABLE_COIN_DENOMS.has(asset.info.native_token?.['denom']));
     const [assetA, assetB] = poolResponse.assets[0].info.token?.['contract_addr'] === baseAsset.info.token?.['contract_addr']
       ? [poolResponse.assets[0], poolResponse.assets[1]]
       : [poolResponse.assets[1], poolResponse.assets[0]];
@@ -66,12 +70,12 @@ export const lp_balance_transform = (lp: any, info: InfoService, config: ConfigS
       .toString();
   } else {
     const dex = key.split('|')[0];
-    const nativeToken = info.terrajs.settings.axlUsdcToken;
+    const nativeToken = info.terrajs.isMainnet ? info.terrajs.settings.axlUsdcToken : info.terrajs.settings.stbToken;
 
     const asset1Token: string = poolResponse.assets[1].info.token
       ? poolResponse.assets[1].info.token?.['contract_addr']
       : poolResponse.assets[1].info.native_token?.['denom'];
-    const token1Price = balance_transform(stableCoinDenoms, '1', 
+    const token1Price = balance_transform(config, '1',
       info.poolResponses[`${dex}|${asset1Token}|${nativeToken}`] || info.poolResponses[`${dex}|${nativeToken}|${asset1Token}`]);
     if (token1Price) {
       if (info.pairInfos[key].pair_type?.['stable']) {
@@ -101,7 +105,7 @@ export const lp_balance_transform = (lp: any, info: InfoService, config: ConfigS
     const asset0Token: string = poolResponse.assets[0].info.token
       ? poolResponse.assets[0].info.token?.['contract_addr']
       : poolResponse.assets[0].info.native_token?.['denom'];
-    const token0Price = balance_transform(stableCoinDenoms, '1', 
+    const token0Price = balance_transform(config, '1',
       info.poolResponses[`${dex}|${asset0Token}|${nativeToken}`] || info.poolResponses[`${dex}|${nativeToken}|${asset0Token}`]);
     if (token0Price) {
       if (info.pairInfos[key].pair_type?.['stable']) {

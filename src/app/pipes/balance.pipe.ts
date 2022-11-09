@@ -14,7 +14,7 @@ export class BalancePipe implements PipeTransform {
   }
 
   transform(value: any, poolResponse: PoolResponse, poolResponseB?: PoolResponse): string {
-    return balance_transform(this.config.STABLE_COIN_DENOMS, value, poolResponse, poolResponseB);
+    return balance_transform(this.config, value, poolResponse, poolResponseB);
   }
 
 }
