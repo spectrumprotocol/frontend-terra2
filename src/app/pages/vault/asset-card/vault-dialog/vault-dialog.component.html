@@ -79,11 +79,11 @@
       <div class="card box-left">
         <div class="card-body">
           <p class="card-text sub-topic">
-            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">LP Balance</ng-container>
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">cToken Balance</ng-container>
           </p>
           <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title text-primary">
-            {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6}}
-            <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="small text-white">
+            {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || '0' | unit: 6}}
+            <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10" class="small text-white">
               &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
               <i [mdbTooltip]="lpBalanceInfo"
                  class="fas fa-info-circle info-icon super"></i>
@@ -91,6 +91,8 @@
             <span *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="text-success">
               +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }}
               (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
+              <i [mdbTooltip]="iLInfo"
+                 class="fas fa-info-circle info-icon super"></i>
             </span>
           </h3>
         </div>

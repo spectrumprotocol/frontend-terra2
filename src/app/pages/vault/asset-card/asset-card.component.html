@@ -1,5 +1,5 @@
 <div [ngClass]="{'min-asset-card': isGrid}" class="card asset-card hover-shadow">
-  <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="position-absolute">
+  <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10" class="position-absolute">
     <div class="badge-deposited text-white">Deposited</div>
   </span>
   <span *ngIf="vault.disabled" class="position-absolute grid-badge mb-1">
@@ -68,13 +68,14 @@
             <div class="fs-6 fw-bold">{{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}</div>
           </div>
           <div *ngIf="vault.poolInfo.farmType === 'LP'" class="col-12 col-sm-4 mt-1 text-end">
-            <div class="f-12">LP Balance</div>
-            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10" class="f-14-600 text-primary">
-              {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
+            <div class="f-12">cToken</div>
+            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10" class="f-14-600 text-primary">
+              {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || '0' | unit: 6 : '1.0-5'}}
               <span class="small text-muted">
+<!--                TODO-->
                 (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
             </div>
-            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
+            <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share < 10">
               <div class="f-14">-</div>
             </div>
           </div>
@@ -157,17 +158,17 @@
               <div class="card-body p-2">
                 <div *ngIf="vault.poolInfo.farmType === 'LP'" class="d-flex justify-content-between">
                   <div>
-                    <div class="f-12 sub-topic">LP Balance</div>
+                    <div class="f-12 sub-topic">cToken</div>
                   </div>
                   <div>
-                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10"
+                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10"
                          class="f-14-600 text-primary">{{
-                      info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | unit: 6 : '1.0-5'}}
-                      <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10"
+                      info.rewardInfos[vault.poolInfo.key]?.bond_share || '0' | unit: 6 : '1.0-5'}}
+                      <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10"
                             class="f-12 text-muted small">
                         (${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})</span>
                     </div>
-                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_amount < 10">
+                    <div *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share < 10">
                       <div class="f-14">-</div>
                     </div>
                   </div>
