@@ -229,11 +229,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const total_share = this.info.poolResponses[this.vault.poolInfo.key].total_share;
       const token0FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[0].amount).div(total_share).toNumber();
       const token1FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[1].amount).div(total_share).toNumber();
-      const token0Change = token0FromGainedLp - +deposit_costs[0];
-      const token1Change = token1FromGainedLp - +deposit_costs[1];
+      const token0Change = +deposit_costs[0] - token0FromGainedLp;
+      const token1Change = +deposit_costs[1] - token1FromGainedLp;
       const token0ChangeUnit = this.unitPipe.transform(token0Change, this.vault.baseDecimals);
       const token1ChangeUnit = this.unitPipe.transform(token1Change, this.vault.denomDecimals);
-      this.iLInfo = `${token0ChangeUnit} ${this.vault.baseSymbol} ${token1ChangeUnit} ${this.vault.denomSymbol}`;
+      const token0Sign = token0Change > 0 ? '+' : '-';
+      const token1Sign = token1Change > 0 ? '+' : '-';
+
+      this.iLInfo = `${token0Sign}${token0ChangeUnit} ${this.vault.baseSymbol}, ${token1Sign}${token1ChangeUnit} ${this.vault.denomSymbol}`;
     }
   }
 
