@@ -74,7 +74,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   withdrawTokenPrice: string;
   withdrawBaseTokenPrice: string;
   grossLpTokenToken: string;
-  grosscToken: string;
+  netCToken: string;
   depositFeeTokenToken: string;
   netLpTokenToken: string;
   depositFeeLp: string;
@@ -365,7 +365,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.grossLpTokenToken = undefined;
     this.depositFeeTokenToken = undefined;
     this.netLpTokenToken = undefined;
-    this.grosscToken = undefined;
+    this.netCToken = undefined;
   }
 
   @debounce(100)
@@ -474,7 +474,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenAAmtTokenToken = undefined;
     this.depositTokenBAmtTokenToken = undefined;
     this.depositLPAmtLP = undefined;
-    this.grosscToken = undefined;
+    this.netCToken = undefined;
 
     this.netLpTokenToken = undefined;
     this.depositFeeTokenToken = undefined;
@@ -778,7 +778,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     Promise.all([totalBondAmountTask, farmStateTask]).then((res) => {
       const totalBondAmount = res[0];
       const totalBondShare = res[1].total_bond_share;
-      this.grosscToken = new BigNumber(lpAmount).times(totalBondShare).div(totalBondAmount).toString();
+      this.netCToken = new BigNumber(lpAmount).times(totalBondShare).div(totalBondAmount).toString();
     });
   }
 
