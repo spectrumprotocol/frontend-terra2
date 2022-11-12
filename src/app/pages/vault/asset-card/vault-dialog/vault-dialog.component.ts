@@ -34,6 +34,8 @@ import {UiUtilsService} from '../../../../services/ui-utils.service';
 import {PercentSuperscriptPipe} from '../../../../pipes/percent-superscript.pipe';
 import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
 import {UnitPipe} from '../../../../pipes/unit.pipe';
+import {WasmService} from '../../../../services/api/wasm.service';
+import {SpectrumAstroportGenericFarmService} from '../../../../services/api/spectrum-astroport-generic-farm.service';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
@@ -57,12 +59,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   // naming convention: actual input field, input mode
   depositTokenAAmtTokenToken: number;
   excessTokenAAmtTokenToken: number;
-  depositUSDAmountTokenUSD: number;
   depositLPAmtLP: number;
-  depositUSDAmtUSD: number;
   depositTokenBAmtTokenToken: number;
   depositTokenAmtSingleToken: number;
-  depositUSDAmtSingleToken: number;
   tokenAToBeStatic = true;
   lpBalanceInfo: string;
   iLInfo: string;
@@ -75,6 +74,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   withdrawTokenPrice: string;
   withdrawBaseTokenPrice: string;
   grossLpTokenToken: string;
+  grosscToken: string;
   depositFeeTokenToken: string;
   netLpTokenToken: string;
   depositFeeLp: string;
@@ -120,7 +120,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     public uiUtil: UiUtilsService,
     private percentSuperscriptPipe: PercentSuperscriptPipe,
     private timeagoPipe: TimeagoPipe,
-    private unitPipe: UnitPipe
+    private unitPipe: UnitPipe,
+    private spectrumAstroportGenericFarmService: SpectrumAstroportGenericFarmService,
+    private wasm: WasmService
   ) {
   }
 
@@ -359,11 +361,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   resetTokenTokenFormAndOutputs() {
-    this.depositUSDAmountTokenUSD = undefined;
     this.depositTokenBAmtTokenToken = undefined;
     this.grossLpTokenToken = undefined;
     this.depositFeeTokenToken = undefined;
     this.netLpTokenToken = undefined;
+    this.grosscToken = undefined;
   }
 
   @debounce(100)
@@ -472,8 +474,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenAAmtTokenToken = undefined;
     this.depositTokenBAmtTokenToken = undefined;
     this.depositLPAmtLP = undefined;
-    this.depositUSDAmountTokenUSD = undefined;
-    this.depositUSDAmtUSD = undefined;
+    this.grosscToken = undefined;
 
     this.netLpTokenToken = undefined;
     this.depositFeeTokenToken = undefined;
@@ -489,7 +490,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenAmtSingleToken = undefined;
     this.depositFeeLp = undefined;
     this.netLpLp = undefined;
-    this.depositUSDAmtSingleToken = undefined;
 
     this.swap_asset_a_amount = undefined;
     this.swap_asset_b_amount = undefined;
@@ -660,6 +660,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
+    this.calcGrossCToken(this.netLpLp);
   }
 
   setMaxDepositLP() {
@@ -761,6 +762,24 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.return_b_amount = response.return_a_amount;
       }
     }
+    this.calcGrossCToken(response.lp_amount);
+  }
+
+  private calcGrossCToken(lpAmount: string){
+    const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
+      deposit: {
+        lp_token: this.vault.pairInfo.liquidity_token,
+        user: this.vault.poolInfo.farmContract
+      }
+    });
+    const farmStateTask = this.spectrumAstroportGenericFarmService.query(this.vault.poolInfo.farmContract, {
+      state: {}
+    });
+    Promise.all([totalBondAmountTask, farmStateTask]).then((res) => {
+      const totalBondAmount = res[0];
+      const totalBondShare = res[1].total_bond_share;
+      this.grosscToken = new BigNumber(lpAmount).times(totalBondShare).div(totalBondAmount).toString();
+    });
   }
 
   private findAssetBaseAndDenom(): [Asset, Asset, boolean] {
