@@ -385,12 +385,9 @@
         <mdb-tab title="Withdraw">
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
             <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
-            <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
             <ng-container *ngIf="withdrawInputType === 'lp'">
-                          <span
-                                  *ngIf="withdrawAmtLPInput > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
-                                  class="invalid-feedback-custom">
-              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+              <span *ngIf="withdrawAmtLPInput > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                class="invalid-feedback-custom">Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
             </span>
               <span
                       *ngIf="withdrawAmtLPInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
@@ -407,11 +404,7 @@
               </span>
               </div>
               <div class="input-group">
-              <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
-                <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
-                <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
-                &nbsp;{{ vault.shortUnitDisplay }}
-              </span>
+                <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
                 <input #withdrawLPAmtCtl="ngModel" (input)="withdrawAmtChanged('lp')" [(ngModel)]="withdrawAmtLPInput"
                        [class.is-invalid]="(formWithdraw.submitted || withdrawLPAmtCtl.touched) && withdrawLPAmtCtl.invalid"
                        [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT" [min]="0.000001"
@@ -422,13 +415,13 @@
                 </button>
               </div>
             </ng-container>
+
             <ng-container *ngIf="withdrawInputType === 'ctoken'">
               <span *ngIf="withdrawAmtCTokenInput > +info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)" class="invalid-feedback-custom">
               Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_share | unit }}
             </span>
-              <span
-                      *ngIf="withdrawAmtLPInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
-                      class="invalid-feedback-custom">
+              <span *ngIf="withdrawAmtCTokenInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
+                class="invalid-feedback-custom">
               You do not have any {{ vault.baseSymbol }}-{{ vault.denomSymbol }} Spectrum cToken deposited
             </span>
               <span *ngIf="withdrawCTokenAmtCtl.errors?.pattern" class="invalid-feedback-custom">
@@ -441,11 +434,7 @@
               </span>
               </div>
               <div class="input-group">
-              <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
-                <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
-                <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
-                &nbsp;cToken
-              </span>
+                <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
                 <input #withdrawCTokenAmtCtl="ngModel" (input)="withdrawAmtChanged('ctoken')" [(ngModel)]="withdrawAmtCTokenInput"
                        [class.is-invalid]="(formWithdraw.submitted || withdrawCTokenAmtCtl.touched) && withdrawCTokenAmtCtl.invalid"
                        [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT" [min]="0.000001"
@@ -562,20 +551,47 @@
 </ng-template>
 
 <ng-template #withdrawInputTypeSection>
-  <div class="auto-container mb-1">
-    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
-      <span class="btn-group w-100">
-        <button (click)="withdrawInputType = 'lp'" [ngClass]="withdrawInputType === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+<!--  <div class="auto-container mb-1">-->
+<!--    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">-->
+<!--      <span class="btn-group w-100">-->
+<!--        <button (click)="withdrawInputType = 'lp'" [ngClass]="withdrawInputType === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
+<!--          LP-->
+<!--        </button>-->
+<!--        <button (click)="withdrawInputType = 'ctoken'" [ngClass]="withdrawInputType === 'ctoken' ? 'btn-auto': 'btn-outline-auto'"-->
+<!--                class="btn" type="button">-->
+<!--          cToken-->
+<!--        </button>-->
+<!--      </span>-->
+<!--    </ng-container>-->
+<!--  </div>-->
+  <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+    <div #withdrawInputTypeDropdown class="dropdown" mdbDropdown>
+      <button class="btn dropdown-toggle btn-drop" mdbDropdownToggle type="button">
+        <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+        <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+        <ng-container *ngIf="withdrawInputType === 'lp'">
           LP
-        </button>
-        <button (click)="withdrawInputType = 'ctoken'" [ngClass]="withdrawInputType === 'ctoken' ? 'btn-auto': 'btn-outline-auto'"
-                class="btn" type="button">
+        </ng-container>
+        <ng-container *ngIf="withdrawInputType === 'ctoken'">
           cToken
-        </button>
-        <!--        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
-        <!--          UST-->
-        <!--        </button>-->
-      </span>
-    </ng-container>
-  </div>
+        </ng-container>
+      </button>
+      <ul class="dropdown-menu" mdbDropdownMenu>
+        <li><a (click)="withdrawInputType = 'lp'; withdrawInputTypeDropdown.hide()" [class.active]="withdrawMode === 'tokentoken'"
+               class="dropdown-item">
+          <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          LP
+        </a></li>
+        <li><a (click)="withdrawInputType = 'ctoken'; withdrawInputTypeDropdown.hide()" [class.active]="withdrawInputType === 'lp'"
+               class="dropdown-item">
+          <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          cToken
+        </a></li>
+      </ul>
+    </div>
+  </ng-container>
+
+
 </ng-template>
