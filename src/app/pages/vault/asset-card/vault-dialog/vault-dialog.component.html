@@ -385,51 +385,92 @@
         <mdb-tab title="Withdraw">
           <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
             <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
-            <div class="text-end small mt-3 mb-1 fw-bold">
-              <span class="sub-topic">Deposited: </span>
-              <span class="text-white">
+            <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
+            <ng-container *ngIf="withdrawInputType === 'lp'">
+                          <span
+                                  *ngIf="withdrawAmtLPInput > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                                  class="invalid-feedback-custom">
+              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+            </span>
+              <span
+                      *ngIf="withdrawAmtLPInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                      class="invalid-feedback-custom">
+              You do not have any {{ vault.unitDisplay }} deposited
+            </span>
+              <span *ngIf="withdrawLPAmtCtl.errors?.pattern" class="invalid-feedback-custom">
+              Amount must be within 6 decimal points
+            </span>
+              <div class="text-end small mt-3 mb-1 fw-bold">
+                <span class="sub-topic">Deposited: </span>
+                <span class="text-white">
                 {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || 0 | unit }} {{vault.unitDisplay }}
               </span>
-            </div>
-            <div class="input-group">
+              </div>
+              <div class="input-group">
               <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
                 <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
                 <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
                 &nbsp;{{ vault.shortUnitDisplay }}
               </span>
-              <input #withdrawAmtCtl="ngModel" (input)="withdrawAmtChanged()" [(ngModel)]="withdrawAmt"
-                     [class.is-invalid]="(formWithdraw.submitted || withdrawAmtCtl.touched) && withdrawAmtCtl.invalid"
-                     [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT" [min]="0.000001"
-                     [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
-                     name="withdrawAmtCtl" required type="number"/>
-              <button (click)="setMaxWithdrawAmount()" class="btn btn-max last" type="button">
-                Max
-              </button>
-            </div>
-            <span
-                    *ngIf="withdrawAmt > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
-                    class="invalid-feedback-custom">
-              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+                <input #withdrawLPAmtCtl="ngModel" (input)="withdrawAmtChanged('lp')" [(ngModel)]="withdrawAmtLPInput"
+                       [class.is-invalid]="(formWithdraw.submitted || withdrawLPAmtCtl.touched) && withdrawLPAmtCtl.invalid"
+                       [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
+                       name="withdrawLPAmtCtl" required type="number"/>
+                <button (click)="setMaxWithdrawAmount('lp')" class="btn btn-max last" type="button">
+                  Max
+                </button>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="withdrawInputType === 'ctoken'">
+              <span *ngIf="withdrawAmtCTokenInput > +info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)" class="invalid-feedback-custom">
+              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_share | unit }}
             </span>
-            <span
-                    *ngIf="withdrawAmt > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
-                    class="invalid-feedback-custom">
-              You do not have any {{ vault.unitDisplay }} deposited
+              <span
+                      *ngIf="withdrawAmtLPInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
+                      class="invalid-feedback-custom">
+              You do not have any {{ vault.baseSymbol }}-{{ vault.denomSymbol }} Spectrum cToken deposited
             </span>
-            <span *ngIf="withdrawAmtCtl.errors?.pattern" class="invalid-feedback-custom">
+              <span *ngIf="withdrawCTokenAmtCtl.errors?.pattern" class="invalid-feedback-custom">
               Amount must be within 6 decimal points
             </span>
-            <div *ngIf="withdrawAmt" class="mt-3">
-              <div *ngIf="withdrawMode !== 'usdc'" class="d-flex">
-                <div>Receive</div>
-                <div class="margin-left-auto">
-                  <ng-container *ngIf="withdrawMode === 'tokentoken'">
-                    {{ withdrawAmt | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
-                  </ng-container>
-                  <ng-container *ngIf="withdrawMode === 'lp'">
-                    {{ withdrawAmt | number }} {{vault.unitDisplay}}
-                  </ng-container>
-                </div>
+              <div class="text-end small mt-3 mb-1 fw-bold">
+                <span class="sub-topic">Deposited: </span>
+                <span class="text-white">
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || 0 | unit }} {{ vault.baseSymbol }}-{{ vault.denomSymbol }} Spectrum cToken
+              </span>
+              </div>
+              <div class="input-group">
+              <span *ngIf="vault.poolInfo.farmType === 'LP'" class="input-group-text f-12 igt-fixwidth fw-bold-600">
+                <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24" width="24">
+                <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+                &nbsp;cToken
+              </span>
+                <input #withdrawCTokenAmtCtl="ngModel" (input)="withdrawAmtChanged('ctoken')" [(ngModel)]="withdrawAmtCTokenInput"
+                       [class.is-invalid]="(formWithdraw.submitted || withdrawCTokenAmtCtl.touched) && withdrawCTokenAmtCtl.invalid"
+                       [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
+                       name="withdrawCTokenAmtCtl" required type="number"/>
+                <button (click)="setMaxWithdrawAmount('ctoken')" class="btn btn-max last" type="button">
+                  Max
+                </button>
+              </div>
+            </ng-container>
+
+
+            <div *ngIf="withdrawAmtLPInput || withdrawAmtCTokenInput" class="mt-3">
+              <div>Receive</div>
+              <div class="margin-left-auto">
+                <ng-container *ngIf="withdrawMode === 'tokentoken'">
+                  {{ withdrawAmtLPInput | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawAmtCTokenPreviewFromLP">
+                   ({{ withdrawAmtCTokenPreviewFromLP | number}} cToken)
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawAmtLPPreviewFromCToken">
+                  ({{ withdrawAmtLPPreviewFromCToken | number }} {{vault.unitDisplay}})
+                </ng-container>
+
               </div>
             </div>
             <div class="d-grid mt-3">
@@ -446,7 +487,7 @@
                   </div>
                 </div>
               </div>
-              <button (click)="doWithdraw()" [disabled]="withdrawAmtCtl.invalid" class="btn btn-primary"
+              <button (click)="doWithdraw()" [disabled]="disableWithdrawButton" class="btn btn-primary"
                       type="submit">Withdraw
               </button>
             </div>
@@ -511,6 +552,25 @@
         <button (click)="withdrawMode = 'lp'" [ngClass]="withdrawMode === 'lp' ? 'btn-auto': 'btn-outline-auto'"
                 class="btn" type="button">
           {{ vault.unitDisplay }}
+        </button>
+        <!--        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
+        <!--          UST-->
+        <!--        </button>-->
+      </span>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #withdrawInputTypeSection>
+  <div class="auto-container mb-1">
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+      <span class="btn-group w-100">
+        <button (click)="withdrawInputType = 'lp'" [ngClass]="withdrawInputType === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          LP
+        </button>
+        <button (click)="withdrawInputType = 'ctoken'" [ngClass]="withdrawInputType === 'ctoken' ? 'btn-auto': 'btn-outline-auto'"
+                class="btn" type="button">
+          cToken
         </button>
         <!--        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
         <!--          UST-->

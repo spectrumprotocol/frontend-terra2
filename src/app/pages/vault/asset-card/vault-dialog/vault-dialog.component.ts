@@ -38,7 +38,8 @@ import {WasmService} from '../../../../services/api/wasm.service';
 import {SpectrumAstroportGenericFarmService} from '../../../../services/api/spectrum-astroport-generic-farm.service';
 
 const DEPOSIT_FEE = '0';
-export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp' | 'usdc';
+export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp';
+export type WITHDRAW_INPUT_TYPE = 'lp' | 'ctoken';
 
 @Component({
   selector: 'app-vault-dialog',
@@ -68,11 +69,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositType: 'compound' | 'speclp';
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
   withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
-  withdrawAmt: number;
-  withdrawUSD: string;
-  withdrawMinUSD: string;
-  withdrawTokenPrice: string;
-  withdrawBaseTokenPrice: string;
+  withdrawInputType: WITHDRAW_INPUT_TYPE = 'lp';
+  withdrawAmtLPInput: number;
+  withdrawAmtCTokenPreviewFromLP: string;
+  withdrawAmtLPPreviewFromCToken: string;
+  withdrawAmtCTokenInput: number;
   grossLpTokenToken: string;
   netCToken: string;
   depositFeeTokenToken: string;
@@ -97,7 +98,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   depositTokenBAmtTokenTokenIsFocus = false;
   compoundStat: CompoundStat;
   lastCompound: string;
-  earlyWithdrawal: boolean = false;
+  earlyWithdrawal = false;
   private heightChanged: Subscription;
   APRAPYTooltipHTML = '';
 
@@ -149,6 +150,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     return !this.depositType || this.formDeposit?.invalid;
   }
 
+  get disableWithdrawButton() {
+    if (!this.formWithdraw) {
+      // prevent error when deposit form is not yet completely initialized
+      return true;
+    }
+    if (this.withdrawMode === 'tokentoken' || this.withdrawMode === 'lp') {
+      return !this.depositType || this.formDeposit?.invalid || (!this.depositTokenAAmtTokenToken && !this.depositTokenBAmtTokenToken);
+    }
+    return !this.depositType || this.formDeposit?.invalid;
+  }
+
   ngOnInit() {
     this.buildRewardSymbolsPrint();
     if (this.vault.poolInfo.farmType === 'LP') {
@@ -166,8 +178,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           } else if (this.depositTokenBAmtTokenToken && !this.tokenAToBeStatic) {
             this.depositTokenBTokenTokenChanged(true);
           }
-          if (this.withdrawAmt) {
-            this.withdrawAmtChanged();
+          if (this.withdrawAmtLPInput) {
+            this.withdrawAmtChanged('lp');
+          }
+          if (this.withdrawAmtCTokenInput) {
+            this.withdrawAmtChanged('ctoken');
           }
         }
         this.refreshLpBalanceInfo();
@@ -250,7 +265,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount) {
       const lpAmount = this.unitPipe.transform(this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount)
       const lpSplitText = this.lpSplitPipe.transform(+this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount / this.UNIT,
-        this.info.poolResponses[this.vault.poolInfo.key], 
+        this.info.poolResponses[this.vault.poolInfo.key],
         this.vault,
         '1.0-2'
       );
@@ -286,12 +301,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.depositTokenATokenTokenChanged(true);
   }
 
-  setMaxWithdrawAmount() {
-    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
-    if (rewardInfo) {
-      this.withdrawAmt = +rewardInfo.bond_amount / CONFIG.UNIT;
+  setMaxWithdrawAmount(type: WITHDRAW_INPUT_TYPE) {
+  const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
+  if (rewardInfo) {
+    if (type === 'lp'){
+      this.withdrawAmtLPInput = +rewardInfo.bond_amount / CONFIG.UNIT;
     }
-    this.withdrawAmtChanged();
+    if (type === 'ctoken'){
+      this.withdrawAmtCTokenInput = +rewardInfo.bond_share / CONFIG.UNIT;
+    }
+  }
+  this.withdrawAmtChanged(type);
   }
 
   @debounce(100)
@@ -506,100 +526,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   @debounce(250)
-  async withdrawAmtChanged() {
-    if (!this.withdrawAmt || (this.withdrawMode !== 'usdc')) {
-      return;
+  async withdrawAmtChanged(type: WITHDRAW_INPUT_TYPE) {
+    if (type === 'lp' && this.withdrawAmtLPInput) {
+      this.calcGrossCToken(this.withdrawAmtLPInput, 'withdraw', type);
     }
-    let commission = 0;
-    const pairInfo = this.info.pairInfos[this.vault.poolInfo.key];
-    if (this.vault.poolInfo.dex === 'Astroport') {
-      if (pairInfo?.pair_type?.['stable']) {
-        commission = +CONFIG.ASTROPORT_STABLE_COMMISSION_TOTAL;
-      } else if (pairInfo?.pair_type?.['xyk']) {
-        commission = +CONFIG.ASTROPORT_XYK_COMMISSION_TOTAL;
-      }
-    } else if (this.vault.poolInfo.dex === 'Terraswap') {
-      commission = +CONFIG.TERRASWAP_COMMISSION;
-    }
-    if (this.config.STABLE_COIN_DENOMS.has(this.vault.poolInfo.denomTokenContract)) {
-      const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-      const [tokenAsset, usdAsset] = poolResponse.assets[0].info.native_token
-        ? [poolResponse.assets[1], poolResponse.assets[0]]
-        : [poolResponse.assets[0], poolResponse.assets[1]];
-      const usdAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
-        .times(usdAsset.amount).div(poolResponse.total_share).integerValue();
-      const tokenAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
-        .times(tokenAsset.amount).div(poolResponse.total_share).integerValue().toString();
-      const tokenPool2 = new BigNumber(tokenAsset.amount).minus(tokenAmt);
-      const usdPool2 = new BigNumber(usdAsset.amount).minus(usdAmt);
-      const returnAmt = usdPool2.minus(tokenPool2.times(usdPool2).div(tokenAsset.amount))
-        .times(1 - +commission)
-        .integerValue()
-        .toString();
-      this.withdrawTokenPrice = floor18Decimal(div(tokenAmt, returnAmt));
-      this.withdrawUSD = usdAmt.plus(returnAmt).toString();
-      this.withdrawMinUSD = usdAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE)).toString();
-    } else {
-      const poolResponse = this.info.poolResponses[this.vault.poolInfo.key];
-      const asset0Token: string = poolResponse.assets[0].info.token
-        ? poolResponse.assets[0].info.token?.['contract_addr']
-        : poolResponse.assets[0].info.native_token?.['denom'];
-      const [tokenA, tokenB] = asset0Token === this.vault.poolInfo.baseTokenContract
-        ? [poolResponse.assets[1], poolResponse.assets[0]]
-        : [poolResponse.assets[0], poolResponse.assets[1]];
-      const tokenAAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
-        .times(tokenA.amount).div(poolResponse.total_share).integerValue();
-      const tokenBAmt = new BigNumber(this.withdrawAmt).times(CONFIG.UNIT)
-        .times(tokenB.amount).div(poolResponse.total_share).integerValue().toString();
-
-      let returnAmt: string;
-      // stable swap use simulation
-      if (pairInfo.pair_type?.['stable']) {
-        const simulation_msg = {
-          simulation: {
-            offer_asset: {
-              info: tokenB.info,
-              amount: tokenBAmt,
-            }
-          }
-        };
-        const simulate = await this.astroport.query(pairInfo.contract_addr, simulation_msg);
-        returnAmt = simulate.return_amount;
-      } else {
-        // calculate return amount after withdraw
-        const tokenAPool2 = new BigNumber(tokenA.amount).minus(tokenAAmt);
-        const tokenBPool2 = new BigNumber(tokenB.amount).minus(tokenBAmt);
-        returnAmt = tokenAPool2.minus(tokenAPool2.times(tokenBPool2).div(tokenB.amount))
-          .times(1 - +commission)
-          .integerValue()
-          .toString();
-      }
-
-      this.withdrawBaseTokenPrice = floor18Decimal(div(tokenBAmt, returnAmt)); // nluna
-      const withdrawA = tokenAAmt.plus(returnAmt);
-      const withdrawMinA = tokenAAmt.plus(times(returnAmt, 1 - +this.SLIPPAGE));
-
-      const simulation2_msg = {
-        simulation: {
-          offer_asset: {
-            info: tokenA.info,
-            amount: withdrawA.toString(),
-          }
-        }
-      };
-      let simulate2: SimulationResponse;
-      const tokenAContractAddrOrDenom = tokenA.info.token?.['contract_addr'] || tokenA.info.native_token?.['denom'];
-      if (this.vault.poolInfo.dex === 'Astroport') {
-        simulate2 = await this.astroport.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${this.getNativeDenom()}`].contract_addr, simulation2_msg);
-      } else if (this.vault.poolInfo.dex === 'Terraswap') {
-        simulate2 = await this.terraSwap.query(this.info.pairInfos[`${this.vault.poolInfo.dex}|${tokenAContractAddrOrDenom}|${this.getNativeDenom()}`].contract_addr, simulation2_msg);
-      }
-      this.withdrawTokenPrice = floor18Decimal(div(withdrawA, simulate2.return_amount));
-      this.withdrawUSD = simulate2.return_amount;
-      this.withdrawMinUSD = withdrawMinA.times(simulate2.return_amount)
-        .div(withdrawA)
-        .times(1 - +this.SLIPPAGE)
-        .toString();
+    if (type === 'ctoken' && this.withdrawAmtCTokenInput) {
+      this.calcGrossCToken(this.withdrawAmtCTokenInput, 'withdraw', type);
     }
   }
 
@@ -613,7 +545,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       this.vault.poolInfo.farmContract,
       {
         unbond: {
-          amount: times(this.withdrawAmt, CONFIG.UNIT),
+          amount: times(this.withdrawAmtLPInput, CONFIG.UNIT),
         }
       } as FarmExecuteMsg
     );
@@ -623,7 +555,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.vault.pairInfo.liquidity_token,
         {
           send: {
-            amount: times(this.withdrawAmt, CONFIG.UNIT),
+            amount: times(this.withdrawAmtLPInput, CONFIG.UNIT),
             contract: this.vault.pairInfo.contract_addr,
             msg: toBase64({withdraw_liquidity: {}}),
           }
@@ -633,9 +565,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     } else if (this.withdrawMode === 'lp') {
       await this.terrajs.post([unbond]);
     }
-    this.withdrawAmt = undefined;
-    this.withdrawUSD = undefined;
-    this.withdrawMinUSD = undefined;
+    this.withdrawAmtLPInput = undefined;
+
   }
 
   async doClaimReward(all?: boolean) {
@@ -660,7 +591,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       : grossLp.multipliedBy(DEPOSIT_FEE);
     this.netLpLp = grossLp.minus(depositFee).toString();
     this.depositFeeLp = depositFee.toString();
-    this.calcGrossCToken(this.netLpLp);
+    this.calcGrossCToken(new BigNumber(this.netLpLp).times(CONFIG.UNIT).toString(), 'deposit', 'lp');
   }
 
   setMaxDepositLP() {
@@ -762,10 +693,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.return_b_amount = response.return_a_amount;
       }
     }
-    this.calcGrossCToken(response.lp_amount);
+    this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
 
-  private calcGrossCToken(lpAmount: string){
+  private calcGrossCToken(amount: string|number, direction: 'deposit'|'withdraw', type: WITHDRAW_INPUT_TYPE){
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
         lp_token: this.vault.pairInfo.liquidity_token,
@@ -778,7 +709,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     Promise.all([totalBondAmountTask, farmStateTask]).then((res) => {
       const totalBondAmount = res[0];
       const totalBondShare = res[1].total_bond_share;
-      this.netCToken = new BigNumber(lpAmount).times(totalBondShare).div(totalBondAmount).toString();
+      if (direction === 'deposit' && type === 'lp'){
+        this.netCToken = new BigNumber(amount).times(totalBondShare).div(totalBondAmount).toString();
+      }
+      if (direction === 'withdraw' && type === 'lp'){
+        this.withdrawAmtCTokenPreviewFromLP = new BigNumber(amount).times(totalBondShare).div(totalBondAmount).toString();
+      }
+      if (direction === 'withdraw' && type === 'ctoken'){
+        this.withdrawAmtLPPreviewFromCToken = new BigNumber(amount).div(totalBondShare).times(totalBondAmount).toString();
+      }
     });
   }
 
