@@ -11,7 +11,7 @@ import {GoogleAnalyticsService} from 'ngx-google-analytics';
 import {CompoundStat, InfoService} from '../../../../services/info.service';
 import {Subscription} from 'rxjs';
 import BigNumber from 'bignumber.js';
-import {debounce} from 'utils-decorators';
+import {debounce, memoizeAsync} from 'utils-decorators';
 import {LpBalancePipe} from '../../../../pipes/lp-balance.pipe';
 import {TokenService} from '../../../../services/api/token.service';
 import {TerraSwapService} from '../../../../services/api/terraswap.service';
@@ -155,10 +155,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       // prevent error when deposit form is not yet completely initialized
       return true;
     }
-    if (this.withdrawMode === 'tokentoken' || this.withdrawMode === 'lp') {
-      return !this.depositType || this.formDeposit?.invalid || (!this.depositTokenAAmtTokenToken && !this.depositTokenBAmtTokenToken);
+    if (this.withdrawInputType === 'lp') {
+      return !this.withdrawMode || this.formWithdraw?.invalid || this.withdrawAmtLPInput;
     }
-    return !this.depositType || this.formDeposit?.invalid;
+    else if (this.withdrawInputType === 'ctoken') {
+      return !this.withdrawMode || this.formWithdraw?.invalid || this.withdrawAmtCTokenInput;
+    }
   }
 
   ngOnInit() {
@@ -696,7 +698,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
 
-  private calcGrossCToken(amount: string|number, direction: 'deposit'|'withdraw', type: WITHDRAW_INPUT_TYPE){
+  @memoizeAsync(60 * 1000)
+  private async getTotalBondAmountAndFarmState(){
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
         lp_token: this.vault.pairInfo.liquidity_token,
@@ -706,7 +709,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     const farmStateTask = this.spectrumAstroportGenericFarmService.query(this.vault.poolInfo.farmContract, {
       state: {}
     });
-    Promise.all([totalBondAmountTask, farmStateTask]).then((res) => {
+    return await Promise.all([totalBondAmountTask, farmStateTask]);
+  }
+
+  private calcGrossCToken(amount: string|number, direction: 'deposit'|'withdraw', type: WITHDRAW_INPUT_TYPE){
+    this.getTotalBondAmountAndFarmState().then((res) => {
       const totalBondAmount = res[0];
       const totalBondShare = res[1].total_bond_share;
       if (direction === 'deposit' && type === 'lp'){
