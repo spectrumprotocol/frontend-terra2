@@ -450,16 +450,29 @@
             <div *ngIf="withdrawAmtLPInput || withdrawAmtCTokenInput" class="mt-3">
               <div>Receive</div>
               <div class="margin-left-auto">
-                <ng-container *ngIf="withdrawMode === 'tokentoken'">
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawMode === 'tokentoken' && withdrawAmtLPInput">
                   {{ withdrawAmtLPInput | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
                 </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawMode === 'tokentoken' && withdrawAmtLPPreviewFromCToken">
+                  {{ +withdrawAmtLPPreviewFromCToken | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawMode === 'lp' && withdrawAmtLPInput">
+                  {{ withdrawAmtLPInput | number }} {{vault.unitDisplay}}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawMode === 'lp' && withdrawAmtLPPreviewFromCToken">
+                  {{ withdrawAmtLPPreviewFromCToken | number}} {{vault.unitDisplay}}
+                </ng-container>
+              </div>
+            </div>
+            <div *ngIf="withdrawMode === 'tokentoken' && (withdrawAmtLPInput || withdrawAmtCTokenInput)" class="mt-3">
+              <div>Equivalent to</div>
+              <div class="margin-left-auto">
                 <ng-container *ngIf="withdrawInputType === 'lp' && withdrawAmtCTokenPreviewFromLP">
-                   ({{ withdrawAmtCTokenPreviewFromLP | number}} cToken)
+                  {{ withdrawAmtCTokenPreviewFromLP | number}} cToken
                 </ng-container>
                 <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawAmtLPPreviewFromCToken">
-                  ({{ withdrawAmtLPPreviewFromCToken | number }} {{vault.unitDisplay}})
+                  {{ withdrawAmtLPPreviewFromCToken | number }} {{vault.unitDisplay}}
                 </ng-container>
-
               </div>
             </div>
             <div class="d-grid mt-3">
