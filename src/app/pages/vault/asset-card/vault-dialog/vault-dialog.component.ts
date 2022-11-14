@@ -576,7 +576,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       await this.terrajs.post([unbond]);
     }
     this.withdrawAmtLPInput = undefined;
-
+    this.withdrawAmtCTokenInput = undefined;
+    this.withdrawAmtLPPreviewFromCToken = undefined;
+    this.withdrawAmtCTokenPreviewFromLP = undefined;
   }
 
   async doClaimReward(all?: boolean) {
