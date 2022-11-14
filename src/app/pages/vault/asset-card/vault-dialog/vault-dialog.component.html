@@ -447,7 +447,7 @@
             </ng-container>
 
 
-            <div *ngIf="withdrawAmtLPInput || withdrawAmtCTokenInput" class="mt-3">
+            <div *ngIf="(withdrawAmtLPInput && withdrawInputType === 'lp') || (withdrawAmtCTokenInput && withdrawInputType === 'ctoken')" class="mt-3">
               <div>Receive</div>
               <div class="margin-left-auto">
                 <ng-container *ngIf="withdrawInputType === 'lp' && withdrawMode === 'tokentoken' && withdrawAmtLPInput">
@@ -464,7 +464,7 @@
                 </ng-container>
               </div>
             </div>
-            <div *ngIf="withdrawMode === 'tokentoken' && (withdrawAmtLPInput || withdrawAmtCTokenInput)" class="mt-3">
+            <div *ngIf="withdrawMode === 'tokentoken' && ((withdrawAmtLPInput && withdrawInputType === 'lp') || (withdrawAmtCTokenInput && withdrawInputType === 'ctoken'))" class="mt-3">
               <div>Equivalent to</div>
               <div class="margin-left-auto">
                 <ng-container *ngIf="withdrawInputType === 'lp' && withdrawAmtCTokenPreviewFromLP">

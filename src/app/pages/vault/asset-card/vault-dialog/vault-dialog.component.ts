@@ -4,7 +4,7 @@ import {Coin, MsgExecuteContract} from '@terra-money/terra.js';
 import {fade} from '../../../../consts/animations';
 import {CONFIG} from '../../../../consts/config';
 import {toBase64} from '../../../../libs/base64';
-import {div, floor18Decimal, floorSixDecimal, times} from '../../../../libs/math';
+import {div, floor18Decimal, floorSixDecimal, gt, roundSixDecimal, times} from '../../../../libs/math';
 import {TerrajsService} from '../../../../services/terrajs.service';
 import {Vault} from '../../vault.component';
 import {GoogleAnalyticsService} from 'ngx-google-analytics';
@@ -156,10 +156,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       return true;
     }
     if (this.withdrawInputType === 'lp') {
-      return !this.withdrawMode || this.formWithdraw?.invalid || this.withdrawAmtLPInput;
+      return !this.withdrawMode || this.formWithdraw?.invalid || !this.withdrawAmtLPInput;
     }
     else if (this.withdrawInputType === 'ctoken') {
-      return !this.withdrawMode || this.formWithdraw?.invalid || this.withdrawAmtCTokenInput;
+      return !this.withdrawMode || this.formWithdraw?.invalid || !this.withdrawAmtCTokenInput || !this.withdrawAmtLPPreviewFromCToken;
     }
   }
 
@@ -541,13 +541,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.formWithdraw.invalid) {
       return;
     }
-    this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.baseSymbol + '-USD');
+    this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.baseSymbol + '-' + this.vault.denomSymbol);
+    let unbondAmount = this.withdrawInputType === 'ctoken' ? times(this.withdrawAmtLPPreviewFromCToken, CONFIG.UNIT) : times(this.withdrawAmtLPInput, CONFIG.UNIT);
+    if (this.withdrawInputType === 'ctoken' && gt(unbondAmount, this.info.rewardInfos[this.vault.poolInfo.key].bond_amount)){
+      unbondAmount = this.info.rewardInfos[this.vault.poolInfo.key].bond_amount;
+    }
     const unbond = new MsgExecuteContract(
       this.terrajs.address,
       this.vault.poolInfo.farmContract,
       {
         unbond: {
-          amount: times(this.withdrawAmtLPInput, CONFIG.UNIT),
+          amount: unbondAmount,
         }
       } as FarmExecuteMsg
     );
@@ -557,7 +561,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
         this.vault.pairInfo.liquidity_token,
         {
           send: {
-            amount: times(this.withdrawAmtLPInput, CONFIG.UNIT),
+            amount: unbondAmount,
             contract: this.vault.pairInfo.contract_addr,
             msg: toBase64({withdraw_liquidity: {}}),
           }
@@ -717,13 +721,13 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const totalBondAmount = res[0];
       const totalBondShare = res[1].total_bond_share;
       if (direction === 'deposit' && type === 'lp'){
-        this.netCToken = new BigNumber(amount).times(totalBondShare).div(totalBondAmount).toString();
+        this.netCToken = roundSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
       }
       if (direction === 'withdraw' && type === 'lp'){
-        this.withdrawAmtCTokenPreviewFromLP = new BigNumber(amount).times(totalBondShare).div(totalBondAmount).toString();
+        this.withdrawAmtCTokenPreviewFromLP = floorSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
       }
       if (direction === 'withdraw' && type === 'ctoken'){
-        this.withdrawAmtLPPreviewFromCToken = new BigNumber(amount).div(totalBondShare).times(totalBondAmount).toString();
+        this.withdrawAmtLPPreviewFromCToken = floorSixDecimal(new BigNumber(amount).div(totalBondShare).times(totalBondAmount));
       }
     });
   }
