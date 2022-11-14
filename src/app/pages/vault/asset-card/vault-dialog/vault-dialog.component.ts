@@ -36,6 +36,8 @@ import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
 import {UnitPipe} from '../../../../pipes/unit.pipe';
 import {WasmService} from '../../../../services/api/wasm.service';
 import {SpectrumAstroportGenericFarmService} from '../../../../services/api/spectrum-astroport-generic-farm.service';
+import {Clipboard} from '@angular/cdk/clipboard';
+import {ModalService} from '../../../../services/modal.service';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp';
@@ -123,7 +125,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     private timeagoPipe: TimeagoPipe,
     private unitPipe: UnitPipe,
     private spectrumAstroportGenericFarmService: SpectrumAstroportGenericFarmService,
-    private wasm: WasmService
+    private wasm: WasmService,
+    private clipboard: Clipboard,
+    private modalService: ModalService
   ) {
   }
 
@@ -770,5 +774,10 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   private getSwapHints(reverse?: boolean, swapHintPrices?: { [p: string]: Decimal }): [] {
     return [];
+  }
+
+  copyFarmAddress() {
+    this.clipboard.copy(this.vault.poolInfo.farmContract);
+    this.modalService.notify('cToken address copied');
   }
 }

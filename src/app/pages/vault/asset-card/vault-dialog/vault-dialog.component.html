@@ -422,7 +422,7 @@
             </span>
               <span *ngIf="withdrawAmtCTokenInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
                 class="invalid-feedback-custom">
-              You do not have any {{ vault.baseSymbol }}-{{ vault.denomSymbol }} Spectrum cToken deposited
+              You do not have any {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken deposited
             </span>
               <span *ngIf="withdrawCTokenAmtCtl.errors?.pattern" class="invalid-feedback-custom">
               Amount must be within 6 decimal points
@@ -430,7 +430,7 @@
               <div class="text-end small mt-3 mb-1 fw-bold">
                 <span class="sub-topic">Deposited: </span>
                 <span class="text-white">
-                {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || 0 | unit }} {{ vault.baseSymbol }}-{{ vault.denomSymbol }} Spectrum cToken
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || 0 | unit }} {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken
               </span>
               </div>
               <div class="input-group">
@@ -494,6 +494,19 @@
               </button>
             </div>
           </form>
+        </mdb-tab>
+        <mdb-tab title="Transfer">
+          <div class="p-3">
+            <p>Spectrum {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP cToken represents your share of deposited LP of this vault</p>
+            <p>You can copy this {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken address below and paste into "Add tokens" in your wallet to transfer and view balance.</p>
+            <div class="input-group">
+              <input [readonly]="true" class="form-control fix-border" [value]="vault.poolInfo.farmContract"
+                     name="withdrawCTokenAmtCtl" />
+              <button (click)="copyFarmAddress()" class="btn btn-max last" type="button">
+                Copy
+              </button>
+            </div>
+          </div>
         </mdb-tab>
         <mdb-tab *ngIf="vault.poolInfo.farm === 'Spectrum'" title="Claim">
           <div class="p-3">
