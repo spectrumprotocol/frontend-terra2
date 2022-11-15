@@ -53,7 +53,7 @@ export const floorSixDecimal = (input: BN.Value): string =>
   new BN(input).decimalPlaces(CONFIG.DIGIT, BN.ROUND_FLOOR).toString();
 
 
-export const roundSixDecimal = (input: BN.Value): string =>
+export const ceilSixDecimal = (input: BN.Value): string =>
   new BN(input).decimalPlaces(CONFIG.DIGIT, BN.ROUND_UP).toString();
 
 export const floor18Decimal = (input: BN.Value): string => {

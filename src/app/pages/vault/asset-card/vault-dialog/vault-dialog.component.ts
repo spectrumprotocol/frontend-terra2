@@ -1,43 +1,42 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {NgForm, NgModel} from '@angular/forms';
-import {Coin, MsgExecuteContract} from '@terra-money/terra.js';
-import {fade} from '../../../../consts/animations';
-import {CONFIG} from '../../../../consts/config';
-import {toBase64} from '../../../../libs/base64';
-import {div, floor18Decimal, floorSixDecimal, gt, roundSixDecimal, times} from '../../../../libs/math';
-import {TerrajsService} from '../../../../services/terrajs.service';
-import {Vault} from '../../vault.component';
-import {GoogleAnalyticsService} from 'ngx-google-analytics';
-import {CompoundStat, InfoService} from '../../../../services/info.service';
-import {Subscription} from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NgForm, NgModel } from '@angular/forms';
+import { Coin, MsgExecuteContract } from '@terra-money/terra.js';
+import { fade } from '../../../../consts/animations';
+import { CONFIG } from '../../../../consts/config';
+import { toBase64 } from '../../../../libs/base64';
+import { floorSixDecimal, gt, ceilSixDecimal, times } from '../../../../libs/math';
+import { TerrajsService } from '../../../../services/terrajs.service';
+import { Vault } from '../../vault.component';
+import { GoogleAnalyticsService } from 'ngx-google-analytics';
+import { CompoundStat, InfoService } from '../../../../services/info.service';
+import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
-import {debounce, memoizeAsync} from 'utils-decorators';
-import {LpBalancePipe} from '../../../../pipes/lp-balance.pipe';
-import {TokenService} from '../../../../services/api/token.service';
-import {TerraSwapService} from '../../../../services/api/terraswap.service';
-import {Denom} from '../../../../consts/denom';
-import {MdbModalRef} from 'mdb-angular-ui-kit/modal';
-import {TerraSwapRouterService} from '../../../../services/api/terraswap-router.service';
-import {AstroportService} from '../../../../services/api/astroport.service';
-import {SimulationResponse} from '../../../../services/api/terraswap_pair/simulation_response';
-import {PercentPipe} from '@angular/common';
-import {AstroportRouterService} from '../../../../services/api/astroport-router.service';
-import {RewardInfoPipe} from '../../../../pipes/reward-info.pipe';
-import {LpSplitPipe} from '../../../../pipes/lp-split.pipe';
-import {LpEarningPipe} from '../../../../pipes/lp-earning.pipe';
-import {ConfigService} from '../../../../services/config.service';
-import {Decimal} from '../../../../services/api/astroport_router/execute_msg';
-import {FarmExecuteMsg} from '../../../../services/api/spectrum_astroport_farm/execute_msg';
-import {SpectrumCompoundProxyService} from '../../../../services/api/spectrum-compound-proxy.service';
+import { debounce, memoizeAsync } from 'utils-decorators';
+import { LpBalancePipe } from '../../../../pipes/lp-balance.pipe';
+import { TokenService } from '../../../../services/api/token.service';
+import { TerraSwapService } from '../../../../services/api/terraswap.service';
+import { Denom } from '../../../../consts/denom';
+import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
+import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
+import { AstroportService } from '../../../../services/api/astroport.service';
+import { PercentPipe } from '@angular/common';
+import { AstroportRouterService } from '../../../../services/api/astroport-router.service';
+import { RewardInfoPipe } from '../../../../pipes/reward-info.pipe';
+import { LpSplitPipe } from '../../../../pipes/lp-split.pipe';
+import { LpEarningPipe } from '../../../../pipes/lp-earning.pipe';
+import { ConfigService } from '../../../../services/config.service';
+import { Decimal } from '../../../../services/api/astroport_router/execute_msg';
+import { FarmExecuteMsg } from '../../../../services/api/spectrum_astroport_farm/execute_msg';
+import { SpectrumCompoundProxyService } from '../../../../services/api/spectrum-compound-proxy.service';
 import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
-import {UiUtilsService} from '../../../../services/ui-utils.service';
-import {PercentSuperscriptPipe} from '../../../../pipes/percent-superscript.pipe';
+import { UiUtilsService } from '../../../../services/ui-utils.service';
+import { PercentSuperscriptPipe } from '../../../../pipes/percent-superscript.pipe';
 import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
-import {UnitPipe} from '../../../../pipes/unit.pipe';
-import {WasmService} from '../../../../services/api/wasm.service';
-import {SpectrumAstroportGenericFarmService} from '../../../../services/api/spectrum-astroport-generic-farm.service';
-import {Clipboard} from '@angular/cdk/clipboard';
-import {ModalService} from '../../../../services/modal.service';
+import { UnitPipe } from '../../../../pipes/unit.pipe';
+import { WasmService } from '../../../../services/api/wasm.service';
+import { SpectrumAstroportGenericFarmService } from '../../../../services/api/spectrum-astroport-generic-farm.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ModalService } from '../../../../services/modal.service';
 
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp';
@@ -110,11 +109,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     protected $gaService: GoogleAnalyticsService,
     public info: InfoService,
     private tokenService: TokenService,
-    private terraSwap: TerraSwapService,
-    private terraSwapRouter: TerraSwapRouterService,
-    private astroport: AstroportService,
     private percentPipe: PercentPipe,
-    private astroportRouter: AstroportRouterService,
     private rewardInfoPipe: RewardInfoPipe,
     private lpSplitPipe: LpSplitPipe,
     public lpEarningPipe: LpEarningPipe,
@@ -248,7 +243,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   async refreshiLInfo() {
     const deposit_costs = this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_costs;
     const gainedLp = +this.info.rewardInfos[this.vault.poolInfo.key]?.bond_amount - +this.info.rewardInfos[this.vault.poolInfo.key]?.deposit_amount;
-    if (deposit_costs && gainedLp){
+    if (deposit_costs && gainedLp) {
       const total_share = this.info.poolResponses[this.vault.poolInfo.key].total_share;
       const token0FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[0].amount).div(total_share).toNumber();
       const token1FromGainedLp = new BigNumber(gainedLp).times(this.info.poolResponses[this.vault.poolInfo.key].assets[1].amount).div(total_share).toNumber();
@@ -256,8 +251,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const token1Change = +deposit_costs[1] - token1FromGainedLp;
       const token0ChangeUnit = this.unitPipe.transform(token0Change, this.vault.baseDecimals);
       const token1ChangeUnit = this.unitPipe.transform(token1Change, this.vault.denomDecimals);
-      const token0Sign = token0Change > 0 ? '+' : '-';
-      const token1Sign = token1Change > 0 ? '+' : '-';
+      const token0Sign = token0Change > 0 ? '+' : '';
+      const token1Sign = token1Change > 0 ? '+' : '';
 
       this.iLInfo = `${token0Sign}${token0ChangeUnit} ${this.vault.baseSymbol}, ${token1Sign}${token1ChangeUnit} ${this.vault.denomSymbol}`;
     }
@@ -308,16 +303,15 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   setMaxWithdrawAmount(type: WITHDRAW_INPUT_TYPE) {
-  const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
-  if (rewardInfo) {
-    if (type === 'lp'){
-      this.withdrawAmtLPInput = +rewardInfo.bond_amount / CONFIG.UNIT;
+    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
+    if (rewardInfo) {
+      if (type === 'lp') {
+        this.withdrawAmtLPInput = +rewardInfo.bond_amount / CONFIG.UNIT;
+      } else if (type === 'ctoken') {
+        this.withdrawAmtCTokenInput = +rewardInfo.bond_share / CONFIG.UNIT;
+      }
     }
-    if (type === 'ctoken'){
-      this.withdrawAmtCTokenInput = +rewardInfo.bond_share / CONFIG.UNIT;
-    }
-  }
-  this.withdrawAmtChanged(type);
+    this.withdrawAmtChanged(type);
   }
 
   @debounce(100)
@@ -535,8 +529,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   async withdrawAmtChanged(type: WITHDRAW_INPUT_TYPE) {
     if (type === 'lp' && this.withdrawAmtLPInput) {
       this.calcGrossCToken(this.withdrawAmtLPInput, 'withdraw', type);
-    }
-    if (type === 'ctoken' && this.withdrawAmtCTokenInput) {
+    } else if (type === 'ctoken' && this.withdrawAmtCTokenInput) {
       this.calcGrossCToken(this.withdrawAmtCTokenInput, 'withdraw', type);
     }
   }
@@ -547,7 +540,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     this.$gaService.event('CLICK_WITHDRAW_LP_VAULT', this.vault.poolInfo.farm.toUpperCase(), this.vault.baseSymbol + '-' + this.vault.denomSymbol);
     let unbondAmount = this.withdrawInputType === 'ctoken' ? times(this.withdrawAmtLPPreviewFromCToken, CONFIG.UNIT) : times(this.withdrawAmtLPInput, CONFIG.UNIT);
-    if (this.withdrawInputType === 'ctoken' && gt(unbondAmount, this.info.rewardInfos[this.vault.poolInfo.key].bond_amount)){
+    if (this.withdrawInputType === 'ctoken' && gt(unbondAmount, this.info.rewardInfos[this.vault.poolInfo.key].bond_amount)) {
       unbondAmount = this.info.rewardInfos[this.vault.poolInfo.key].bond_amount;
     }
     const unbond = new MsgExecuteContract(
@@ -567,7 +560,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           send: {
             amount: unbondAmount,
             contract: this.vault.pairInfo.contract_addr,
-            msg: toBase64({withdraw_liquidity: {}}),
+            msg: toBase64({ withdraw_liquidity: {} }),
           }
         }
       );
@@ -679,7 +672,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (!this.freeTokenTokenRatio && !(this.depositTokenAAmtTokenToken && this.depositTokenBAmtTokenToken)){
+    if (!this.freeTokenTokenRatio && !(this.depositTokenAAmtTokenToken && this.depositTokenBAmtTokenToken)) {
       return;
     }
 
@@ -709,7 +702,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   @memoizeAsync(60 * 1000)
-  private async getTotalBondAmountAndFarmState(){
+  private async getTotalBondAmountAndFarmState() {
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
         lp_token: this.vault.pairInfo.liquidity_token,
@@ -722,18 +715,18 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     return await Promise.all([totalBondAmountTask, farmStateTask]);
   }
 
-  private calcGrossCToken(amount: string|number, direction: 'deposit'|'withdraw', type: WITHDRAW_INPUT_TYPE){
+  private calcGrossCToken(amount: string | number, direction: 'deposit' | 'withdraw', type: WITHDRAW_INPUT_TYPE) {
     this.getTotalBondAmountAndFarmState().then((res) => {
       const totalBondAmount = res[0];
       const totalBondShare = res[1].total_bond_share;
-      if (direction === 'deposit' && type === 'lp'){
-        this.netCToken = roundSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
+      if (direction === 'deposit' && type === 'lp') {
+        this.netCToken = floorSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
       }
-      if (direction === 'withdraw' && type === 'lp'){
-        this.withdrawAmtCTokenPreviewFromLP = floorSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
+      if (direction === 'withdraw' && type === 'lp') {
+        this.withdrawAmtCTokenPreviewFromLP = ceilSixDecimal(new BigNumber(amount).times(totalBondShare).div(totalBondAmount));
       }
-      if (direction === 'withdraw' && type === 'ctoken'){
-        this.withdrawAmtLPPreviewFromCToken = floorSixDecimal(new BigNumber(amount).div(totalBondShare).times(totalBondAmount));
+      if (direction === 'withdraw' && type === 'ctoken') {
+        this.withdrawAmtLPPreviewFromCToken = floorSixDecimal(new BigNumber(amount).times(totalBondAmount).div(totalBondShare));
       }
     });
   }
