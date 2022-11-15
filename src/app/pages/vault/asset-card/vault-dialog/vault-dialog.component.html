@@ -263,12 +263,7 @@
                 </div>
                 <div *ngIf="+netCToken" class="row">
                   <div class="col">Net cToken</div>
-                  <div *ngIf="+netCToken > 0" class="col text-end">{{netCToken | unit }} cToken</div>
-                  <div *ngIf="!(+netCToken > 0)" class="col text-end">
-                    <div class="spinner-grow spinner-small" role="status">
-                      <span class="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
+                  <div class="col text-end">{{netCToken | unit }} cToken</div>
                 </div>
               </div>
 
