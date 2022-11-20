@@ -38,7 +38,7 @@ export const balance_transform = (stableCoinDenoms: Set<string>, value: any, poo
   }
 };
 
-const isAssetStableCoin = (stableCoinDenoms: Set<String>, assetInfo: AssetInfo) => {
+const isAssetStableCoin = (stableCoinDenoms: Set<string>, assetInfo: AssetInfo) => {
   return stableCoinDenoms.has(assetInfo.native_token?.['denom'] || assetInfo.token?.['contract_addr'])
 };
 
