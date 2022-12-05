@@ -35,7 +35,7 @@ export type PoolInfo = {
   poolType: PoolType;
   disabled: boolean;
 };
-export type RewardInfoResponseItem = SpecRewardInfoResponseItem | AstroportFarmRewardInfoResponseItem;
+export type RewardInfoResponseItem = AstroportFarmRewardInfoResponseItem;
 
 export type PoolAPR = {
   apr: number,

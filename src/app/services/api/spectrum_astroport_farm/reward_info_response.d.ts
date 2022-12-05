@@ -47,9 +47,13 @@ export interface RewardInfoResponseItem {
    */
   bond_share: Uint128;
   /**
-   * The weighted average deposit amount
+   * The deposit amount
    */
   deposit_amount: Uint128;
+  /**
+   * The deposit cost
+   */
+  deposit_costs: Uint128[];
   /**
    * The weighted average deposit time
    */

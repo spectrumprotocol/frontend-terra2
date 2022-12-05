@@ -41,12 +41,21 @@ export interface InstantiateMsg {
    */
   liquidity_token: string;
   /**
+   * token info
+   */
+  name: string;
+  /**
    * The owner address
    */
   owner: string;
   /**
+   * The pair contract address
+   */
+  pair: string;
+  /**
    * The LP staking generator contract address
    */
   staking_contract: string;
+  symbol: string;
   [k: string]: unknown;
 }
