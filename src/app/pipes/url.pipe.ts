@@ -52,6 +52,10 @@ export class UrlPipe implements PipeTransform {
             return `/assets/ampLuna.png`;
           case 'Eris':
             return `/assets/eris.png`;
+          case 'Backbone':
+            return `/assets/backbone.png`;
+          case 'bLuna':
+            return `/assets/boneluna.png`;
           default:
             return null;
         }
