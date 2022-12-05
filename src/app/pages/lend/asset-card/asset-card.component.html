@@ -1,0 +1,53 @@
+<div class="card asset-card hover-shadow">
+  <!-- <span *ngIf="+info.rewardInfos[pool.poolInfo.key]?.bond_share >= 10" class="position-absolute">
+    <div class="badge-deposited text-white">Deposited</div>
+  </span>
+  <span *ngIf="pool.disabled" class="position-absolute grid-badge mb-1">
+    <div class="badge-deposit-disabled">Deposit Disabled</div>
+  </span>
+  <span *ngIf="pool.poolInfo?.highlight" class="position-absolute grid-badge mb-1">
+    <div class="badge-deposit-disabled">New</div>
+  </span> -->
+  <div class="card-body pt-15">
+    <div (click)="openModal()" class="row asset-card-info">
+      <div class="col-12 col-md-4">
+        <div class="row">
+          <div class="col-12 text-center no-padding">
+            <div class="p-2 bulk-name-container">
+              <img [src]="pool.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon mt-2 float-start">
+              <div class="name-detail">
+                <div class="f-12 sub-topic">&nbsp;</div>
+                <h6 class="m-0"> {{pool.name}}
+                </h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-8">
+        <div class="row">
+          <div class="col-12 col-sm-2 mt-1">
+            <div class="f-12 sub-topic">Total Borrow</div>
+            <span class="fs-6 fw-bold text-white"> {{pool.totalBorrow}}</span>
+          </div>
+          <div class="col-12 col-sm-2 mt-1">
+            <div class="f-12 sub-topic">Total Supply</div>
+            <span class="fs-6 fw-bold"> {{pool.totalSupply}}</span>
+          </div>
+          <div class="col-12 col-sm-2 mt-1">
+            <div class="f-12 sub-topic">Utilization</div>
+            <span class="fs-6 fw-bold"> {{ pool.utilization || 0 | percent: '1.2-2' }}</span>
+          </div>
+          <div class="col-12 col-sm-2 mt-1">
+            <div class="f-12 sub-topic">APR</div>
+            <span class="fs-6 fw-bold text-primary"> {{ pool.poolAprTotal | percent}}</span>
+          </div>
+          <div class="col-12 col-sm-3 mt-1">
+            <div class="f-12 sub-topic">Balance</div>
+            <span class="fs-6 fw-bold"> 5500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

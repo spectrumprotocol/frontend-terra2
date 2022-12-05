@@ -97,6 +97,12 @@ import {
 import {
   AstroportBLunaLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-bluna-luna-farm-info.service';
+import { LeveragedVaultComponent } from './pages/leveraged/leveraged.component';
+import { LendComponent } from './pages/lend/lend.component';
+import { LeveragedAssetCardComponent } from './pages/leveraged/asset-card/asset-card.component';
+import { LeveragedVaultDialogComponent } from './pages/leveraged/asset-card/vault-dialog/vault-dialog.component';
+import { LendAssetCardComponent } from './pages/lend/asset-card/asset-card.component';
+import { LendDialogComponent } from './pages/lend/asset-card/lend-dialog/lend-dialog.component';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -140,7 +146,13 @@ registerLocaleData(locale, 'en');
     DashboardComponent,
     CurrencyPipe,
     AirdropComponent,
-    PercentSuperscriptPipe
+    PercentSuperscriptPipe,
+    LeveragedVaultComponent,
+    LeveragedAssetCardComponent,
+    LeveragedVaultDialogComponent,
+    LendComponent,
+    LendAssetCardComponent,
+    LendDialogComponent,
   ],
   imports: [
     ApolloModule,

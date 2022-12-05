@@ -5,6 +5,8 @@ import {VaultComponent} from './pages/vault/vault.component';
 // import {TxHistoryComponent} from './pages/tx-history/tx-history.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import {AirdropComponent} from './pages/airdrop/airdrop.component';
+import { LeveragedVaultComponent } from './pages/leveraged/leveraged.component';
+import { LendComponent } from './pages/lend/lend.component';
 
 const routes: Routes = [
   { path: 'vaults', component: VaultComponent },
@@ -13,7 +15,9 @@ const routes: Routes = [
   // { path: 'gov/poll/new', component: GovPollNewComponent },
   // { path: 'gov/poll/:id', component: GovPollDetailComponent },
   // { path: 'dashboard', component: DashboardComponent },
+  { path: 'lend', component: LendComponent },
   { path: 'airdrop', component: AirdropComponent },
+  { path: 'leverage', component: LeveragedVaultComponent },
   { path: '**', redirectTo: '/vaults' },
 ];
 

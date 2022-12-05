@@ -1,0 +1,618 @@
+<div class="modal-header pb-0">
+  <div class="col-11 d-flex justify-content-center">
+    <div *ngIf="vault.poolInfo.farmType === 'LP'" class="p-2 p-l-0 bulk-name-container">
+      <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start">
+      <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle assetIcon float-start token-denom">
+      <div class="name-detail">
+        <h6 class="m-0"> {{vault.name}}
+          <img *ngIf="vault.poolInfo.dex === 'Astroport'" alt="Astroport DEX" class="dex-logo"
+               src="./assets/logo-astroport.svg">
+          <img *ngIf="vault.poolInfo.dex === 'Terraswap'" alt="Terraswap DEX" class="dex-logo"
+               src="./assets/logo-terraswap.svg">
+        </h6>
+        <p class="m-0"><span class="badge bg-{{vault.poolInfo.farm}}">Farm: {{vault.poolInfo.farm}}</span></p>
+      </div>
+    </div>
+  </div>
+  <i (click)="modalRef.close()" class="margin-left-auto margin-top-close-button fas fa-times fa-lg pe-2"
+     role="button"></i>
+</div>
+<div class="modal-body">
+  <div class="row g-1">
+    <div class="col-12 col-md-4">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            TVL
+          </p>
+          <h3 class="card-title">
+            {{vault.pairStat?.tvl || 0 | unit: 6 : '1.0-2' }} USD
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
+              APR <i
+                    [mdbTooltip]="'APR (Annual Percentage Rate) is the rate of return in one year from earning '+ rewardSymbolsPrint"
+                    class="fas fa-info-circle info-icon super"></i>
+            </ng-container>
+            <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
+              APY <i [html]="true"
+                    [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with daily compound interest in one year from '+ rewardSymbolsPrint + '.</br>Fees are already subtracted from displayed APY.'"
+                    class="fas fa-info-circle info-icon super"></i>
+            </ng-container>
+          </p>
+          <h3 class="card-title">
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
+              <span class="fs-6 fw-bold text-primary" [innerHTML]="vault.pairStat.poolApy | percentsuperscript"></span>
+            </div>
+            <div *ngIf="vault.poolInfo.farm !== 'Spectrum'" [html]="true" [mdbTooltip]="APRAPYTooltipHTML">
+              <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
+                <span class="sub-topic text-decoration-line-through text-primary">
+                  <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>
+                </span>
+                <i class="fas fa-info-circle info-icon super card-text sub-topic"></i>
+              </span>
+              <span class="fs-6 fw-bold text-primary" [innerHTML]="vault.pairStat.poolApy  | percentsuperscript"></span>
+            </div>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="card box-left h-100">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            Daily Rate <i class="fas fa-info-circle info-icon super" mdbTooltip="Estimated rate of return per day"></i>
+          </p>
+          <h3 class="card-title">
+            {{ vault.pairStat?.dpr || 0 | percent: '1.4-4' }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card box-left">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">cToken Balance</ng-container>
+          </p>
+          <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title text-primary">
+            {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || '0' | unit: 6}}
+            <span *ngIf="+info.rewardInfos[vault.poolInfo.key]?.bond_share >= 10" class="small text-white">
+              &nbsp;(${{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || '0' | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
+              <i [mdbTooltip]="lpBalanceInfo"
+                 class="fas fa-info-circle info-icon super"></i>
+            </span>
+            <span *ngIf="info.rewardInfos[vault.poolInfo.key] | lpEarning" class="text-success">
+              +{{ info.rewardInfos[vault.poolInfo.key] | lpEarning | unit }} LP
+              (${{ info.rewardInfos[vault.poolInfo.key] | lpEarning | lpBalance: vault.poolInfo.key | unit: 6: '1.0-2' }})
+<!--              <i [mdbTooltip]="iLInfo"-->
+<!--                 class="fas fa-info-circle info-icon super"></i>-->
+            </span>
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4" *ngIf="compoundStat && +info.rewardInfos[vault.poolInfo.key]?.bond_amount >= 10">
+      <div class="card box-left">
+        <div class="card-body">
+          <p class="card-text sub-topic">
+            <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">Last Compound</ng-container>
+          </p>
+          <h3 *ngIf="vault.poolInfo.farmType === 'LP'" class="card-title">
+            {{ lastCompound }}
+          </h3>
+        </div>
+      </div>
+    </div>
+    <div class="row tab-container g-0">
+      <mdb-tabs [justified]="true">
+        <mdb-tab *ngIf="!vault.disabled" title="Deposit">
+          <form #formDeposit="ngForm" class="needs-validation p-3" novalidate>
+            <ng-container *ngTemplateOutlet="depositModeSection"></ng-container>
+            <div *ngIf="depositMode === 'tokentoken'" class="mt-3">
+              <div class="card card-green">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i>&nbsp;
+                    <a [href]="vault.poolInfo.baseTokenContract | url:'trade' : vault.poolInfo.dex"
+                       target="_blank">Buy {{ vault.baseSymbol }}</a>&nbsp;
+                    <a [href]="vault.poolInfo.denomTokenContract | url:'trade' : vault.poolInfo.dex"
+                       target="_blank">Buy {{ vault.denomSymbol }}</a>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col col-mbp">
+                  <div class="text-end small mt-3 mb-1 fw-bold">
+                    <span class="sub-topic">Balance: </span>
+                    <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.baseTokenContract]"
+                          aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span
+                            class="text-white">{{ info.tokenBalances[vault.poolInfo.baseTokenContract] | unit : vault.baseDecimals }} {{ vault.baseSymbol }}</span>
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
+                      <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle me-1" height="24"
+                           width="24">{{ vault.baseSymbol }}
+                    </span>
+                    <input #depositTokenAAmtTokenTokenCtl="ngModel"
+                           (focusin)="focusInDepositTokenABAmtTokenToken('A')"
+                           (focusout)="focusOutDepositTokenABAmtTokenToken('A')"
+                           (input)="depositTokenATokenTokenChanged(false, $event)"
+                           [(ngModel)]="depositTokenAAmtTokenToken"
+                           [class.is-invalid]="(formDeposit.submitted || depositTokenAAmtTokenTokenCtl.touched) && depositTokenAAmtTokenTokenCtl.invalid"
+                           [max]="+info.tokenBalances[vault.poolInfo.baseTokenContract] / vault.baseUnit"
+                           [min]="0" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.baseDecimals + '})?$'"
+                           [required]="!freeTokenTokenRatio"
+                           [step]="0.000001" class="form-control fix-border" name="depositTokenAAmtTokenTokenCtl" type="number"/>
+                    <button (click)="setMaxDepositTokenATokenToken()" class="btn btn-max last" type="button">
+                      Max
+                    </button>
+                  </div>
+                </div>
+                <div class="col-1 col-mbp">
+                  <div class="mt-5 icon-between-inputs">
+                    <div>
+                      <img alt="" class="image-6" loading="lazy" src="/assets/plus.svg" width="20">
+                    </div>
+                  </div>
+                </div>
+                <div class="col col-mbp">
+                  <div class="text-end small mt-3 mb-1 fw-bold">
+                    <span class="sub-topic mb-1">Balance: </span>
+                    <span *ngIf="this.terrajs.isConnected && !info.tokenBalances[vault.poolInfo.denomTokenContract]"
+                          aria-hidden="true" class="spinner-grow spinner-small mb-1" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </span>
+                    <span
+                            class="text-white">{{ info.tokenBalances[vault.poolInfo.denomTokenContract] | unit : vault.denomDecimals }}
+                      {{ vault.denomSymbol }}</span>
+                  </div>
+                  <div class="input-group">
+                    <span class="input-group-text f-12 igt-fixwidth ps-4 fw-bold-600"><img
+                            [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle me-1"
+                            height="24" width="24">{{vault.denomSymbol}}</span>
+                    <input #depositTokenBAmtTokenTokenCtl="ngModel"
+                           (focusin)="focusInDepositTokenABAmtTokenToken('B')"
+                           (focusout)="focusOutDepositTokenABAmtTokenToken('B')"
+                           (input)="depositTokenBTokenTokenChanged(false, $event)"
+                           [(ngModel)]="depositTokenBAmtTokenToken"
+                           [class.is-invalid]="(formDeposit.submitted || depositTokenBAmtTokenTokenCtl.touched) && depositTokenBAmtTokenTokenCtl.invalid"
+                           [max]="+info.tokenBalances[vault.poolInfo.denomTokenContract] / vault.denomUnit"
+                           [min]="0" [pattern]="'^[0-9]+(.[0-9]{0,' + vault.denomDecimals + '})?$'"
+                           [required]="!freeTokenTokenRatio"
+                           [step]="0.000001" class="form-control fix-border" name="depositTokenBAmtTokenTokenCtl" type="number"/>
+                    <button (click)="setMaxDepositTokenBTokenToken()" class="btn btn-max last" type="button">
+                      Max
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="d-flex">
+                  <div class="form-check form-switch free-token-ratio-switch">
+                    <input
+                            (change)="onFreeRatioChanged($event)"
+                            [(ngModel)]="freeTokenTokenRatio"
+                            [ngModelOptions] ="{standalone: true}"
+                            class="form-check-input"
+                            id="freeRatioToggle"
+                            mdbCheckbox
+                            type="checkbox"
+                    />
+                    <label class="form-check-label" for="freeRatioToggle">
+                      Free Ratio
+                    </label>
+                  </div>
+                  <div class="row">
+                    <ng-container *ngIf="showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
+                      Spectrum will auto
+                      <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
+                      <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
+                      to keep 1:1 ratio required to create LP.
+                    </ng-container>
+                    <ng-container *ngIf="!showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
+                      You can input {{vault.baseSymbol}} and {{vault.denomSymbol}} amount not bound to 1:1 ratio freely
+                    </ng-container>
+                    <ng-container *ngIf="freeTokenTokenRatio && vault.poolInfo.poolType === 'stable'">
+                      You can input {{vault.baseSymbol}} and {{vault.denomSymbol}} amount not bound to 1:1 ratio freely
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="depositTokenAAmtTokenToken || depositTokenBAmtTokenToken" @fade class="mt-1 pool-info">
+                <div class="row" *ngIf="vault.poolInfo.poolType !== 'stable'">
+                  <div class="col">{{vault.baseSymbol}} Price</div>
+                  <div class="col text-end">{{vault.poolInfo.key | price | number }} {{ vault.denomSymbol }}</div>
+                </div>
+                <div class="row">
+                  <div class="col">Gross LP</div>
+                  <div *ngIf="+grossLpTokenToken > 0" class="col text-end">{{grossLpTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+grossLpTokenToken > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="+depositFeeTokenToken" class="row">
+                  <div class="col">Deposit Fee (0.1%)</div>
+                  <div *ngIf="+depositFeeTokenToken > 0" class="col text-end">{{depositFeeTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+depositFeeTokenToken > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="+depositFeeTokenToken" class="row">
+                  <div class="col">Net LP</div>
+                  <div *ngIf="+netLpTokenToken > 0" class="col text-end">{{netLpTokenToken | unit }} LP</div>
+                  <div *ngIf="!(+netLpTokenToken > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="+netCToken" class="row">
+                  <div class="col">Net cToken</div>
+                  <div class="col text-end">{{netCToken | unit }} cToken</div>
+                </div>
+              </div>
+
+            </div>
+            <div *ngIf="depositMode === 'lp'" class="mt-3">
+              <div class="card card-green">
+                <div class="card-body">
+                  <div class="small p-2">
+                    <i class="fas fa-info-circle info-icon"></i> Already have LP token? Deposit
+                    here or <a
+                          [href]="vault.baseSymbol | url:'provideLP' : vault.poolInfo.dex"
+                          target="_blank">provide/withdraw {{vault.poolInfo.dex}} LP</a>
+                  </div>
+                </div>
+              </div>
+              <div class="text-end small mt-3 mb-1 fw-bold-600">
+                <span class="sub-topic">Balance: </span>
+                <span class="text-white">
+                  {{+info.lpTokenBalances[vault.lpToken] | unit}} {{ vault.unitDisplay }}
+                </span>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text f-12 igt-fixwidth fw-bold-600">
+                  <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+                  <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+                  &nbsp;{{ vault.shortUnitDisplay }}
+                </span>
+                <input #depositLPAmtLPCtl="ngModel" (input)="depositLPChanged(false, $event)"
+                       [(ngModel)]="depositLPAmtLP"
+                       [class.is-invalid]="(formDeposit.submitted || depositLPAmtLPCtl.touched) && depositLPAmtLPCtl.invalid"
+                       [max]="+info.lpTokenBalances[vault.lpToken] / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
+                       name="depositLPAmtLP" required type="number"/>
+                <button (click)="setMaxDepositLP()" class="btn btn-max last" type="button">
+                  Max
+                </button>
+              </div>
+              <div *ngIf="depositLPAmtLP" @fade class="mt-3 pool-info">
+                <div *ngIf="+depositFeeLp" class="row">
+                  <div class="col">Deposit Fee (0.1%)</div>
+                  <div *ngIf="+depositFeeLp > 0" class="col text-end">{{depositFeeLp | number }} LP</div>
+                  <div *ngIf="!(+depositFeeLp > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="+depositFeeLp" class="row">
+                  <div class="col">Net LP</div>
+                  <div *ngIf="+netLpLp > 0" class="col text-end">{{netLpLp | number }} LP</div>
+                  <div *ngIf="!(+netLpLp > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="+netCToken" class="row">
+                  <div class="col">Net cToken</div>
+                  <div *ngIf="+netCToken > 0" class="col text-end">{{netCToken | unit }} cToken</div>
+                  <div *ngIf="!(+netCToken > 0)" class="col text-end">
+                    <div class="spinner-grow spinner-small" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="depositType" class="mt-3">
+              <div *ngIf="depositType === 'compound'">
+                <ng-container *ngFor="let poolApr of vault.pairStat.poolAprs">
+                  <div *ngIf="poolApr.apr > 0" class="row">
+                    <div class="col">{{poolApr.rewardSymbol}} Reward APR</div>
+                    <div class="col text-end">{{poolApr.apr || 0 | percent }}</div>
+                  </div>
+                </ng-container>
+                <div *ngIf="vault.poolAprTotal > 0" class="row">
+                  <div class="col">Total Rewards APR</div>
+                  <div class="col text-end">{{vault.poolAprTotal || 0 | percent }}</div>
+                </div>
+                <div *ngIf="shouldShowAPRFromAstroportData" class="row">
+                  <div class="col">APR from Astroport data <a
+                          href="https://docs.astroport.fi/astroport/backend/apy-calculation" target="_blank">(detail)</a>
+                  </div>
+                  <div class="col text-end"></div>
+                </div>
+                <div *ngIf="vault.pairStat?.tradeApy" class="row">
+                  <div class="col">APY from trade fee</div>
+                  <div class="col text-end">{{vault.pairStat?.tradeApy || 0 | percent }}</div>
+                </div>
+                <div *ngIf="vault.pairStat?.poolApy > 0" class="row">
+                  <div class="col">APY from auto compound</div>
+                  <div class="col text-end" [innerHTML]="vault.pairStat?.poolApy || 0 | percentsuperscript"></div>
+                </div>
+              </div>
+
+              <div *ngIf="depositType === 'speclp'">
+                TODO
+              </div>
+
+
+            </div>
+            <div class="d-grid mt-3">
+              <div *ngIf="vault.poolInfo.auditWarning" class="card-text small text-warning mb-1">
+                <i class="fas fa-flag"></i> {{vault.poolInfo.farm}} is being audited, please use your own discretion
+                before investing.
+              </div>
+
+              <button (click)="doDeposit()" [disabled]="disableDepositButton" class="btn btn-primary mt-3"
+                      type="submit">Deposit
+              </button>
+            </div>
+          </form>
+        </mdb-tab>
+        <mdb-tab title="Withdraw">
+          <form #formWithdraw="ngForm" class="needs-validation p-3" novalidate>
+            <ng-container *ngTemplateOutlet="withdrawModeSection"></ng-container>
+            <ng-container *ngIf="withdrawInputType === 'lp'">
+              <span *ngIf="withdrawAmtLPInput > +info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                class="invalid-feedback-custom">Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_amount | unit }}
+            </span>
+              <span
+                      *ngIf="withdrawAmtLPInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_amount === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_amount)"
+                      class="invalid-feedback-custom">
+              You do not have any {{ vault.unitDisplay }} deposited
+            </span>
+              <span *ngIf="withdrawLPAmtCtl.errors?.pattern" class="invalid-feedback-custom">
+              Amount must be within 6 decimal points
+            </span>
+              <div class="text-end small mt-3 mb-1 fw-bold">
+                <span class="sub-topic">Deposited: </span>
+                <span class="text-white">
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_amount || 0 | unit }} {{vault.unitDisplay }}
+              </span>
+              </div>
+              <div class="input-group">
+                <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
+                <input #withdrawLPAmtCtl="ngModel" (input)="withdrawAmtChanged('lp')" [(ngModel)]="withdrawAmtLPInput"
+                       [class.is-invalid]="(formWithdraw.submitted || withdrawLPAmtCtl.touched) && withdrawLPAmtCtl.invalid"
+                       [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_amount / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
+                       name="withdrawLPAmtCtl" required type="number"/>
+                <button (click)="setMaxWithdrawAmount('lp')" class="btn btn-max last" type="button">
+                  Max
+                </button>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="withdrawInputType === 'ctoken'">
+              <span *ngIf="withdrawAmtCTokenInput > +info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)" class="invalid-feedback-custom">
+              Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_share | unit }}
+            </span>
+              <span *ngIf="withdrawAmtCTokenInput > 0 && (+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
+                class="invalid-feedback-custom">
+              You do not have any {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken deposited
+            </span>
+              <span *ngIf="withdrawCTokenAmtCtl.errors?.pattern" class="invalid-feedback-custom">
+              Amount must be within 6 decimal points
+            </span>
+              <div class="text-end small mt-3 mb-1 fw-bold">
+                <span class="sub-topic">Deposited: </span>
+                <span class="text-white">
+                {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || 0 | unit }} {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken
+              </span>
+              </div>
+              <div class="input-group">
+                <ng-container *ngTemplateOutlet="withdrawInputTypeSection"></ng-container>
+                <input #withdrawCTokenAmtCtl="ngModel" (input)="withdrawAmtChanged('ctoken')" [(ngModel)]="withdrawAmtCTokenInput"
+                       [class.is-invalid]="(formWithdraw.submitted || withdrawCTokenAmtCtl.touched) && withdrawCTokenAmtCtl.invalid"
+                       [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT" [min]="0.000001"
+                       [pattern]="'^[0-9]+(.[0-9]{0,6})?$'" [step]="0.000001" class="form-control fix-border"
+                       name="withdrawCTokenAmtCtl" required type="number"/>
+                <button (click)="setMaxWithdrawAmount('ctoken')" class="btn btn-max last" type="button">
+                  Max
+                </button>
+              </div>
+            </ng-container>
+
+
+            <div *ngIf="(withdrawAmtLPInput && withdrawInputType === 'lp') || (withdrawAmtCTokenInput && withdrawInputType === 'ctoken')" class="mt-3">
+              <div>Receive</div>
+              <div class="margin-left-auto">
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawMode === 'tokentoken' && withdrawAmtLPInput">
+                  {{ withdrawAmtLPInput | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawMode === 'tokentoken' && withdrawAmtLPPreviewFromCToken">
+                  {{ +withdrawAmtLPPreviewFromCToken | lpSplit: info.poolResponses[vault.poolInfo.key]: vault }}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawMode === 'lp' && withdrawAmtLPInput">
+                  {{ withdrawAmtLPInput | number }} {{vault.unitDisplay}}
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawMode === 'lp' && withdrawAmtLPPreviewFromCToken">
+                  {{ withdrawAmtLPPreviewFromCToken | number}} {{vault.unitDisplay}}
+                </ng-container>
+              </div>
+            </div>
+            <div *ngIf="withdrawMode === 'tokentoken' && ((withdrawAmtLPInput && withdrawInputType === 'lp') || (withdrawAmtCTokenInput && withdrawInputType === 'ctoken'))" class="mt-3">
+              <div>Equivalent to</div>
+              <div class="margin-left-auto">
+                <ng-container *ngIf="withdrawInputType === 'lp' && withdrawAmtCTokenPreviewFromLP">
+                  {{ withdrawAmtCTokenPreviewFromLP | number}} cToken
+                </ng-container>
+                <ng-container *ngIf="withdrawInputType === 'ctoken' && withdrawAmtLPPreviewFromCToken">
+                  {{ withdrawAmtLPPreviewFromCToken | number }} {{vault.unitDisplay}}
+                </ng-container>
+              </div>
+            </div>
+            <div class="d-grid mt-3">
+              <div *ngIf="earlyWithdrawal"
+                   class="card card-warning mt-3 mb-3">
+                <div class="card-body">
+                  <div class="card-text small">
+                    <div class="bulk-name-container">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <div class="name-detail">
+                        The deposit time is less than 24 hours. If you withdraw early, LP gain from compounding will not be fully realized.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button (click)="doWithdraw()" [disabled]="disableWithdrawButton" class="btn btn-primary"
+                      type="submit">Withdraw
+              </button>
+            </div>
+          </form>
+        </mdb-tab>
+        <mdb-tab title="Transfer">
+          <div class="p-3">
+            <p>Spectrum {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP cToken represents your share of deposited LP of this vault</p>
+            <p>You can copy this {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken address below and paste into "Add tokens" in your wallet to transfer and view balance.</p>
+            <div class="input-group">
+              <input [readonly]="true" class="form-control fix-border" [value]="vault.poolInfo.farmContract"
+                     name="withdrawCTokenAmtCtl" />
+              <button (click)="copyFarmAddress()" class="btn btn-max last" type="button">
+                Copy
+              </button>
+            </div>
+          </div>
+        </mdb-tab>
+        <mdb-tab *ngIf="vault.poolInfo.farm === 'Spectrum'" title="Claim">
+          <div class="p-3">
+            <div class="small mt-6">
+            </div>
+            <div class="row mt-3">
+            </div>
+            <div class="row">
+              <div class="col">
+                SPEC Reward
+              </div>
+              <div class="col text-end">
+                {{info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || 0 | unit }}
+                <small class="text-muted">
+                  (${{ info.rewardInfos[vault.poolInfo.key]?.pending_spec_reward || '0' | balance:
+                        info.poolResponses[info.SPEC_KEY] |
+                        unit: 6 : '1.0-2' }})
+                </small>
+              </div>
+            </div>
+            <div *ngIf="vault.poolInfo.farm === 'Spectrum'" class="d-grid mt-3 mb-3">
+              <button (click)="doClaimReward()" class="btn btn-primary" type="submit">Claim SPEC + ASTRO</button>
+            </div>
+          </div>
+        </mdb-tab>
+      </mdb-tabs>
+    </div>
+  </div>
+</div>
+
+<ng-template #depositModeSection>
+  <div class="auto-container mb-1">
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+      <span class="btn-group w-100">
+        <button (click)="depositMode = 'tokentoken'; changeDepositMode('tokentoken')"
+                [ngClass]="depositMode === 'tokentoken' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          {{ vault.baseSymbol }} + {{ vault.denomSymbol }}</button>
+        <button (click)="depositMode = 'lp'; changeDepositMode('lp')"
+                [ngClass]="depositMode === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          {{ vault.unitDisplay }}
+        </button>
+        <!--        <button (click)="depositMode = 'ust'; changeDepositMode('ust')" [ngClass]="depositMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
+        <!--          UST-->
+        <!--        </button>-->
+      </span>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #withdrawModeSection>
+  <div class="auto-container mb-1">
+    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+      <span class="btn-group w-100">
+        <button (click)="withdrawMode = 'tokentoken'"
+                [ngClass]="withdrawMode === 'tokentoken' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          {{ vault.baseSymbol }} + {{ vault.denomSymbol }}
+        </button>
+        <button (click)="withdrawMode = 'lp'" [ngClass]="withdrawMode === 'lp' ? 'btn-auto': 'btn-outline-auto'"
+                class="btn" type="button">
+          {{ vault.unitDisplay }}
+        </button>
+        <!--        <button *ngIf="vault.poolInfo.farm != 'Spectrum'" (click)="withdrawMode = 'ust'; withdrawAmtChanged()" [ngClass]="withdrawMode === 'ust' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
+        <!--          UST-->
+        <!--        </button>-->
+      </span>
+    </ng-container>
+  </div>
+</ng-template>
+
+<ng-template #withdrawInputTypeSection>
+<!--  <div class="auto-container mb-1">-->
+<!--    <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">-->
+<!--      <span class="btn-group w-100">-->
+<!--        <button (click)="withdrawInputType = 'lp'" [ngClass]="withdrawInputType === 'lp' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">-->
+<!--          LP-->
+<!--        </button>-->
+<!--        <button (click)="withdrawInputType = 'ctoken'" [ngClass]="withdrawInputType === 'ctoken' ? 'btn-auto': 'btn-outline-auto'"-->
+<!--                class="btn" type="button">-->
+<!--          cToken-->
+<!--        </button>-->
+<!--      </span>-->
+<!--    </ng-container>-->
+<!--  </div>-->
+  <ng-container *ngIf="vault.poolInfo.farmType === 'LP'">
+    <div #withdrawInputTypeDropdown class="dropdown" mdbDropdown>
+      <button class="btn dropdown-toggle btn-drop" mdbDropdownToggle type="button">
+        <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon me-1">
+        <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust me-1">
+        <ng-container *ngIf="withdrawInputType === 'lp'">
+          LP
+        </ng-container>
+        <ng-container *ngIf="withdrawInputType === 'ctoken'">
+          cToken
+        </ng-container>
+      </button>
+      <ul class="dropdown-menu" mdbDropdownMenu>
+        <li><a (click)="withdrawInputType = 'lp'; withdrawInputTypeDropdown.hide()" [class.active]="withdrawMode === 'tokentoken'"
+               class="dropdown-item">
+          <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          LP
+        </a></li>
+        <li><a (click)="withdrawInputType = 'ctoken'; withdrawInputTypeDropdown.hide()" [class.active]="withdrawInputType === 'lp'"
+               class="dropdown-item">
+          <img [src]="vault.baseSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon">
+          <img [src]="vault.denomSymbol | url:'icon'" class="img-fluid rounded-circle deposit-icon-ust">
+          cToken
+        </a></li>
+      </ul>
+    </div>
+  </ng-container>
+
+
+</ng-template>
