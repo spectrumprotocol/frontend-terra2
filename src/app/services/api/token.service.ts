@@ -28,6 +28,12 @@ export class TokenService {
     });
   }
 
+  info(contract: string) {
+    return this.query(contract, {
+      token_info: {}
+    });
+  }
+
   query(contract: string, msg: Extract<QueryMsg, { balance: unknown }>): Promise<BalanceResponse>;
   query(contract: string, msg: Extract<QueryMsg, { token_info: unknown }>): Promise<TokenInfoResponse>;
   query(contract: string, msg: Extract<QueryMsg, { minter: unknown }>): Promise<MinterResponse>;

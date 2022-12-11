@@ -22,7 +22,7 @@
     <div class="row pt-2 g-3">
       <ng-container *ngFor="let pool of pools; trackBy: poolId">
         <div class="col-12">
-          <app-lend-asset-card [pool]="pool"></app-lend-asset-card>
+          <app-lend-asset-card [pool]="pool" [balance]="balances[pool.ibTokenContract]"></app-lend-asset-card>
         </div>
       </ng-container>
     </div>

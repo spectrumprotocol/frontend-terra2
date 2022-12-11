@@ -74,6 +74,7 @@ export type TokenInfo = {
   symbol: string;
   decimals: number;
   unit: number;
+  totalSupply?: string;
 };
 
 export type CompoundStat = {
@@ -165,7 +166,7 @@ export class InfoService {
   compoundStat: Record<string, CompoundStat> = {};
 
   DISABLED_VAULTS: Set<string> = new Set([]);
-  
+
   private loadedNetwork: string;
 
   constructor(

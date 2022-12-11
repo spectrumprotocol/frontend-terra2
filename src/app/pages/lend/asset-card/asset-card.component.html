@@ -10,7 +10,7 @@
   </span> -->
   <div class="card-body pt-15">
     <div (click)="openModal()" class="row asset-card-info">
-      <div class="col-12 col-md-4">
+      <div class="col-12 col-md-3">
         <div class="row">
           <div class="col-12 text-center no-padding">
             <div class="p-2 bulk-name-container">
@@ -24,27 +24,27 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-md-8">
+      <div class="col-12 col-md-9">
         <div class="row">
-          <div class="col-12 col-sm-2 mt-1">
-            <div class="f-12 sub-topic">Total Borrow</div>
-            <span class="fs-6 fw-bold text-white"> {{pool.totalBorrow}}</span>
-          </div>
-          <div class="col-12 col-sm-2 mt-1">
+          <div class="col-12 col-sm-3 mt-1">
             <div class="f-12 sub-topic">Total Supply</div>
-            <span class="fs-6 fw-bold"> {{pool.totalSupply}}</span>
+            <span class="fs-6 fw-bold"> {{ +pool.totalSupply / pool.baseUnit | shortNum }} {{ pool.baseSymbol }}</span>
+          </div>
+          <div class="col-12 col-sm-3 mt-1">
+            <div class="f-12 sub-topic">Total Borrow</div>
+            <span class="fs-6 fw-bold"> {{ +pool.totalBorrow / pool.baseUnit | shortNum }} {{ pool.baseSymbol }}</span>
           </div>
           <div class="col-12 col-sm-2 mt-1">
             <div class="f-12 sub-topic">Utilization</div>
-            <span class="fs-6 fw-bold"> {{ pool.utilization || 0 | percent: '1.2-2' }}</span>
+            <span class="fs-6 fw-bold"> {{ pool.utilization | percent: '1.2-2' }}</span>
           </div>
-          <div class="col-12 col-sm-2 mt-1">
+          <div class="col-12 col-sm-1 mt-1">
             <div class="f-12 sub-topic">APR</div>
-            <span class="fs-6 fw-bold text-primary"> {{ pool.poolAprTotal | percent}}</span>
+            <span class="fs-6 fw-bold text-primary"> {{ pool.poolAprTotal | percent }}</span>
           </div>
           <div class="col-12 col-sm-3 mt-1">
             <div class="f-12 sub-topic">Balance</div>
-            <span class="fs-6 fw-bold"> 5500</span>
+            <span class="fs-6 fw-bold"> {{ balance | unit: pool.baseDecimals }} {{ pool.baseSymbol }}</span>
           </div>
         </div>
       </div>
