@@ -1,5 +1,6 @@
 export const SYMBOLS = {
   ASTRO: 'ASTRO',
   VKR: 'VKR',
-  TPT: 'TPT'
+  TPT: 'TPT',
+  BLUNA: 'bLUNA'
 };

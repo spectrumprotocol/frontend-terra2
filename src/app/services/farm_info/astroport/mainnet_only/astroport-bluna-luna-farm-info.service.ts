@@ -54,6 +54,11 @@ export class AstroportBLunaLunaFarmInfoService implements FarmInfoService {
       apr: 0,
       rewardSymbol: SYMBOLS.ASTRO,
       rewardContract: this.terrajs.settings.astroToken
+    },
+    {
+      apr: 0,
+      rewardSymbol: SYMBOLS.BLUNA,
+      rewardContract: this.terrajs.settings.boneLunaToken
     }];
     this.farmContract = this.terrajs.settings.astroportbLunaLunaFarm;
     this.compoundProxyContract = this.terrajs.settings.astroportbLunaLunaFarmCompoundProxy;
