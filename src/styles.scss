@@ -476,6 +476,11 @@ input[type="number"] {
   border: solid 1px $backbone;
 }
 
+.bg-Redacted {
+  background: $redacted-bg;
+  border: solid 1px $redacted;
+}
+
 .bg-your-rewards {
   background: #ed7b84;
   background: -webkit-linear-gradient(315deg, darken(#ed7b84, 7%) 0%, #ed7b84 50%);

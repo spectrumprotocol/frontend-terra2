@@ -97,6 +97,7 @@ import {
 import {
   AstroportBLunaLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-bluna-luna-farm-info.service';
+import { AstroportRedLunaFarmInfoService } from './services/farm_info/astroport/mainnet_only/astroport-red-luna-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -184,6 +185,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportTptLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportAmpLunaLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportBLunaLunaFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportRedLunaFarmInfoService, multi: true},
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
