@@ -80,52 +80,72 @@ export type CompoundStat = {
   id: string,
   txHash: string,
   txTimestamp: string,
-}
+};
+
+export type AstroportPools = {
+  pools: Array<AstroportPool>
+};
+
+export type AstroportPool = {
+  lpAddress: string;
+  poolAddress: string;
+  rewardTokenSymbol: string;
+  tradingFees: AstroRewards;
+  astroRewards: AstroRewards;
+  protocolRewards: AstroRewards;
+  totalRewards: AstroRewards;
+};
+
+export type AstroRewards = {
+  apy: number;
+  apr: number;
+  day: number;
+};
 
 const HEIGHT_PER_YEAR = 365 * 24 * 60 * 60 * 1000 / BLOCK_TIME;
 const ASTROPORT_PRICE_GQL = gql`
-        query price($address: String!) {
-          price(tokenAddress: $address) {
-            price_usd
-          }
-        }`;
+      query Token($tokenAddress: String!, $chainId: String!) {
+        token(tokenAddress: $tokenAddress, chainId: $chainId) {
+          priceUsd
+        }
+      }`;
 const ASTROPORT_POOLS_GQL = gql`
-        query Query($limit: Int, $sortField: PoolSortFields) {
-          pools(limit: $limit, sortField: $sortField) {
-            lp_address
-            pool_address
-            token_symbol
-            trading_fee
-            pool_liquidity
-            _24hr_volume
-            trading_fees {
+        query Pools($chains: [String]!, $limit: Int, $sortField: PoolSortFields) {
+          pools(chains: $chains, limit: $limit, sortField: $sortField) {
+            lpAddress
+            poolAddress
+            rewardTokenSymbol
+            tradingFee
+            poolLiquidity
+            dayVolumeUsd
+            tradingFees {
               apy
               apr
               day
             }
-            astro_rewards {
+            astroRewards {
               apy
               apr
               day
             }
-            protocol_rewards {
+            protocolRewards {
               apy
               apr
               day
             }
-            total_rewards {
+            totalRewards {
               apy
               apr
               day
             }
             prices {
-              token1_address
-              token1_price_usd
-              token2_address
-              token2_price_usd
+              token1Address
+              token1PriceUsd
+              token2Address
+              token2PriceUsd
             }
-            pool_type
-            reward_proxy_address
+            poolType
+            rewardProxyAddress
           }
         }`;
 
@@ -160,12 +180,11 @@ export class InfoService {
   myTvl = 0;
   allVaults: Vault[] = [];
   portfolio: Portfolio;
-  astroportPoolsData: any;
+  astroportPoolsData: AstroportPools;
   ulunaUSDPrice: number; // to get testnet uluna/usd price
   compoundStat: Record<string, CompoundStat> = {};
 
   DISABLED_VAULTS: Set<string> = new Set([]);
-  
   private loadedNetwork: string;
 
   constructor(
@@ -243,7 +262,7 @@ export class InfoService {
   }
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
-    return farmInfo.availableNetworks.has(this.terrajs.networkName as NETWORK_NAME_ENUM)
+    return farmInfo.availableNetworks.has(this.terrajs.networkName as NETWORK_NAME_ENUM);
     // && (farmInfo.farmContract.length > 0 && farmInfo.baseTokenContract.length > 0 && farmInfo.denomTokenContract.length > 0); // for check farm setup validity
   }
 
@@ -478,14 +497,13 @@ export class InfoService {
     await this.refreshPoolInfos();
     await Promise.all([
       this.refreshPoolResponses(),
-      this.ensureAstroportData().catch(_ => {
-      }),
+      this.ensureAstroportData().catch(e => console.error(e)),
     ]);
 
     const vaults = null; // await vaultsTask; TODO
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-        .filter(it => it[1].farmContract === farmInfo.farmContract));
+          .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
@@ -496,12 +514,12 @@ export class InfoService {
           const farmConfig = this.poolInfos[key]?.farmConfig || defaultFarmConfig;
           const totalFee = +farmConfig.controller_fee + +farmConfig.platform_fee + +farmConfig.community_fee;
           if (farmInfo.dex === 'Astroport' && farmInfo.farmType === 'LP') {
-            const found = this.astroportPoolsData.pools.find(pool => pool?.pool_address === this.pairInfos[key]?.contract_addr);
+            const found = this.astroportPoolsData.pools.find(pool => pool?.poolAddress === this.pairInfos[key]?.contract_addr);
             if (farmInfo.notUseAstroportGqlApr) {
               const pair = pairStats[key];
               const poolAprTotal = this.getPoolAprTotal(pair);
               const proxyAndAstroApy = ((poolAprTotal * (1 - totalFee)) / CONFIG.COMPOUND_TIMES_PER_YEAR + 1) ** CONFIG.COMPOUND_TIMES_PER_YEAR - 1;
-              const foundTradingFeeApy = +found?.trading_fees?.apy || 0;
+              const foundTradingFeeApy = +found?.tradingFees?.apy || 0;
               pair.tradeApy = foundTradingFeeApy;
               pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (foundTradingFeeApy + 1) - 1 : 0;
               pair.dpr = (this.getPoolAprTotal(pair) * (1 - totalFee)) / 365;
@@ -509,26 +527,26 @@ export class InfoService {
               // to prevent set pairStat undefined in case of no data available from Astroport api
               if (found) {
                 const pair = pairStats[key];
-                const foundTokenSymbol = found.token_symbol;
+                const foundTokenSymbol = found.rewardTokenSymbol;
                 const poolAprAstro = pair.poolAprs.find(poolAPR => poolAPR.rewardContract === this.terrajs.settings.astroToken);
-                if (poolAprAstro && found?.astro_rewards?.apr) {
-                  poolAprAstro.apr = +found.astro_rewards.apr;
+                if (poolAprAstro && found?.astroRewards?.apr) {
+                  poolAprAstro.apr = +found.astroRewards.apr;
                 }
-                if (foundTokenSymbol) {
-                  this.findPoolAPRBySymbol(pair, foundTokenSymbol).apr = +found.protocol_rewards.apr;
-                } else if (!foundTokenSymbol && +found.protocol_rewards.apr > 0) {
-                  let symbol = 'UNKNOWN_TOKEN';
-                  this.poolInfos[key].rewardTokenContracts.forEach(rewardTokenContract => {
-                    if (rewardTokenContract !== this.terrajs.settings.astroToken && symbol === 'UNKNOWN_TOKEN') {
-                      symbol = this.tokenInfos[rewardTokenContract].symbol;
+                if (found.protocolRewards.apr) {
+                  if (foundTokenSymbol) {
+                    this.findPoolAPRBySymbol(pair, foundTokenSymbol).apr = +found.protocolRewards.apr;
+                  } else {
+                    const rewardTokenContract = this.poolInfos[key].rewardTokenContracts.find(it => it !== this.terrajs.settings.astroToken);
+                    if (rewardTokenContract) {
+                      const symbol = this.tokenInfos[rewardTokenContract].symbol;
+                      this.findPoolAPRBySymbol(pair, symbol).apr = +found.protocolRewards.apr;
                     }
-                  });
-                  this.findPoolAPRBySymbol(pair, symbol).apr = +found.protocol_rewards.apr;
+                  }
                 }
-                const proxyAndAstroApy = (((+found.protocol_rewards.apr + +found.astro_rewards.apr) * (1 - totalFee)) / CONFIG.COMPOUND_TIMES_PER_YEAR + 1) ** CONFIG.COMPOUND_TIMES_PER_YEAR - 1;
-                pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.trading_fees.apy + 1) - 1 : 0;
-                pair.tradeApy = +found?.trading_fees?.apy || 0;
                 const poolAprTotal = this.getPoolAprTotal(pair);
+                const proxyAndAstroApy = ((poolAprTotal * (1 - totalFee)) / CONFIG.COMPOUND_TIMES_PER_YEAR + 1) ** CONFIG.COMPOUND_TIMES_PER_YEAR - 1;
+                pair.poolApy = proxyAndAstroApy > 0 ? (proxyAndAstroApy + 1) * (+found.tradingFees.apy + 1) - 1 : 0;
+                pair.tradeApy = +found?.tradingFees?.apy || 0;
                 pair.vaultFee = +pair.tvl * poolAprTotal * totalFee;
                 pair.dpr = (poolAprTotal * (1 - totalFee)) / 365;
               }
@@ -910,6 +928,7 @@ export class InfoService {
     const apollo = this.apollo.use(this.terrajs.settings.astroport_gql);
     const poolsQuery = apollo.query<any>({
       variables: {
+        chains: [this.terrajs.settings.chainID],
         limit: 500,
         sortField: 'TVL'
       },
@@ -918,7 +937,8 @@ export class InfoService {
     });
     const ulunaPriceQuery = apollo.query<any>({
       variables: {
-        address: Denom.LUNA
+        chainId: this.terrajs.settings.chainID,
+        tokenAddress: Denom.LUNA
       },
       query: ASTROPORT_PRICE_GQL,
       errorPolicy: 'all'
@@ -931,6 +951,6 @@ export class InfoService {
     }
     const [poolResponse, ulunaPriceResponse] = await Promise.all(tasks);
     this.astroportPoolsData = poolResponse.data;
-    this.ulunaUSDPrice = ulunaPriceResponse.data.price.price_usd;
+    this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
   }
 }

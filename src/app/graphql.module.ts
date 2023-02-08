@@ -14,16 +14,11 @@ const defaultOptions: DefaultOptions = {
 
 export function createApollo(httpLink: HttpLink): Record<string, ApolloClientOptions<any>> {
   return {
-    astroport_mainnet: {
-      link: httpLink.create({uri: 'https://terra2-api.astroport.fi/graphql'}),
+    astroport_multichain: {
+      link: httpLink.create({uri: 'https://develop-multichain-api.astroport.fi/graphql'}),
       cache: new InMemoryCache(),
       defaultOptions,
-    },
-    astroport_testnet: {
-      link: httpLink.create({uri: 'https://terra2-develop-api.astroport.fi/graphql'}),
-      cache: new InMemoryCache(),
-      defaultOptions,
-    },
+    }
   };
 }
 

@@ -128,7 +128,7 @@ export const networks: Record<string, ISettings> = {
     specAPI: 'https://spec-api.azurefd.net/api',
     chainID: 'phoenix-1',
     finder: 'https://terrasco.pe',
-    astroport_gql: 'astroport_mainnet'
+    astroport_gql: 'astroport_multichain'
   },
   testnet: {
     specToken: 'terra1jtu03gxpssmxcxydqs5dzsavdz8jum9a3un36tyuhyjhzamxf4gqlj2q48',
@@ -193,6 +193,6 @@ export const networks: Record<string, ISettings> = {
     specAPI: 'https://terra2-testapi.spec.finance/api',
     chainID: 'pisco-1',
     finder: 'https://finder.terra.money',
-    astroport_gql: 'astroport_testnet'
+    astroport_gql: 'astroport_multichain'
   },
 };
