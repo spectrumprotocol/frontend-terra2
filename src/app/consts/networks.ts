@@ -125,7 +125,7 @@ export const networks: Record<string, ISettings> = {
     lcd: 'https://phoenix-lcd.terra.dev',
     fcd: 'https://phoenix-fcd.terra.dev',
     querier: '',
-    specAPI: 'https://spec-api.azurefd.net/api',
+    specAPI: ' https://spec-api-eeh8efcmd2b0fffh.z01.azurefd.net/api',
     chainID: 'phoenix-1',
     finder: 'https://terrasco.pe',
     astroport_gql: 'astroport_multichain'
