@@ -60,6 +60,10 @@ export class UrlPipe implements PipeTransform {
               return `/assets/red.svg`;
           case 'RED':
               return `/assets/red.svg`;
+          case 'Sayve':
+            return `/assets/SAYVE.svg`;
+          case 'SAYVE':
+            return `/assets/SAYVE.svg`;
           default:
             return null;
         }
