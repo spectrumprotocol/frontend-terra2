@@ -29,7 +29,7 @@ export class AstroportRedLunaFarmInfoService implements FarmInfoService {
   readonly dex: DEX = 'Astroport';
   baseTokenContract: string;
   denomTokenContract: string;
-  readonly highlight = true;
+  readonly highlight = false;
   readonly notUseAstroportGqlApr = false;
   poolAprs: PoolAPR[];
   farmContract: string;
