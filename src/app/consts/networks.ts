@@ -22,6 +22,8 @@ export interface ISettings {
   boneLunaToken: string;
   redToken: string;
   sayveToken: string;
+  stLUNAToken: string;
+  xAstroToken: string;
   astroportGov: string;
   astroportGenerator: string;
   // MAINNET ONLY
@@ -41,10 +43,12 @@ export interface ISettings {
   astroportAmpLunaLunaFarmCompoundProxy: string;
   astroportbLunaLunaFarm: string;
   astroportbLunaLunaFarmCompoundProxy: string;
-  astroportRedLunaFarm: string,
-  astroportRedLunaFarmCompoundProxy: string,
-  astroportSayveLunaFarm: string,
-  astroportSayveLunaFarmCompoundProxy: string,
+  astroportRedLunaFarm: string;
+  astroportRedLunaFarmCompoundProxy: string;
+  astroportSayveLunaFarm: string;
+  astroportSayveLunaFarmCompoundProxy: string;
+  astroportLunaStLunaFarm: string;
+  astroportLunaStLunaFarmCompoundProxy: string;
   // MAINNET ONLY
   // TESTNET ONLY
   astroportAstroLunaFarm: string;
@@ -92,6 +96,8 @@ export const networks: Record<string, ISettings> = {
     boneLunaToken: 'terra17aj4ty4sz4yhgm08na8drc0v03v2jwr3waxcqrwhajj729zhl7zqnpc0ml',
     redToken: 'terra1xe8umegahlqphtpvjsuwfzfvyjfvag5h8rffsx6ezm0el4xzsf8s7uzezk',
     sayveToken: 'terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3',
+    stLUNAToken: 'ibc/08095CEDEA29977C9DD0CE9A48329FDA622C183359D5F90CF04CC4FF80CBE431',
+    xAstroToken: 'terra1x62mjnme4y0rdnag3r8rfgjuutsqlkkyuh4ndgex0wl3wue25uksau39q8',
     astroportGov: '',
     astroportGenerator: 'terra1vf9ceekuxx8kycm7yv6hs96hgwsmrzt4la6s84skrgvfu7t09huqqdg09d', // 'terra1ksvlfex49desf4c452j6dewdjs6c48nafemetuwjyj6yexd7x3wqvwa7j9',
     // MAINNET ONLY
@@ -115,6 +121,8 @@ export const networks: Record<string, ISettings> = {
     astroportRedLunaFarmCompoundProxy: 'terra1rzxfvde2dhe3l44r3llugqpuxl4njps0xk2ss96vfmlw3nmhusdqt8zphj',
     astroportSayveLunaFarm: 'terra1v9luz2r9u8mzd4w8ew5dm4cczk8kcxun4jry464j48jsl2fus2qss73ld4', // pair: terra1nckl6ex6239tv4kjzv03ecmuxwakjm8uj8cy6p850vmlmejfmj9sy094yr lp: terra1zqthrqndchxp5ye443zdulhhh2938uak78q4ztthfrnkfltpgrpsu3c5xd
     astroportSayveLunaFarmCompoundProxy: 'terra1cgya885wdlqvu2ad0fengce39lyvq02ccczh7w7hkt7yylll2klsw62urq',
+    astroportLunaStLunaFarm: '', // pair: terra1re0yj0j6e9v2szg7kp02ut6u8jjea586t6pnpq6628wl36fphtpqwt6l7p lp : terra14n22zd24nath0tf8fwn468nz7753rjuks67ppddrcqwq37x2xsxsddqxqc
+    astroportLunaStLunaFarmCompoundProxy: '',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: '',
@@ -160,6 +168,8 @@ export const networks: Record<string, ISettings> = {
     boneLunaToken: '',
     redToken: '',
     sayveToken: '',
+    stLUNAToken: '',
+    xAstroToken: '',
     astroportGov: '',
     astroportGenerator: 'terra1pplp2s7u3h9cn3qddm7yfw7stajl8fqlu7tzr097697jx3ahtkqsnzvedu', // 'terra1gc4d4v82vjgkz0ag28lrmlxx3tf6sq69tmaujjpe7jwmnqakkx0qm28j2l',
     // MAINNET ONLY
@@ -183,6 +193,8 @@ export const networks: Record<string, ISettings> = {
     astroportRedLunaFarmCompoundProxy: '',
     astroportSayveLunaFarm: '',
     astroportSayveLunaFarmCompoundProxy: '',
+    astroportLunaStLunaFarm: '',
+    astroportLunaStLunaFarmCompoundProxy: '',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: 'terra1e9xfd3zxnra963meea5e7vvdm89dwd2tgvg4cq96q33c2s204cuqgl3wxq',
