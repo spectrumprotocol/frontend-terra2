@@ -4,4 +4,5 @@ export const SYMBOLS = {
   TPT: 'TPT',
   BLUNA: 'bLUNA',
   RED: 'RED',
+  SAYVE: 'SAYVE',
 };

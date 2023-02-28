@@ -951,6 +951,8 @@ export class InfoService {
     }
     const [poolResponse, ulunaPriceResponse] = await Promise.all(tasks);
     this.astroportPoolsData = poolResponse.data;
-    this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
+    if (!this.terrajs.isMainnet) {
+      this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
+    }
   }
 }
