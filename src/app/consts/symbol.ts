@@ -5,4 +5,6 @@ export const SYMBOLS = {
   BLUNA: 'bLUNA',
   RED: 'RED',
   SAYVE: 'SAYVE',
+  STLUNA: 'stLUNA',
+  XASTRO: 'xASTRO',
 };
