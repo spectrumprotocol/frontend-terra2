@@ -64,7 +64,7 @@ export class UrlPipe implements PipeTransform {
             return `/assets/SAYVE.svg`;
           case 'SAYVE':
             return `/assets/SAYVE.svg`;
-          case 'Stride DAO':
+          case 'Stride':
             return `/assets/stride.svg`;
           case 'stLUNA':
             return `/assets/stLuna.svg`;

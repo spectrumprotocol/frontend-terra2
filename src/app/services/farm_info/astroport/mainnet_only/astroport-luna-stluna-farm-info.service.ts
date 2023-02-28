@@ -23,7 +23,7 @@ import {getStablePrice} from '../../../../libs/stable';
 
 @Injectable()
 export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
-  readonly farm = 'Stride DAO';
+  readonly farm = 'Stride';
   readonly farmColor = '#E91279';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
@@ -37,7 +37,7 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
-  readonly poolType = 'xyk';
+  readonly poolType = 'stable';
 
   constructor(
     private farmService: SpectrumAstroportGenericFarmService,
@@ -80,6 +80,15 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
+    
+    pairs[key] = {
+      poolAprs: this.poolAprs,
+      poolApy: 0,
+      tvl: '0',
+      multiplier: 0,
+      vaultFee: 0
+    };
+
     const [ulunaAsset, stLUNAsset] = p.assets[0].info?.['native_token']?.['denom'] === Denom.LUNA
         ? [p.assets[0], p.assets[1]]
         : [p.assets[1], p.assets[0]];
@@ -87,18 +96,18 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
       return;
     }
     const amp = ampStablePairs[key];
-    const lunaXPrice = getStablePrice(+stLUNAsset.amount, +ulunaAsset.amount, +amp);
-    const lunaXSwap = new BigNumber(depositAmount)
+    const stLunaPrice = getStablePrice(+stLUNAsset.amount, +ulunaAsset.amount, +amp);
+    const stLunaSwap = new BigNumber(depositAmount)
         .times(stLUNAsset.amount)
         .div(p.total_share)
-        .times(lunaXPrice)
+        .times(stLunaPrice)
         .integerValue(BigNumber.ROUND_DOWN);
 
     const pair = pairs[key];
     pair.tvl = new BigNumber(depositAmount)
         .times(ulunaAsset.amount)
         .div(p.total_share)
-        .plus(lunaXSwap)
+        .plus(stLunaSwap)
         .times(ulunaPrice)
         .toString();
 
