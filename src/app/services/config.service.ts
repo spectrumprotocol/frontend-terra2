@@ -20,7 +20,7 @@ export class ConfigService {
 
   refreshContractOnNetwork() {
     if (this.terrajs.isMainnet) {
-      this.STABLE_COIN_DENOMS = new Set([this.terrajs.settings.axlUsdcToken, this.terrajs.settings.axlUsdtToken]);
+      this.STABLE_COIN_DENOMS = new Set([this.terrajs.settings.axlUsdcToken, this.terrajs.settings.axlUsdtToken, this.terrajs.settings.stLUNAToken]);
       this.NATIVE_TOKEN_DENOMS = new Set([...this.STABLE_COIN_DENOMS, Denom.LUNA]);
     } else {
       this.STABLE_COIN_DENOMS = new Set([this.terrajs.settings.stbToken, this.terrajs.settings.stblToken]);
