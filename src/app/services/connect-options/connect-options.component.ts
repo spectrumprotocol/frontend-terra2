@@ -1,12 +1,13 @@
-import {Component, ViewChild} from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import MobileDetect from 'mobile-detect';
 import { getExtensions } from '@terra-money/wallet-controller/operators/getExtensions';
 import { firstValueFrom } from 'rxjs';
 import { ExtensionInfo } from '@terra-money/wallet-controller/modules/extension-router/multiChannel';
-import {ConnectType, NetworkInfo} from '@terra-money/wallet-provider';
-import {networks} from '../../consts/networks';
-import {NgForm, NgModel} from '@angular/forms';
+import { NetworkInfo } from '@terra-money/wallet-provider';
+import { NgForm } from '@angular/forms';
+import { CONFIG } from '../../consts/config';
+import { KeplrExtensionConnector } from './keplr-extension-connector';
 
 interface InstallableExtension {
   name: string;
@@ -22,19 +23,46 @@ interface InstallableExtension {
 })
 export class ConnectOptionsComponent {
   types: string[];
-  walletExtensions: ExtensionInfo[];
+  walletExtensions: ExtensionInfo[] = [];
   walletExtensionsForInstall: InstallableExtension[] = [];
   isPhoneOrTablet: boolean;
   viewOnlyAddress: string;
   @ViewChild('formViewOnly') formViewOnly: NgForm;
 
   constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
-    firstValueFrom(getExtensions()).then((value) => {
-      this.walletExtensionsForInstall = value;
-    });
-    this.walletExtensions = window.terraWallets ?? [];
+    this.setInstallableExtensions();
     const md = new MobileDetect(window.navigator.userAgent);
     this.isPhoneOrTablet = md.phone() !== null || md.tablet() !== null;
+  }
+
+  static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[]) {
+    if (window.keplr && window.getOfflineSigner) {
+      if (!extensions.find(it => it.identifier === 'keplr')) {
+        extensions.push({
+          name: 'Keplr',
+          identifier: 'keplr',
+          icon: '/assets/keplr.png',
+          connector: () => new KeplrExtensionConnector()
+        });
+      }
+    } else {
+      if (!extensionToInstall.find(it => it.identifier === 'keplr')) {
+        extensionToInstall.push({
+          name: 'Keplr',
+          identifier: 'keplr',
+          icon: '/assets/keplr.png',
+          url: 'https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap',
+        });
+      }
+    }
+  }
+
+  private async setInstallableExtensions() {
+    if (CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1') {
+      this.walletExtensionsForInstall = await firstValueFrom(getExtensions());
+      this.walletExtensions = window.terraWallets ?? [];
+    }
+    ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall);
   }
 
   connect(type: string, identifier: string) {
@@ -42,7 +70,7 @@ export class ConnectOptionsComponent {
   }
 
   connectViewOnly(networkName: string) {
-    if (this.formViewOnly.invalid){
+    if (this.formViewOnly.invalid) {
       return;
     }
     const stateReadOnly = {
