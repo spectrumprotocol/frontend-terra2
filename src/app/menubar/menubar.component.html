@@ -23,10 +23,6 @@
       <!--        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active"><i class="fas fa-balance-scale"></i>-->
       <!--          Gov</a>-->
       <!--      </li>-->
-      <li class="nav-item">
-        <a class="nav-link text-center" href="https://classic.spec.finance" target="_blank"><i class="fas fa-archive"></i>
-          Spectrum Classic</a>
-      </li>
 
     </ul>
     <!-- Left links -->
@@ -51,6 +47,11 @@
             class="dropdown-item"
             href="https://aptos.spec.finance"
             target="_blank"><img [src]='"/assets/aptos.svg"' class="network-logo"> Aptos</a>
+          </li>
+          <li><a (click)="selectNetworkDropdown.hide()"
+                 class="dropdown-item"
+                 href="https://classic.spec.finance"
+                 target="_blank"><img [src]='"/assets/LUNC.svg"' class="network-logo"> Terra Classic</a>
           </li>
         </ul>
       </div>
@@ -131,9 +132,6 @@
       <!--        <a (click)="mobileMenu.hide()" class="nav-link" routerLink="/gov" routerLinkActive="active"><i-->
       <!--          class="fas fa-balance-scale"></i> Gov</a>-->
       <!--      </li>-->
-      <li class="nav-item">
-        <a (click)="mobileMenu.hide()" class="nav-link text-center" href="https://classic.spec.finance" target="_blank">Spectrum Classic</a>
-      </li>
     </ul>
   </div>
 </div>
