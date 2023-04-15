@@ -6,11 +6,13 @@ import {
 } from '@terra-money/web-extension-interface';
 import { Observer, Subscribable, Subject } from 'rxjs';
 import { CONFIG } from '../../consts/config';
-import { CreateTxOptions } from '@terra-money/terra.js';
+import { AuthInfo, CreateTxOptions, LCDClient, Tx, TxBody } from '@terra-money/terra.js';
+import { TxBody as TxBody_pb, AuthInfo as AuthInfo_pb } from '@terra-money/terra.proto/cosmos/tx/v1beta1/tx';
 import { getChainInfo } from './chain-info';
-import { AminoTypes, SigningStargateClient } from '@cosmjs/stargate';
-import { registry } from 'kujira.js/lib/esm/registry';
+import { AminoTypes, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
+import { registry, accountParser } from 'kujira.js/lib/esm/registry';
 import { aminoTypes } from 'kujira.js/lib/esm/amino';
+import { Decimal } from '@cosmjs/math';
 
 declare global {
   interface Window {
@@ -22,6 +24,10 @@ declare global {
 export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   client: SigningStargateClient;
   aminoTypes: AminoTypes;
+
+  constructor(
+    private lcdClient: LCDClient,
+  ) {}
 
   supportFeatures(): TerraWebExtensionFeatures[] {
     return ['post'];
@@ -44,6 +50,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
       this.aminoTypes = aminoTypes(chainInfo.bech32Config.bech32PrefixAccAddr) as any;
       this.client = await SigningStargateClient.connectWithSigner(chainInfo.rpc, signer, {
         registry: registry as any,
+        accountParser,
         aminoTypes: this.aminoTypes,
       });
 
@@ -82,26 +89,31 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
         });
         subject.complete();
       },
-      error => subject.error(error));
+        error => subject.error(error));
     return subject;
   }
   private async postAsync(terraAddress: string, tx: CreateTxOptions): Promise<WebExtensionPostPayload> {
-    const result = await this.client.signAndBroadcast(
+    const result = await this.client.sign(
       terraAddress,
       tx.msgs.map(it => this.aminoTypes.fromAmino(it.toAmino())),
-      tx.fee
-        ? {
-          amount: tx.fee.amount.toData(),
-          gas: tx.fee.gas_limit.toString(),
-          payer: tx.fee.payer,
-          granter: tx.fee.granter,
-        }
-        : 'auto',
+      {
+        amount: tx.fee.amount.toData(),
+        gas: tx.fee.gas_limit.toString(),
+        payer: tx.fee.payer,
+        granter: tx.fee.granter,
+      },
       tx.memo);
+    
+    const bc = await this.lcdClient.tx.broadcastSync(Tx.fromData({
+      auth_info: AuthInfo.fromProto(AuthInfo_pb.decode(result.authInfoBytes)).toData(),
+      signatures: result.signatures.map(it => Buffer.from(it).toString('base64')),
+      body: TxBody.fromProto(TxBody_pb.decode(result.bodyBytes)).toData(),
+    }));
+
     return {
-      height: result.height,
-      raw_log: result.rawLog,
-      txhash: result.transactionHash,
+      height: bc.height,
+      raw_log: bc.raw_log,
+      txhash: bc.txhash,
     };
   }
 

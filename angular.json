@@ -114,7 +114,7 @@
             },
             "development": {
               "optimization": false,
-              "outputHashing": false,
+              "outputHashing": "none",
               "sourceMap": true,
               "namedChunks": true,
               "extractLicenses": true,

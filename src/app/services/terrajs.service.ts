@@ -180,11 +180,14 @@ export class TerrajsService implements OnDestroy {
           connectCallbackData = {
             identifier,
             type: connect,
-          }  
+          }
         }
         if (identifier === 'keplr') {
           const modal = await import('./connect-options/connect-options.component');
-          modal.ConnectOptionsComponent.ensureKeplr(window.terraWallets, []);  
+          if (!this.lcdClient) {
+            await this.initLcdClient();
+          }
+          modal.ConnectOptionsComponent.ensureKeplr(window.terraWallets, [], this.lcdClient);
         }
       }
     } else { // CLICK CONNECT
@@ -192,7 +195,7 @@ export class TerrajsService implements OnDestroy {
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-        data: { types }
+        data: { types, lcdClient: this.lcdClient }
       });
       connectCallbackData = await firstValueFrom(ref.onClose);
       if (!connectCallbackData?.type) {

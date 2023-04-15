@@ -8,6 +8,7 @@ import { NetworkInfo } from '@terra-money/wallet-provider';
 import { NgForm } from '@angular/forms';
 import { CONFIG } from '../../consts/config';
 import { KeplrExtensionConnector } from './keplr-extension-connector';
+import { LCDClient } from '@terra-money/terra.js';
 
 interface InstallableExtension {
   name: string;
@@ -23,6 +24,7 @@ interface InstallableExtension {
 })
 export class ConnectOptionsComponent {
   types: string[];
+  lcdClient: LCDClient;
   walletExtensions: ExtensionInfo[] = [];
   walletExtensionsForInstall: InstallableExtension[] = [];
   isPhoneOrTablet: boolean;
@@ -35,14 +37,14 @@ export class ConnectOptionsComponent {
     this.isPhoneOrTablet = md.phone() !== null || md.tablet() !== null;
   }
 
-  static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[]) {
+  static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[], lcdClient: LCDClient) {
     if (window.keplr && window.getOfflineSigner) {
       if (!extensions.find(it => it.identifier === 'keplr')) {
         extensions.push({
           name: 'Keplr',
           identifier: 'keplr',
           icon: '/assets/keplr.png',
-          connector: () => new KeplrExtensionConnector()
+          connector: () => new KeplrExtensionConnector(lcdClient)
         });
       }
     } else {
@@ -62,7 +64,7 @@ export class ConnectOptionsComponent {
       this.walletExtensionsForInstall = await firstValueFrom(getExtensions());
       this.walletExtensions = window.terraWallets ?? [];
     }
-    ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall);
+    ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall, this.lcdClient);
   }
 
   connect(type: string, identifier: string) {
