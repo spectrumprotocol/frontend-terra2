@@ -24,6 +24,7 @@ declare global {
 export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   client: SigningStargateClient;
   aminoTypes: AminoTypes;
+  chainID = CONFIG.CHAIN_ID;
 
   constructor(
     private lcdClient: LCDClient,
@@ -34,7 +35,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   }
 
   async open(hostWindow: Window, statesObserver: Observer<WebExtensionStates>) {
-    const chainID = CONFIG.CHAIN_ID;
+    const chainID = this.chainID;
     const chainInfo = getChainInfo(chainID);
 
     if (hostWindow.keplr && hostWindow.getOfflineSigner && chainInfo) {

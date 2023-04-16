@@ -5,9 +5,24 @@
     <div class="d-grid gap-3">
       <ng-container *ngFor="let walletExtension of walletExtensions">
         <ng-container *ngFor="let type of types">
-          <button type="button" *ngIf="type != 'WALLETCONNECT'" class="btn btn-connect" (click)="connect(type, walletExtension.identifier)">
-            <img [src]="walletExtension.icon" /> {{walletExtension.name}}
+          <button type="button" *ngIf="type != 'WALLETCONNECT' && walletExtension.name !== 'Keplr'" class="btn btn-connect" (click)="connect(type, walletExtension.identifier)">
+                <img [src]="walletExtension.icon" /> {{walletExtension.name}}
           </button>
+            <div mdbDropdown *ngIf="type != 'WALLETCONNECT' && walletExtension.name == 'Keplr'" class="btn btn-connect">
+                <div mdbDropdownToggle>
+                    <img [src]="walletExtension.icon" /> {{walletExtension.name}}
+                </div>
+                <ul class="dropdown-menu" mdbDropdownMenu>
+                    <li>
+                        <a (click)="connectKeplr(type, walletExtension.identifier, MAINNET)"
+                           class="dropdown-item" type="submit">Mainnet</a>
+                    </li>
+                    <li>
+                        <a (click)="connectKeplr(type, walletExtension.identifier, TESTNET)"
+                           class="dropdown-item" type="submit">Testnet</a>
+                    </li>
+                </ul>
+            </div>
         </ng-container>
       </ng-container>
       <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-connect" (click)="connect( 'WALLETCONNECT', null)">
