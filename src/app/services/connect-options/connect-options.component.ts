@@ -23,16 +23,6 @@ interface InstallableExtension {
   styleUrls: ['./connect-options.component.scss'],
 })
 export class ConnectOptionsComponent {
-
-  constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
-    this.setInstallableExtensions();
-    const md = new MobileDetect(window.navigator.userAgent);
-    this.isPhoneOrTablet = md.phone() !== null || md.tablet() !== null;
-  }
-
-  static keplrExtensionConnector: KeplrExtensionConnector;
-  MAINNET = 'phoenix-1';
-  TESTNET = 'pisco-1';
   types: string[];
   lcdClient: LCDClient;
   walletExtensions: ExtensionInfo[] = [];
@@ -41,15 +31,20 @@ export class ConnectOptionsComponent {
   viewOnlyAddress: string;
   @ViewChild('formViewOnly') formViewOnly: NgForm;
 
+  constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
+    this.setInstallableExtensions();
+    const md = new MobileDetect(window.navigator.userAgent);
+    this.isPhoneOrTablet = md.phone() !== null || md.tablet() !== null;
+  }
+
   static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[], lcdClient: LCDClient) {
     if (window.keplr && window.getOfflineSigner) {
       if (!extensions.find(it => it.identifier === 'keplr')) {
-        ConnectOptionsComponent.keplrExtensionConnector = new KeplrExtensionConnector(lcdClient);
         extensions.push({
           name: 'Keplr',
           identifier: 'keplr',
           icon: '/assets/keplr.png',
-          connector: () => ConnectOptionsComponent.keplrExtensionConnector
+          connector: () => new KeplrExtensionConnector(lcdClient)
         });
       }
     } else {
@@ -96,11 +91,4 @@ export class ConnectOptionsComponent {
   findWalletExtensionIdentifier(identifier: string) {
     return !!this.walletExtensions.find((w) => w.identifier === identifier);
   }
-
-  connectKeplr(type: string, identifier: string, network: string) {
-    ConnectOptionsComponent.keplrExtensionConnector.chainID = network;
-    this.connect(type, identifier);
-  }
-
-
 }
