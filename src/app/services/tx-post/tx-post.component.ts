@@ -8,7 +8,6 @@ import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
 import { Denom } from '../../consts/denom';
-import { BalancePipe } from '../../pipes/balance.pipe';
 import { times } from "../../libs/math";
 
 @Component({
@@ -53,9 +52,7 @@ export class TxPostComponent implements OnInit {
     private terrajs: TerrajsService,
     protected $gaService: GoogleAnalyticsService,
     private info: InfoService,
-    private balancePipe: BalancePipe
-  ) {
-  }
+  ) { }
 
   async ngOnInit() {
     try {
@@ -136,7 +133,7 @@ export class TxPostComponent implements OnInit {
         }));
       } catch (e) {
       }
-      if (this.terrajs.isReadOnly){
+      if (this.terrajs.isReadOnly) {
         throw { message: 'Wallet connected in read only mode.', data: null };
       }
       this.loading = true;

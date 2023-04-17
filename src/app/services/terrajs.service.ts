@@ -1,9 +1,9 @@
-import {Injectable, OnDestroy} from '@angular/core';
-import {Coin, LCDClient, Msg, SyncTxBroadcastResult} from '@terra-money/terra.js';
-import {ISettings, networks} from '../consts/networks';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, firstValueFrom, interval, Subject, Subscription} from 'rxjs';
-import {filter, startWith} from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Coin, LCDClient, Msg, SyncTxBroadcastResult } from '@terra-money/terra.js';
+import { ISettings, networks } from '../consts/networks';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, firstValueFrom, interval, Subject, Subscription } from 'rxjs';
+import { filter, startWith } from 'rxjs/operators';
 import {
   ConnectType,
   getChainOptions,
@@ -12,12 +12,12 @@ import {
   WalletStates,
   WalletStatus,
 } from '@terra-money/wallet-provider';
-import {ModalService} from './modal.service';
-import {throttleAsync} from 'utils-decorators';
-import {MdbModalService} from 'mdb-angular-ui-kit/modal';
-import BigNumber from 'bignumber.js';
+import { throttleAsync } from 'utils-decorators';
+import { MdbModalService } from 'mdb-angular-ui-kit/modal';
+import { CONFIG } from '../consts/config';
+import { getChainInfo } from './connect-options/chain-info';
 
-export const BLOCK_TIME = 6500; // 6.5s
+export const BLOCK_TIME = CONFIG.CHAIN_ID.startsWith('injective') ? 1100 : 6500; // 6.5s
 export const DEFAULT_NETWORK = 'mainnet';
 
 export type Result = SyncTxBroadcastResult.Data;
@@ -76,7 +76,6 @@ export class TerrajsService implements OnDestroy {
 
   constructor(
     private httpClient: HttpClient,
-    private modal: ModalService,
     private modalService: MdbModalService,
   ) {
     getChainOptions().then(chainOptions => {
@@ -86,7 +85,7 @@ export class TerrajsService implements OnDestroy {
         connectorOpts: {
           bridge: 'https://walletconnect.terra.dev/'
         },
-        waitingChromeExtensionInstallCheck: 1000
+        waitingChromeExtensionInstallCheck: 1000,
       });
     });
     this.subscription = this.heightChanged.subscribe(() => this.height++);
@@ -101,13 +100,16 @@ export class TerrajsService implements OnDestroy {
   }
 
   async checkInstalled() {
-    const types = await firstValueFrom((await this.getWalletController()).availableInstallTypes());
+    const ctlr = await this.getWalletController();
+    const types = await firstValueFrom(ctlr.availableInstallTypes());
     return types.length === 0;
   }
 
   async getConnectTypes() {
-    const types = firstValueFrom((await this.getWalletController()).availableConnectTypes());
-    return (await types).filter(t => t !== 'READONLY');  }
+    const ctlr = await this.getWalletController();
+    const types = await firstValueFrom(ctlr.availableConnectTypes());
+    return types.filter(t => t !== 'READONLY');
+  }
 
   @throttleAsync(1) // to prevent first time getHeight from calling API tendermint.blockInfo() simultaneously
   async getHeight(force?: boolean): Promise<number> {
@@ -126,7 +128,16 @@ export class TerrajsService implements OnDestroy {
   }
 
   async initLcdClient() {
-    const gasPrices = await firstValueFrom(this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`));
+    let gasPrices: Record<string, string>;
+    if (CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1') {
+      gasPrices = await firstValueFrom(this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`));
+    } else {
+      gasPrices = {};
+      const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
+      for (const fee of chainInfo.feeCurrencies) {
+        gasPrices[fee.coinMinimalDenom] = fee.gasPriceStep?.low.toString() || '0.01';
+      }
+    }
     this.lcdClient = new LCDClient({
       URL: this.settings.lcd,
       chainID: this.settings.chainID,
@@ -139,10 +150,8 @@ export class TerrajsService implements OnDestroy {
     if (this.isConnected) {
       return;
     }
-    let terra_extension_router_session: any;
     const connectTypes = await this.getConnectTypes();
     if (auto) { // AUTO CONNECT AFTER APP INIT
-      const terra_extension_router_session_raw = localStorage.getItem('__terra_extension_router_session__');
       const connect = localStorage.getItem('connect');
       if (!connect) {
         return;
@@ -152,7 +161,7 @@ export class TerrajsService implements OnDestroy {
           type: connect,
           identifier: null
         };
-      } else if (connect === 'READONLY_CUSTOM_IMP'){
+      } else if (connect === 'READONLY_CUSTOM_IMP') {
         const viewonly_state_raw = localStorage.getItem('readonly_state');
         connectCallbackData = {
           stateReadOnly: JSON.parse(viewonly_state_raw),
@@ -161,22 +170,38 @@ export class TerrajsService implements OnDestroy {
         this.isReadOnly = true;
         await this.finalConnectStep(connectCallbackData.stateReadOnly, connectCallbackData.type);
       } else {
-        terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
-        connectCallbackData = terra_extension_router_session;
-        connectCallbackData.type = connect;
+        let identifier = localStorage.getItem('extension');
+        if (!identifier) {  // fallback to old way to connect extension
+          const terra_extension_router_session_raw = localStorage.getItem('__terra_extension_router_session__');
+          const terra_extension_router_session = JSON.parse(terra_extension_router_session_raw);
+          identifier = terra_extension_router_session?.identifier;
+        }
+        if (identifier) {
+          connectCallbackData = {
+            identifier,
+            type: connect,
+          }
+        }
+        if (identifier === 'keplr') {
+          const modal = await import('./connect-options/connect-options.component');
+          if (!this.lcdClient) {
+            await this.initLcdClient();
+          }
+          modal.ConnectOptionsComponent.ensureKeplr(window.terraWallets, [], this.lcdClient);
+        }
       }
     } else { // CLICK CONNECT
       const installTypes = await firstValueFrom(this.walletController.availableInstallTypes());
       const types = connectTypes.concat(installTypes);
       const modal = await import('./connect-options/connect-options.component');
       const ref = this.modalService.open(modal.ConnectOptionsComponent, {
-        data: {types}
+        data: { types, lcdClient: this.lcdClient }
       });
       connectCallbackData = await firstValueFrom(ref.onClose);
       if (!connectCallbackData?.type) {
         throw new Error('Nothing selected');
       }
-      if (connectCallbackData.type === 'READONLY_CUSTOM_IMP' && connectCallbackData.stateReadOnly){
+      if (connectCallbackData.type === 'READONLY_CUSTOM_IMP' && connectCallbackData.stateReadOnly) {
         this.isReadOnly = true;
         await this.finalConnectStep(connectCallbackData.stateReadOnly, connectCallbackData.type);
         return;
@@ -194,10 +219,10 @@ export class TerrajsService implements OnDestroy {
     }
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED))); // ONLY EXTENSION AND WALLET CONNECT, NOT CUSTOM READ ONLY
-    await this.finalConnectStep(state, connectCallbackData.type);
+    await this.finalConnectStep(state, connectCallbackData.type, connectCallbackData.identifier);
   }
 
-  async finalConnectStep(state: ConnectedState, connectType){
+  async finalConnectStep(state: ConnectedState, connectType: string, identifier?: string) {
     const networkNameFromWallet = state.network.name === 'classic' ? 'mainnet' : state.network.name;
     this.settings = networks[networkNameFromWallet];
     if (!this.lcdClient || this.networkName !== state.network.name) {
@@ -209,7 +234,10 @@ export class TerrajsService implements OnDestroy {
     this.networkName = networkNameFromWallet;
 
     localStorage.setItem('connect', connectType);
-    if (this.isReadOnly){
+    if (identifier) {
+      localStorage.setItem('extension', identifier);
+    }
+    if (this.isReadOnly) {
       localStorage.setItem('readonly_state', JSON.stringify(state));
     }
     this.isConnected = true;
@@ -289,19 +317,6 @@ export class TerrajsService implements OnDestroy {
     const now = Date.now();
     await this.getHeight();
     return new Date(now + (height - this.height) * BLOCK_TIME);
-  }
-
-  async deductTax(denom: string, amount: string) {
-    const [taxRate, taxCap] = await Promise.all([
-      this.lcdClient.treasury.taxRate(),
-      this.lcdClient.treasury.taxCap(denom)
-    ]);
-    const num = new BigNumber(amount);
-    let tax = num.minus(num.div(1 + taxRate.toNumber()).integerValue(BigNumber.ROUND_DOWN));
-    if (tax.gt(taxCap.amount.toString())) {
-      tax = new BigNumber(taxCap.amount.toString());
-    }
-    return num.minus(tax).toString();
   }
 
   private async getWalletController() {

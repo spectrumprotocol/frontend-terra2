@@ -10,4 +10,5 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
+  CHAIN_ID: process.env.CHAIN_ID || 'phoenix-1', // 'phoenix-1', // 'injective-1',
 };

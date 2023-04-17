@@ -31,7 +31,7 @@ import { SpectrumCompoundProxyService } from '../../../../services/api/spectrum-
 import { Asset } from '../../../../services/api/terraswap_pair/pool_response';
 import { UiUtilsService } from '../../../../services/ui-utils.service';
 import { PercentSuperscriptPipe } from '../../../../pipes/percent-superscript.pipe';
-import { TimeagoPipe } from 'src/app/pipes/timeago.pipe';
+import { TimeagoPipe } from '../../../../pipes/timeago.pipe';
 import { UnitPipe } from '../../../../pipes/unit.pipe';
 import { WasmService } from '../../../../services/api/wasm.service';
 import { SpectrumAstroportGenericFarmService } from '../../../../services/api/spectrum-astroport-generic-farm.service';
