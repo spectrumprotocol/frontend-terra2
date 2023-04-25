@@ -70,6 +70,10 @@ export class UrlPipe implements PipeTransform {
             return `/assets/stLuna.svg`;
           case 'xASTRO':
             return `/assets/xASTRO.png`;
+          case 'Lion DAO':
+            return `/assets/roar.png`;
+          case 'ROAR':
+            return `/assets/roar.png`;
           default:
             return null;
         }
