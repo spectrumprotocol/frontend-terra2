@@ -27,7 +27,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
-    private wasm: WasmService
+    private wasm: WasmService,
   ) {
   }
 
