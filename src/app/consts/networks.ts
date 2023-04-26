@@ -127,8 +127,8 @@ export const networks: Record<string, ISettings> = {
     astroportSayveLunaFarmCompoundProxy: 'terra1cgya885wdlqvu2ad0fengce39lyvq02ccczh7w7hkt7yylll2klsw62urq',
     astroportLunaStLunaFarm: 'terra1n8lx9uhysjfxsc9cqanydrkqlm3wrenew8kc0vqzjr6gw0u92teqrmvxcv', // pair: terra1re0yj0j6e9v2szg7kp02ut6u8jjea586t6pnpq6628wl36fphtpqwt6l7p lp : terra14n22zd24nath0tf8fwn468nz7753rjuks67ppddrcqwq37x2xsxsddqxqc
     astroportLunaStLunaFarmCompoundProxy: 'terra18v87nv8nhxtmynetmtg228lee2cgx7dk828szuglkjnvwhr6ye0qaz48w5',
-    astroportRoarLunaFarm: '', // pair: terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q, lp: terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4
-    astroportRoarLunaFarmCompoundProxy: '',
+    astroportRoarLunaFarm: 'terra1fz4x56u96fkgzvtdxaq2969qlmfk4wnwq0fqhlrklpqc629ah9qs4h8v50', // pair: terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q, lp: terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4
+    astroportRoarLunaFarmCompoundProxy: 'terra14l4nwrfcdgjd2dtucd8f66p8w0fanxvus7twuuupq96cmw82w4usw2wjc3',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: '',

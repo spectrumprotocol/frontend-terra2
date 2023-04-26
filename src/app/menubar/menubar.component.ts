@@ -79,41 +79,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
     this.clipboard.copy(this.terrajs.address);
     this.modelService.notify('address copied');
     this.dropdown.hide();
-
-    this.wasm.instantiate(778,
-        {
-          commission_bps: 30,
-          pair_contract: 'terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q',
-          pair_proxies: [
-            [
-              {
-                token: {
-                  contract_addr: 'terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26'
-                }
-              },
-              'terra13rj43lsucnel7z8hakvskr7dkfj27hd9aa06pcw4nh7t66fgt7qshrpmaw'
-            ]
-          ],
-          slippage_tolerance: '0.01'
-        }, 'Spectrum ROAR-LUNA Compound Proxy');
-
-    this.wasm.instantiate(942,
-        {
-          base_reward_token: 'terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26',
-          compound_proxy: '...',
-          controller: 'terra1h5tnsa8520qlgg2gp3gw2u46qqtdf0qyhdfvpz',
-          fee: '0.05',
-          fee_collector: 'terra10y08s37a8uralncpqredva58e4aqfxc5kpz9yaf5rv48rzqtvsmqpy0f5h',
-          liquidity_token: 'terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4',
-          name: 'Spectrum Astroport ROAR-LUNA LP cToken',
-          owner: 'terra1yqxkeu93ss3p2ddgkahjsh7pvk0nzzxqkuua49lxaecxutprye8st273wq',
-          pair: 'terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q',
-          staking_contract: 'terra1vf9ceekuxx8kycm7yv6hs96hgwsmrzt4la6s84skrgvfu7t09huqqdg09d',
-          symbol: 'clpRoarLuna'
-        }, 'Spectrum ROAR-LUNA Farm');
   }
-
-
 
   private async initWallet(): Promise<boolean> {
     return await this.terrajs.checkInstalled();
