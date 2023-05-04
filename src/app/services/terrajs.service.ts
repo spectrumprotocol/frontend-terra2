@@ -18,7 +18,10 @@ import { CONFIG } from '../consts/config';
 import { getChainInfo } from './connect-options/chain-info';
 
 export const BLOCK_TIME = CONFIG.CHAIN_ID.startsWith('injective') ? 1100 : 6500; // 6.5s
-export const DEFAULT_NETWORK = 'mainnet';
+const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
+export const DEFAULT_NETWORK = chainInfo.chainName.toLowerCase().includes('testnet')
+  ? 'testnet'
+  : 'mainnet';
 
 export type Result = SyncTxBroadcastResult.Data;
 
@@ -129,11 +132,10 @@ export class TerrajsService implements OnDestroy {
 
   async initLcdClient() {
     let gasPrices: Record<string, string>;
-    if (CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1') {
+    if (CONFIG.IS_TERRA) {
       gasPrices = await firstValueFrom(this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`));
     } else {
       gasPrices = {};
-      const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
       for (const fee of chainInfo.feeCurrencies) {
         gasPrices[fee.coinMinimalDenom] = fee.gasPriceStep?.low.toString() || '0.01';
       }
@@ -228,6 +230,7 @@ export class TerrajsService implements OnDestroy {
     if (!this.lcdClient || this.networkName !== state.network.name) {
       await this.initLcdClient();
     }
+
     this.address = state.wallets[0].terraAddress;
     this.network = state.network;
     this.extensionCurrentNetworkName = this.network.name;

@@ -40,18 +40,10 @@
         <div class="row">
           <div class="col-12 col-sm-5 mt-1">
             <div class="f-12 sub-topic">
-              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
-                APR
-              </ng-container>
-              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
-                APY
-              </ng-container>
+              APY
             </div>
             <div class="f-14">
-              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
-                <span class="fs-6 fw-bold text-primary"> {{vault.poolAprTotal | percent}}</span>
-              </ng-container>
-              <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
+              <ng-container>
               <span *ngIf="vault.pairStat.poolApy > vault.poolAprTotal">
                 <span class="sub-topic text-decoration-line-through text-primary">
                   <span class="sub-topic">{{ vault.poolAprTotal || 0 | percent }}</span>

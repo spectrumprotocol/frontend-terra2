@@ -5,14 +5,10 @@ import {
   TerraWebExtensionFeatures
 } from '@terra-money/web-extension-interface';
 import { Observer, Subscribable, Subject } from 'rxjs';
-import { CONFIG } from '../../consts/config';
-import { AuthInfo, CreateTxOptions, LCDClient, Tx, TxBody } from '@terra-money/terra.js';
-import { TxBody as TxBody_pb, AuthInfo as AuthInfo_pb } from '@terra-money/terra.proto/cosmos/tx/v1beta1/tx';
+import { CONFIG, InjectivePublicKey } from '../../consts/config';
+import { AuthInfo, CreateTxOptions, Fee, LCDClient, ModeInfo, SignDoc, SignerInfo, SimplePublicKey, Tx, TxBody } from '@terra-money/terra.js';
 import { getChainInfo } from './chain-info';
-import { AminoTypes, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
-import { registry, accountParser } from 'kujira.js/lib/esm/registry';
-import { aminoTypes } from 'kujira.js/lib/esm/amino';
-import { Decimal } from '@cosmjs/math';
+import { AuthInfo as ProtoAuthInfo } from '@terra-money/terra.proto/cosmos/tx/v1beta1/tx';
 
 declare global {
   interface Window {
@@ -22,12 +18,11 @@ declare global {
 }
 
 export class KeplrExtensionConnector implements TerraWebExtensionConnector {
-  client: SigningStargateClient;
-  aminoTypes: AminoTypes;
+  private signer: OfflineAminoSigner & OfflineDirectSigner;
 
   constructor(
     private lcdClient: LCDClient,
-  ) {}
+  ) { }
 
   supportFeatures(): TerraWebExtensionFeatures[] {
     return ['post'];
@@ -44,20 +39,17 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
 
       await hostWindow.keplr.experimentalSuggestChain(chainInfo);
       await hostWindow.keplr.enable(chainID);
-      const signer = hostWindow.getOfflineSigner(chainID);
-      const accounts = await signer.getAccounts();
-
-      this.aminoTypes = aminoTypes(chainInfo.bech32Config.bech32PrefixAccAddr) as any;
-      this.client = await SigningStargateClient.connectWithSigner(chainInfo.rpc, signer, {
-        registry: registry as any,
-        accountParser,
-        aminoTypes: this.aminoTypes,
-      });
+      this.signer = hostWindow.getOfflineSigner(chainID);
+      const accounts = await this.signer.getAccounts();
 
       statesObserver.next({
         type: WebExtensionStatus.READY,
         focusedWalletAddress: accounts[0]?.address,
-        wallets: accounts.map(it => ({ name: it.address, terraAddress: it.address, design: chainID })),
+        wallets: accounts.map(it => ({
+          name: it.address,
+          terraAddress: it.address,
+          design: chainID
+        })),
         network: {
           name: chainInfo.chainName.toLowerCase().includes('testnet') ? 'testnet' : 'mainnet',
           chainID,
@@ -93,28 +85,42 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     return subject;
   }
   private async postAsync(terraAddress: string, tx: CreateTxOptions): Promise<WebExtensionPostPayload> {
-    const result = await this.client.sign(
-      terraAddress,
-      tx.msgs.map(it => this.aminoTypes.fromAmino(it.toAmino())),
-      {
-        amount: tx.fee.amount.toData(),
-        gas: tx.fee.gas_limit.toString(),
-        payer: tx.fee.payer,
-        granter: tx.fee.granter,
-      },
-      tx.memo);
-    
-    const bc = await this.lcdClient.tx.broadcastSync(Tx.fromData({
-      auth_info: AuthInfo.fromProto(AuthInfo_pb.decode(result.authInfoBytes)).toData(),
-      signatures: result.signatures.map(it => Buffer.from(it).toString('base64')),
-      body: TxBody.fromProto(TxBody_pb.decode(result.bodyBytes)).toData(),
-    }));
+    const accountInfo = await this.lcdClient.auth.accountInfo(terraAddress);
+    const accounts = await this.signer.getAccounts();
+    const account = accounts.find(it => it.address === terraAddress);
+    if (!account) {
+      throw new Error("Failed to retrieve account from signer");
+    }
 
-    return {
-      height: bc.height,
-      raw_log: bc.raw_log,
-      txhash: bc.txhash,
-    };
+    const txBody = new TxBody(tx.msgs, tx.memo, tx.timeoutHeight);
+    const pubkey = CONFIG.CHAIN_ID.startsWith('injective')
+      ? new InjectivePublicKey(Buffer.from(account.pubkey).toString('base64'))
+      : new SimplePublicKey(Buffer.from(account.pubkey).toString('base64'));
+    const modeInfo = this.signer.signDirect
+      ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
+      : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
+    const signerInfo = new SignerInfo(pubkey, accountInfo.getSequenceNumber(), modeInfo);
+    const authInfo = new AuthInfo([signerInfo], tx.fee);
+    const signDoc = new SignDoc(CONFIG.CHAIN_ID, accountInfo.getAccountNumber(), accountInfo.getSequenceNumber(), authInfo, txBody);
+    
+    if (this.signer.signDirect) {
+      const signature = await this.signer.signDirect(terraAddress, signDoc.toProto());
+      const protoAuthInfo = ProtoAuthInfo.decode(signature.signed.authInfoBytes);
+      authInfo.fee = Fee.fromProto(protoAuthInfo.fee);
+      const signedTx = new Tx(txBody, authInfo, [signature.signature.signature]);
+      return this.lcdClient.tx.broadcastSync(signedTx);
+  } else {
+      const signature = await this.signer.signAmino(terraAddress, signDoc.toAmino());
+      const signedFee = signature.signed.fee;
+      authInfo.fee = Fee.fromData({
+        amount: signedFee.amount.map(it => it),
+        gas_limit: signedFee.gas,
+        granter: signedFee.granter,
+        payer: signedFee.payer,
+      });
+      const signedTx = new Tx(txBody, authInfo, [signature.signature.signature]);
+      return this.lcdClient.tx.broadcastSync(signedTx);
+    }
   }
 
   sign(): never {

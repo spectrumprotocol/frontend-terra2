@@ -30,6 +30,7 @@ export class ConnectOptionsComponent {
   isPhoneOrTablet: boolean;
   viewOnlyAddress: string;
   @ViewChild('formViewOnly') formViewOnly: NgForm;
+  isTerra = CONFIG.IS_TERRA;
 
   constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
     this.setInstallableExtensions();
@@ -60,9 +61,11 @@ export class ConnectOptionsComponent {
   }
 
   private async setInstallableExtensions() {
-    if (CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1') {
+    if (CONFIG.IS_TERRA) {
       this.walletExtensionsForInstall = await firstValueFrom(getExtensions());
-      this.walletExtensions = window.terraWallets ?? [];
+      this.walletExtensions = window.terraWallets ?? (window.terraWallets = []);
+    } else {
+      this.walletExtensions = window.terraWallets = [];
     }
     ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall, this.lcdClient);
   }

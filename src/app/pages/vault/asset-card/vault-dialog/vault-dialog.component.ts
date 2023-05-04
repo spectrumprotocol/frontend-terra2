@@ -14,13 +14,9 @@ import BigNumber from 'bignumber.js';
 import { debounce, memoizeAsync } from 'utils-decorators';
 import { LpBalancePipe } from '../../../../pipes/lp-balance.pipe';
 import { TokenService } from '../../../../services/api/token.service';
-import { TerraSwapService } from '../../../../services/api/terraswap.service';
 import { Denom } from '../../../../consts/denom';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
-import { TerraSwapRouterService } from '../../../../services/api/terraswap-router.service';
-import { AstroportService } from '../../../../services/api/astroport.service';
 import { PercentPipe } from '@angular/common';
-import { AstroportRouterService } from '../../../../services/api/astroport-router.service';
 import { RewardInfoPipe } from '../../../../pipes/reward-info.pipe';
 import { LpSplitPipe } from '../../../../pipes/lp-split.pipe';
 import { LpEarningPipe } from '../../../../pipes/lp-earning.pipe';
@@ -67,7 +63,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   tokenAToBeStatic = true;
   lpBalanceInfo: string;
   iLInfo: string;
-  depositType: 'compound' | 'speclp';
   depositMode: DEPOSIT_WITHDRAW_MODE_ENUM;
   withdrawMode: DEPOSIT_WITHDRAW_MODE_ENUM;
   withdrawInputType: WITHDRAW_INPUT_TYPE = 'lp';
@@ -144,9 +139,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       return true;
     }
     if (this.depositMode === 'tokentoken') {
-      return !this.depositType || this.formDeposit?.invalid || (!this.depositTokenAAmtTokenToken && !this.depositTokenBAmtTokenToken);
+      return this.formDeposit?.invalid || (!this.depositTokenAAmtTokenToken && !this.depositTokenBAmtTokenToken);
     }
-    return !this.depositType || this.formDeposit?.invalid;
+    return this.formDeposit?.invalid;
   }
 
   get disableWithdrawButton() {
@@ -231,9 +226,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   }
 
   async refreshData() {
-    if (this.vault.poolInfo.forceDepositType) {
-      this.depositType = this.vault.poolInfo.forceDepositType as any;
-    }
     this.refreshLpBalanceInfo();
     this.refreshiLInfo();
     this.refreshAPRAPYTooltipHTML();
@@ -411,7 +403,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.disableDepositButton) {
       return;
     }
-    this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', `${this.depositType}, ${this.depositMode}`, this.vault.baseSymbol + this.vault.denomSymbol);
+    this.$gaService.event('CLICK_DEPOSIT_LP_VAULT', `${this.depositMode}`, this.vault.baseSymbol + this.vault.denomSymbol);
     if (this.depositMode === 'tokentoken') {
       const assetBaseAmount = times(this.depositTokenAAmtTokenToken, this.vault.baseUnit);
       const assetDenomAmount = times(this.depositTokenBAmtTokenToken, this.vault.denomUnit);

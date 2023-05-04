@@ -36,10 +36,10 @@ export function getChainInfo(chainId: string): ChainInfo {
             coinDecimals: 18,
             coinGeckoId: 'injective-protocol',
             gasPriceStep: {
-              low: 5000000000,
-              average: 25000000000,
-              high: 50000000000,
-            },
+              low: 500000000,
+              average: 1000000000,
+              high: 1500000000
+            }
           },
         ],
         features: ['ibc-transfer', 'ibc-go', 'eth-address-gen', 'eth-key-sign'],
@@ -77,10 +77,10 @@ export function getChainInfo(chainId: string): ChainInfo {
             coinDecimals: 18,
             coinGeckoId: 'injective-protocol',
             gasPriceStep: {
-              low: 5000000000,
-              average: 25000000000,
-              high: 40000000000,
-            },
+              low: 500000000,
+              average: 1000000000,
+              high: 1500000000
+            }
           },
         ],
         coinType: 60,

@@ -6,7 +6,9 @@ import {TruncatePipe} from '../pipes/truncate.pipe';
 import {InfoService} from '../services/info.service';
 import {Subscription, switchMap, tap} from 'rxjs';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
-import {WasmService} from '../services/api/wasm.service';
+import { Currency } from '@keplr-wallet/types';
+import { getChainInfo } from '../services/connect-options/chain-info';
+import { CONFIG } from '../consts/config';
 
 @Component({
   selector: 'app-menubar',
@@ -20,6 +22,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
   walletText = 'Connect Wallet';
   tnsName = null;
   private processes: Subscription;
+  currency: Currency;
+
+  get finderLink() {
+    return CONFIG.IS_TERRA
+      ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/account/${this.terrajs.address}`
+      : `${this.terrajs.settings.finder}/account/${this.terrajs.address}`;
+  }
+
+  get finderName() {
+    return CONFIG.IS_TERRA
+      ? 'Terra Finder'
+      : 'Injective Explorer';
+  }
 
   constructor(
     public terrajs: TerrajsService,
@@ -27,7 +42,6 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
-    private wasm: WasmService
   ) {
   }
 
@@ -59,6 +73,9 @@ export class MenubarComponent implements OnInit, OnDestroy {
         })
       ).subscribe()
     );
+
+    const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
+    this.currency = chainInfo.currencies[0];
   }
 
   ngOnDestroy(): void {

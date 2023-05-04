@@ -57,7 +57,6 @@ import {MdbModalService} from 'mdb-angular-ui-kit/modal';
 import {LpEarningPipe} from './pipes/lp-earning.pipe';
 import {MdbCheckboxModule} from 'mdb-angular-ui-kit/checkbox';
 import {DashboardComponent} from './pages/dashboard/dashboard.component';
-import {CurrencyPipe} from './pipes/currency.pipe';
 import {
   AstroportAstroLunaFarmInfoService
 } from './services/farm_info/astroport/testnet_only/astroport-astro-luna-farm-info.service';
@@ -145,7 +144,6 @@ registerLocaleData(locale, 'en');
     VaultDialogComponent,
     LpEarningPipe,
     DashboardComponent,
-    CurrencyPipe,
     AirdropComponent,
     PercentSuperscriptPipe
   ],

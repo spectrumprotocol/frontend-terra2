@@ -5,12 +5,10 @@ import {BankService} from './api/bank.service';
 import {PoolResponse} from './api/terraswap_pair/pool_response';
 import {div, plus} from '../libs/math';
 import {CONFIG} from '../consts/config';
-import {GovService} from './api/gov.service';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
   FarmInfoService,
-  FORCE_DEPOSIT_TYPE_ENUM,
   NETWORK_NAME_ENUM,
   PairStat,
   PoolAPR,
@@ -20,14 +18,10 @@ import {
 } from './farm_info/farm-info.service';
 import {fromEntries} from '../libs/core';
 import {PairInfo} from './api/astroport_pair/pair_info';
-import {BalancePipe} from '../pipes/balance.pipe';
 import {Vault} from '../pages/vault/vault.component';
 import {HttpClient} from '@angular/common/http';
 import {memoize} from 'utils-decorators';
 import {Denom} from '../consts/denom';
-import {WalletService} from './api/wallet.service';
-import {AstroportService} from './api/astroport.service';
-import {AstroportFactoryService} from './api/astroport-factory.service';
 import {Apollo, gql} from 'apollo-angular';
 import {BalanceResponse} from './api/gov/balance_response';
 import {StateInfo} from './api/gov/state_info';
@@ -190,14 +184,9 @@ export class InfoService {
   constructor(
     private bankService: BankService,
     @Inject(FARM_INFO_SERVICE) public farmInfos: FarmInfoService[],
-    private gov: GovService,
     public terrajs: TerrajsService,
-    private astroport: AstroportService,
-    private astroportFactory: AstroportFactoryService,
     private token: TokenService,
-    private balancePipe: BalancePipe,
     private httpClient: HttpClient,
-    private wallet: WalletService,
     private apollo: Apollo,
     private wasm: WasmService,
     private config: ConfigService
@@ -339,7 +328,6 @@ export class InfoService {
       } else {
         farmConfig = defaultFarmConfig;
       }
-      const forceDepositType: FORCE_DEPOSIT_TYPE_ENUM = farmInfo.farmContract === this.terrajs.settings.specFarm ? 'speclp' : 'compound';
       poolInfos[key] = {
         key,
         farm: farmInfo.farm,
@@ -347,7 +335,6 @@ export class InfoService {
         baseTokenContract: farmInfo.baseTokenContract,
         denomTokenContract: farmInfo.denomTokenContract,
         rewardTokenContracts: this.poolAprsToRewardTokenContracts(farmInfo.poolAprs),
-        forceDepositType,
         auditWarning: farmInfo.auditWarning,
         farmType: farmInfo.farmType ?? 'LP',
         score: (farmInfo.highlight ? 1000000 : 0),
@@ -605,9 +592,6 @@ export class InfoService {
     const tasks: Promise<any>[] = [];
     const BUNDLER_BLACKLIST = new Set([]);
     const processRewards = (farmInfo: FarmInfoService, reward: RewardInfoResponseItem) => {
-      if (farmInfo.farmContract === this.terrajs.settings.specFarm) {
-        reward['stake_bond_amount'] = reward.bond_amount;
-      }
       if (farmInfo.farmType === 'LP') {
         rewardInfos[`${farmInfo.dex}|${farmInfo.baseTokenContract}|${farmInfo.denomTokenContract}`] = {
           ...reward,

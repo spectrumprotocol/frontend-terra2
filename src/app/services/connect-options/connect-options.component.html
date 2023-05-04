@@ -1,50 +1,52 @@
 <div class="modal-header text-center">
-    <h4 class="modal-title w-100">Connect to a wallet</h4>
+  <h4 class="modal-title w-100">Connect to a wallet</h4>
 </div>
 <div class="modal-body">
-    <div class="d-grid gap-3">
-      <ng-container *ngFor="let walletExtension of walletExtensions">
-        <ng-container *ngFor="let type of types">
-          <button type="button" *ngIf="type != 'WALLETCONNECT'" class="btn btn-connect" (click)="connect(type, walletExtension.identifier)">
-            <img [src]="walletExtension.icon" /> {{walletExtension.name}}
+  <div class="d-grid gap-3">
+    <ng-container *ngFor="let walletExtension of walletExtensions">
+      <ng-container *ngFor="let type of types">
+        <button type="button" *ngIf="type != 'WALLETCONNECT'" class="btn btn-connect"
+          (click)="connect(type, walletExtension.identifier)">
+          <img [src]="walletExtension.icon" /> {{walletExtension.name}}
+        </button>
+      </ng-container>
+    </ng-container>
+    <button type="button" *ngIf="types.includes('WALLETCONNECT') && isTerra" class="btn btn-connect"
+      (click)="connect( 'WALLETCONNECT', null)">
+      <img src="/assets/WalletConnect.png" /> Wallet Connect
+    </button>
+    <ng-container *ngFor="let walletExtensionInstall of walletExtensionsForInstall">
+      <a type="button" *ngIf="!findWalletExtensionIdentifier(walletExtensionInstall.identifier) && !isPhoneOrTablet"
+        class="btn btn-connect" href="{{walletExtensionInstall.url}}" target="_blank">
+        <img [src]="walletExtensionInstall.icon" /> Install {{walletExtensionInstall.name}}
+        <i class="fas fa-info-circle info-icon super" *ngIf="walletExtensionInstall.identifier === 'xdefi-wallet'"
+          [mdbTooltip]="'If installed, please turn on Prioritise XDEFI to allow connection'"></i>
+      </a>
+    </ng-container>
+    <form #formViewOnly="ngForm" novalidate *ngIf="isTerra">
+      <div class="input-group">
+        <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress" class="form-control fix-border"
+          placeholder="Input Terra Address" pattern="(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)"
+          #viewOnlyAddressCtl="ngModel"
+          [class.is-invalid]="(formViewOnly.submitted || viewOnlyAddressCtl.touched) && viewOnlyAddressCtl.invalid">
+        <div class="dropdown btn-group" mdbDropdown>
+          <button aria-expanded="false" class="btn btn-max last" mdbDropdownToggle type="button"
+            [disabled]="viewOnlyAddressCtl.invalid">
+            View
           </button>
-        </ng-container>
-      </ng-container>
-      <button type="button" *ngIf="types.includes('WALLETCONNECT')" class="btn btn-connect" (click)="connect( 'WALLETCONNECT', null)">
-          <img src="/assets/WalletConnect.png" /> Wallet Connect
-      </button>
-      <ng-container *ngFor="let walletExtensionInstall of walletExtensionsForInstall">
-        <a type="button" *ngIf="!findWalletExtensionIdentifier(walletExtensionInstall.identifier) && !isPhoneOrTablet" class="btn btn-connect" href="{{walletExtensionInstall.url}}" target="_blank">
-          <img [src]="walletExtensionInstall.icon" /> Install {{walletExtensionInstall.name}}
-          <i class="fas fa-info-circle info-icon super" *ngIf="walletExtensionInstall.identifier === 'xdefi-wallet'"
-             [mdbTooltip]="'If installed, please turn on Prioritise XDEFI to allow connection'"></i>
-        </a>
-      </ng-container>
-        <form #formViewOnly="ngForm" novalidate>
-        <div class="input-group">
-            <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress" class="form-control fix-border"
-                   placeholder="Input Terra Address" pattern="(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)" #viewOnlyAddressCtl="ngModel"
-                   [class.is-invalid]="(formViewOnly.submitted || viewOnlyAddressCtl.touched) && viewOnlyAddressCtl.invalid">
-            <div class="dropdown btn-group"
-                 mdbDropdown>
-                <button aria-expanded="false" class="btn btn-max last" mdbDropdownToggle type="button" [disabled]="viewOnlyAddressCtl.invalid">
-                    View
-                </button>
-                <ul class="dropdown-menu" mdbDropdownMenu>
-                    <li>
-                        <a (click)="connectViewOnly('mainnet')"
-                           class="dropdown-item" type="submit">Mainnet</a>
-                    </li>
-                    <li>
-                        <a (click)="connectViewOnly('testnet')"
-                           class="dropdown-item" type="submit">Testnet</a>
-                    </li>
-                </ul>
-            </div>
+          <ul class="dropdown-menu" mdbDropdownMenu>
+            <li>
+              <a (click)="connectViewOnly('mainnet')" class="dropdown-item" type="submit">Mainnet</a>
+            </li>
+            <li>
+              <a (click)="connectViewOnly('testnet')" class="dropdown-item" type="submit">Testnet</a>
+            </li>
+          </ul>
         </div>
-        <span *ngIf="viewOnlyAddressCtl.errors?.pattern" class="invalid-feedback-custom">
-            Invalid Terra address
-        </span>
-        </form>
-    </div>
+      </div>
+      <span *ngIf="viewOnlyAddressCtl.errors?.pattern" class="invalid-feedback-custom">
+        Invalid Terra address
+      </span>
+    </form>
+  </div>
 </div>

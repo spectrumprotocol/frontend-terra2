@@ -59,7 +59,7 @@
         <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
           <i class="fas fa-wallet"></i>&nbsp;<span class="text-muted d-none d-md-inline">{{ tnsName || walletText }}
           <span *ngIf="terrajs.networkName !== 'mainnet'" class="text-danger"> ({{terrajs.networkName}})</span><span *ngIf="terrajs.isReadOnly" class="text-danger"> (View Only)</span>&nbsp;|&nbsp;</span>
-          {{info.tokenBalances['uluna'] | unit: 6 | number : '1.0-2'}} LUNA
+          {{info.tokenBalances[currency.coinMinimalDenom] | unit: currency.coinDecimals | number : '1.0-2'}} {{currency.coinDenom}}
         </button>
         <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
   <!--        <li>-->
@@ -77,8 +77,8 @@
           </li>
           <li><a (click)="dropdown.hide()"
                 class="dropdown-item"
-                href="{{terrajs.settings.finder}}/{{terrajs.networkName}}/account/{{terrajs.address}}"
-                target="_blank">View on Terra Finder</a></li>
+                [href]="finderLink"
+                target="_blank">View on {{finderName}}</a></li>
           <li class="dropdown-item">
             <div class="solid-line"></div>
           </li>

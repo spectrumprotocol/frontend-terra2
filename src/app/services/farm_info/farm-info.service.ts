@@ -10,7 +10,6 @@ import {PairInfo} from '../api/astroport_pair/pair_info';
 import {TokenInfo} from '../info.service';
 
 export type FARM_TYPE_ENUM = 'LP';
-export type FORCE_DEPOSIT_TYPE_ENUM = 'speclp' | 'compound';
 
 export type DEX = 'Terraswap' | 'Astroport' | 'Phoenix';
 export type PoolType = 'xyk' | 'stable';
@@ -30,7 +29,6 @@ export type PoolInfo = {
   commission?: number;
   notUseAstroportGqlApr?: boolean
   farmConfig?: FarmConfig;
-  forceDepositType: FORCE_DEPOSIT_TYPE_ENUM;
   compoundProxyContract: string;
   poolType: PoolType;
   disabled: boolean;

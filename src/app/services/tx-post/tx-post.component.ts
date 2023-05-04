@@ -8,7 +8,8 @@ import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
 import { Denom } from '../../consts/denom';
-import { times } from "../../libs/math";
+import { getChainInfo } from '../connect-options/chain-info';
+import { Currency } from '@keplr-wallet/types';
 
 @Component({
   selector: 'app-tx-post',
@@ -34,7 +35,8 @@ export class TxPostComponent implements OnInit {
   feeUSD: string;
   coins: string[];
   isEnoughFee = true;
-  selectedCoin = Denom.LUNA;
+  selectedCoin: string;
+  selectedCoinName: string;
   gasBuffer = 70;
   ngx_slider_option = {
     animate: false,
@@ -45,6 +47,8 @@ export class TxPostComponent implements OnInit {
     showTicksValues: false,
     hideLimitLabels: true,
   };
+  isTerra = CONFIG.IS_TERRA;
+  currency: Currency;
 
   constructor(
     private httpClient: HttpClient,
@@ -67,6 +71,11 @@ export class TxPostComponent implements OnInit {
       if (Object.keys(this.info.tokenBalances).length === 0) {
         await this.info.refreshNativeTokens();
       }
+
+      const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
+      this.currency = chainInfo.currencies[0];
+      this.selectedCoin = this.currency.coinMinimalDenom;
+      this.selectedCoinName = this.currency.coinDenom;
 
       // load old values
       try {
@@ -94,9 +103,12 @@ export class TxPostComponent implements OnInit {
       // simulate
       this.loadingMsg = 'Simulating...';
       const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
+      const feeDenoms = CONFIG.IS_TERRA
+        ? [Denom.LUNA]
+        : [Denom.INJ]
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
-        feeDenoms: [Denom.LUNA],
+        feeDenoms,
       });
       this.gasLimit = this.signMsg.auth_info.fee.gas_limit;
       this.calculateFee();
@@ -120,7 +132,10 @@ export class TxPostComponent implements OnInit {
       .times(this.terrajs.lcdClient.config.gasPrices[this.selectedCoin])
       .integerValue(BigNumber.ROUND_UP)
       .toString();
-    this.feeUSD = times(this.fee, this.info.ulunaUSDPrice);
+    this.feeUSD = new BigNumber(this.fee)
+      .times(this.info.ulunaUSDPrice)
+      .div(10 ** (this.currency.coinDecimals - 6))
+      .toString();
     this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
   }
 
@@ -152,8 +167,15 @@ export class TxPostComponent implements OnInit {
         gasPrices: `${this.terrajs.lcdClient.config.gasPrices[this.selectedCoin]}${this.selectedCoin}`,
       };
       const res = await this.terrajs.walletController.post(postMsg);
+      if (res.result['code']) {
+        throw { message: res.result.raw_log };
+      }
       this.txhash = res.result.txhash;
-      this.link = this.txhash && `${this.terrajs.settings.finder}/${this.terrajs.networkName}/tx/${this.txhash}`;
+      if (this.txhash) {
+        this.link = CONFIG.IS_TERRA
+          ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/tx/${this.txhash}`
+          : `${this.terrajs.settings.finder}/transaction/${this.txhash}`;
+      }
       if (!res.success) {
         throw res;
       }

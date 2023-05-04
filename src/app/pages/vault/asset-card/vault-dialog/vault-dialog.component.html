@@ -35,12 +35,7 @@
       <div class="card box-left h-100">
         <div class="card-body">
           <p class="card-text sub-topic">
-            <ng-container *ngIf="vault.poolInfo.forceDepositType === 'speclp'">
-              APR <i
-                    [mdbTooltip]="'APR (Annual Percentage Rate) is the rate of return in one year from earning '+ rewardSymbolsPrint"
-                    class="fas fa-info-circle info-icon super"></i>
-            </ng-container>
-            <ng-container *ngIf="vault.poolInfo.forceDepositType === 'compound'">
+            <ng-container>
               APY <i [html]="true"
                     [mdbTooltip]="'APY (Annual Percentage Yield) is the rate of return with daily compound interest in one year from '+ rewardSymbolsPrint + '.</br>Fees are already subtracted from displayed APY.'"
                     class="fas fa-info-circle info-icon super"></i>
@@ -331,8 +326,8 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="depositType" class="mt-3">
-              <div *ngIf="depositType === 'compound'">
+            <div class="mt-3">
+              <div>
                 <ng-container *ngFor="let poolApr of vault.pairStat.poolAprs">
                   <div *ngIf="poolApr.apr > 0" class="row">
                     <div class="col">{{poolApr.rewardSymbol}} Reward APR</div>
@@ -358,11 +353,6 @@
                   <div class="col text-end" [innerHTML]="vault.pairStat?.poolApy || 0 | percentsuperscript"></div>
                 </div>
               </div>
-
-              <div *ngIf="depositType === 'speclp'">
-                TODO
-              </div>
-
 
             </div>
             <div class="d-grid mt-3">
