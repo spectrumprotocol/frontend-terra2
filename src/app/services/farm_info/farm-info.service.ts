@@ -8,6 +8,12 @@ import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {PairInfo} from '../api/astroport_pair/pair_info';
 import {TokenInfo} from '../info.service';
+import {
+  INJECTIVE_MAINNET_CHAINID,
+  INJECTIVE_TESTNET_CHAINID,
+  TERRA2_MAINNET_CHAINID,
+  TERRA2_TESTNET_CHAINID
+} from '../../consts/config';
 
 export type FARM_TYPE_ENUM = 'LP';
 
@@ -66,7 +72,7 @@ export const defaultFarmConfig: FarmConfig = {
 };
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
-export type NETWORK_NAME_ENUM = 'mainnet' | 'testnet';
+export type CHAIN_ID_ENUM = typeof TERRA2_MAINNET_CHAINID | typeof TERRA2_TESTNET_CHAINID | typeof INJECTIVE_MAINNET_CHAINID | typeof INJECTIVE_TESTNET_CHAINID;
 
 export interface FarmInfoService {
   // name of farm
@@ -81,7 +87,7 @@ export interface FarmInfoService {
 
   // color for chart
   readonly farmColor: string;
-  readonly availableNetworks: Set<NETWORK_NAME_ENUM>;
+  readonly availableNetworks: Set<CHAIN_ID_ENUM>;
 
   readonly farmType: FARM_TYPE_ENUM;
   readonly highlight?: boolean;

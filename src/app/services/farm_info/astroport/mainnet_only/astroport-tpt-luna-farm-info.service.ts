@@ -6,7 +6,7 @@ import {
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
-  NETWORK_NAME_ENUM,
+  CHAIN_ID_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -19,6 +19,7 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
 import {Denom} from '../../../../consts/denom';
+import {TERRA2_MAINNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
 export class AstroportTptLunaFarmInfoService implements FarmInfoService {
@@ -34,7 +35,7 @@ export class AstroportTptLunaFarmInfoService implements FarmInfoService {
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
+  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([TERRA2_MAINNET_CHAINID]);
   contractOnNetwork: string;
   readonly poolType = 'xyk';
 

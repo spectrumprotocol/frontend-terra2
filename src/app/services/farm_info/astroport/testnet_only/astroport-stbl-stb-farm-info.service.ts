@@ -6,7 +6,7 @@ import {
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
-  NETWORK_NAME_ENUM,
+  CHAIN_ID_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -18,6 +18,7 @@ import {WasmService} from '../../../api/wasm.service';
 import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
+import {TERRA2_TESTNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
 export class AstroportStblStbFarmInfoService implements FarmInfoService {
@@ -33,7 +34,7 @@ export class AstroportStblStbFarmInfoService implements FarmInfoService {
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['testnet']);
+  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([TERRA2_TESTNET_CHAINID]);
   contractOnNetwork: string;
   readonly poolType = 'stable';
 

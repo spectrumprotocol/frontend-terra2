@@ -18,7 +18,12 @@ export const CONFIG = {
   IS_TERRA: false,
 };
 
-CONFIG.IS_TERRA = CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1';
+export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
+export const TERRA2_TESTNET_CHAINID = 'pisco-1';
+export const INJECTIVE_MAINNET_CHAINID = 'injective-1';
+export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
+
+CONFIG.IS_TERRA = CONFIG.CHAIN_ID === TERRA2_MAINNET_CHAINID || CONFIG.CHAIN_ID === TERRA2_TESTNET_CHAINID;
 
 // HACK
 

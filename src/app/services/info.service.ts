@@ -9,7 +9,7 @@ import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
   FarmInfoService,
-  NETWORK_NAME_ENUM,
+  CHAIN_ID_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo,
@@ -251,7 +251,7 @@ export class InfoService {
   }
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
-    return farmInfo.availableNetworks.has(this.terrajs.networkName as NETWORK_NAME_ENUM);
+    return farmInfo.availableNetworks.has(this.terrajs.settings.chainID as CHAIN_ID_ENUM);
     // && (farmInfo.farmContract.length > 0 && farmInfo.baseTokenContract.length > 0 && farmInfo.denomTokenContract.length > 0); // for check farm setup validity
   }
 

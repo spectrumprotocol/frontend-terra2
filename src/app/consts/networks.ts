@@ -1,4 +1,10 @@
-import { CONFIG } from "./config";
+import {
+  CONFIG,
+  INJECTIVE_MAINNET_CHAINID,
+  INJECTIVE_TESTNET_CHAINID,
+  TERRA2_MAINNET_CHAINID,
+  TERRA2_TESTNET_CHAINID
+} from './config';
 
 export interface ISettings {
   specToken: string;
@@ -113,7 +119,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       fcd: 'https://phoenix-fcd.terra.dev',
       querier: '',
       specAPI: 'https://spec-api-eeh8efcmd2b0fffh.z01.azurefd.net/api',
-      chainID: 'phoenix-1',
+      chainID: TERRA2_MAINNET_CHAINID,
       finder: 'https://terrasco.pe',
       astroport_gql: 'astroport_multichain'
     },
@@ -142,7 +148,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       fcd: 'https://pisco-fcd.terra.dev',
       querier: '',
       specAPI: 'https://terra2-testapi.spec.finance/api',
-      chainID: 'pisco-1',
+      chainID: TERRA2_TESTNET_CHAINID,
       finder: 'https://finder.terra.money',
       astroport_gql: 'astroport_multichain'
     },
@@ -158,7 +164,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       fcd: '',
       querier: '',
       specAPI: 'https://terra2-testapi.spec.finance/api',
-      chainID: 'injective-1',
+      chainID: INJECTIVE_MAINNET_CHAINID,
       finder: 'https://explorer.injective.network',
       astroport_gql: 'astroport_multichain'
     },
@@ -171,7 +177,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       fcd: '',
       querier: '',
       specAPI: 'https://terra2-testapi.spec.finance/api',
-      chainID: 'injective-888',
+      chainID: INJECTIVE_TESTNET_CHAINID,
       finder: 'https://testnet.explorer.injective.network',
       astroport_gql: 'astroport_multichain'
     }
