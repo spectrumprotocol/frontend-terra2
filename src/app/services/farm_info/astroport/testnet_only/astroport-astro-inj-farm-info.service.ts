@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import {RewardInfoResponseItem} from '../../../api/spectrum_astroport_farm/reward_info_response';
 import {TerrajsService} from '../../../terrajs.service';
 import {
+  CHAIN_ID_ENUM,
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
-  NETWORK_NAME_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -20,6 +20,7 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {times} from '../../../../libs/math';
 import {SYMBOLS} from '../../../../consts/symbol';
+import { INJECTIVE_TESTNET_CHAINID } from 'src/app/consts/config';
 
 @Injectable()
 export class AstroportAstroInjFarmInfoService implements FarmInfoService {
@@ -35,7 +36,7 @@ export class AstroportAstroInjFarmInfoService implements FarmInfoService {
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['testnet']);
+  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([INJECTIVE_TESTNET_CHAINID]);
   contractOnNetwork: string;
   readonly poolType = 'xyk';
 
