@@ -179,7 +179,7 @@ export class InfoService {
   compoundStat: Record<string, CompoundStat> = {};
 
   DISABLED_VAULTS: Set<string> = new Set([]);
-  private loadedNetwork: string;
+  private loadedChainId: string;
 
   constructor(
     private bankService: BankService,
@@ -303,11 +303,11 @@ export class InfoService {
   }
 
   async ensurePoolInfoLoaded() {
-    if (this.poolInfos && this.loadedNetwork === this.terrajs.settings.chainID) {
+    if (this.poolInfos && this.loadedChainId === this.terrajs.settings.chainID) {
       return this.poolInfos;
     }
     await this.refreshPoolInfos();
-    this.loadedNetwork = this.terrajs.settings.chainID;
+    this.loadedChainId = this.terrajs.settings.chainID;
   }
 
   getRewardTokenContracts(poolAPRs: PoolAPR[]): string[] {
@@ -816,12 +816,12 @@ export class InfoService {
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '1');
     // } finally {
-      this.loadedNetwork = this.terrajs.settings.chainID;
+      this.loadedChainId = this.terrajs.settings.chainID;
     // }
   }
 
   updateVaults() {
-    if (this.loadedNetwork !== this.terrajs.settings.chainID) {
+    if (this.loadedChainId !== this.terrajs.settings.chainID) {
       return;
     }
     this.allVaults = [];

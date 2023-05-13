@@ -2,6 +2,10 @@ import { Any } from "@injectivelabs/core-proto-ts/cjs/google/protobuf/any";
 import { AccAddress, Account, BaseAccount, PublicKey, SimplePublicKey } from "@terra-money/terra.js";
 import { bech32 } from 'bech32';
 
+export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
+export const TERRA2_TESTNET_CHAINID = 'pisco-1';
+export const INJECTIVE_MAINNET_CHAINID = 'injective-1';
+export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
 export const CONFIG = {
   DIGIT: 6,
   UNIT: 1000000,  // 10^DIGIT
@@ -14,14 +18,9 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: 'injective-888', // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: INJECTIVE_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
   IS_TERRA: false,
 };
-
-export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
-export const TERRA2_TESTNET_CHAINID = 'pisco-1';
-export const INJECTIVE_MAINNET_CHAINID = 'injective-1';
-export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
 
 CONFIG.IS_TERRA = CONFIG.CHAIN_ID === TERRA2_MAINNET_CHAINID || CONFIG.CHAIN_ID === TERRA2_TESTNET_CHAINID;
 
