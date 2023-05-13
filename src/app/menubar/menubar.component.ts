@@ -9,6 +9,9 @@ import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 import { Currency } from '@keplr-wallet/types';
 import { getChainInfo } from '../services/connect-options/chain-info';
 import { CONFIG } from '../consts/config';
+import { WasmService } from '../services/api/wasm.service';
+import { toBase64 } from '../libs/base64';
+import * as zlib from 'pako';
 
 @Component({
   selector: 'app-menubar',
@@ -42,6 +45,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private modelService: ModalService,
     private truncate: TruncatePipe,
+    private wasm: WasmService,
   ) {
   }
 
@@ -96,6 +100,30 @@ export class MenubarComponent implements OnInit, OnDestroy {
     this.clipboard.copy(this.terrajs.address);
     this.modelService.notify('address copied');
     this.dropdown.hide();
+    // this.wasm.execute("inj1wrtwcee23p0k9z5tveerx8tyesvjs4k8vlf4en", {
+    //   send: {
+    //     amount: "3529477000000",
+    //     contract: this.terrajs.settings.astroportAstroInjFarm,
+    //     msg: toBase64({
+    //       bond: {}
+    //     })
+    //   }
+    // })
+    // this.wasm.execute(this.terrajs.settings.astroportAstroInjFarm, {
+    //   "compound": {
+    //     "minimum_receive": "1"
+    //   }
+    // })
+    // this.wasm.migrate(this.terrajs.settings.astroportAstroInjFarm, 1180, {});
+
+  }
+
+  async handleFiles(files: FileList) {
+    const file = files.item(0);
+    const data = await file.arrayBuffer();
+    const gzip = zlib.gzip(new Uint8Array(data));
+    const base64 = Buffer.from(gzip).toString('base64');
+    return this.wasm.storeCode(base64);
   }
 
   private async initWallet(): Promise<boolean> {

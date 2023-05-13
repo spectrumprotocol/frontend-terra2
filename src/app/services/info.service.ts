@@ -145,7 +145,7 @@ const ASTROPORT_POOLS_GQL = gql`
 
 
 export const isNativeToken = (input: string) => {
-  return input.startsWith('u') || input.startsWith('ibc');
+  return input.startsWith('u') || input.startsWith('ibc') || input.startsWith('inj');
 };
 
 @Injectable({
@@ -783,41 +783,41 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    try {
-      const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-      if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.ulunaUSDPrice || !data.ampStablePairs) {
-        throw (data);
-      }
-      this.tokenInfos = data.tokenInfos;
-      this.stat = data.stat;
-      this.pairInfos = data.pairInfos;
-      this.poolInfos = data.poolInfos;
-      this.circulation = data.circulation;
-      this.marketCap = data.marketCap;
-      this.ulunaUSDPrice = data.ulunaUSDPrice;
-      this.ampStablePairs = data.ampStablePairs;
-      this.compoundStat = data.compoundStat;
-      localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-      localStorage.setItem('stat', JSON.stringify(this.stat));
-      localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-      localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-      localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-      localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
-      localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
-      if (!skipPoolResponses) {
-        this.poolResponses = data.poolResponses;
-        localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-      }
-      // no more fallback
-    } catch (ex) {
-      // fallback if api die
-      console.error('Error in retrieveCachedStat: fallback local info service data init');
-      console.error(ex);
+    // try {
+    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.ulunaUSDPrice || !data.ampStablePairs) {
+    //     throw (data);
+    //   }
+    //   this.tokenInfos = data.tokenInfos;
+    //   this.stat = data.stat;
+    //   this.pairInfos = data.pairInfos;
+    //   this.poolInfos = data.poolInfos;
+    //   this.circulation = data.circulation;
+    //   this.marketCap = data.marketCap;
+    //   this.ulunaUSDPrice = data.ulunaUSDPrice;
+    //   this.ampStablePairs = data.ampStablePairs;
+    //   this.compoundStat = data.compoundStat;
+    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+    //   localStorage.setItem('stat', JSON.stringify(this.stat));
+    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+    //   localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
+    //   localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
+    //   if (!skipPoolResponses) {
+    //     this.poolResponses = data.poolResponses;
+    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+    //   }
+    //   // no more fallback
+    // } catch (ex) {
+    //   // fallback if api die
+    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
+    //   console.error(ex);
       await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
       localStorage.setItem('infoSchemaVersion', '1');
-    } finally {
+    // } finally {
       this.loadedNetwork = this.terrajs.settings.chainID;
-    }
+    // }
   }
 
   updateVaults() {
@@ -853,10 +853,11 @@ export class InfoService {
       const vault: Vault = {
         baseSymbol,
         denomSymbol,
-        baseDecimals: isNativeToken(baseTokenContract) ? CONFIG.DIGIT : this.tokenInfos[baseTokenContract]?.decimals,
-        baseUnit: isNativeToken(baseTokenContract) ? CONFIG.UNIT : this.tokenInfos[baseTokenContract]?.unit,
-        denomDecimals: isNativeToken(denomTokenContract) ? CONFIG.DIGIT : this.tokenInfos[denomTokenContract]?.decimals,
-        denomUnit: isNativeToken(denomTokenContract) ? CONFIG.UNIT : this.tokenInfos[denomTokenContract]?.unit,
+        // TODO: Fix this
+        baseDecimals: baseTokenContract.startsWith('inj') ? 18 : isNativeToken(baseTokenContract) ? CONFIG.DIGIT : this.tokenInfos[baseTokenContract]?.decimals,
+        baseUnit: baseTokenContract.startsWith('inj') ? 1000000000000000000 : isNativeToken(baseTokenContract) ? CONFIG.UNIT : this.tokenInfos[baseTokenContract]?.unit,
+        denomDecimals: denomTokenContract.startsWith('inj') ? 18 : isNativeToken(denomTokenContract) ? CONFIG.DIGIT : this.tokenInfos[denomTokenContract]?.decimals,
+        denomUnit: denomTokenContract.startsWith('inj') ? 1000000000000000000 : isNativeToken(denomTokenContract) ? CONFIG.UNIT : this.tokenInfos[denomTokenContract]?.unit,
         baseAssetInfo: isNativeToken(baseTokenContract)
           ? {native_token: {denom: baseTokenContract}}
           : {token: {contract_addr: baseTokenContract}},
@@ -922,7 +923,7 @@ export class InfoService {
     const ulunaPriceQuery = apollo.query<any>({
       variables: {
         chainId: this.terrajs.settings.chainID,
-        tokenAddress: Denom.LUNA
+        tokenAddress: Denom.INJ
       },
       query: ASTROPORT_PRICE_GQL,
       errorPolicy: 'all'
@@ -936,6 +937,7 @@ export class InfoService {
     const [poolResponse, ulunaPriceResponse] = await Promise.all(tasks);
     this.astroportPoolsData = poolResponse.data;
     if (!this.terrajs.isMainnet) {
+      console.log(ulunaPriceResponse)
       this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
     }
   }

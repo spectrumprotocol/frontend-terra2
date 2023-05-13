@@ -103,6 +103,7 @@ import {
 import {
   AstroportLunaStlunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-luna-stluna-farm-info.service';
+import { AstroportAstroInjFarmInfoService } from './services/farm_info/astroport/testnet_only/astroport-astro-inj-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -181,22 +182,22 @@ registerLocaleData(locale, 'en');
       deps: [TerrajsService],
       multi: true
     },
-    {provide: FARM_INFO_SERVICE, useClass: AstroportAstroAxlUsdcFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportAxlUsdcAxlUsdtFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportAxlUsdcLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportLunaxLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportVkrAxlUsdcFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportTptLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportAmpLunaLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportBLunaLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportRedLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportSayveLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportLunaStlunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportAstroAxlUsdcFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportAxlUsdcAxlUsdtFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportAxlUsdcLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportLunaxLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportVkrAxlUsdcFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportTptLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportAmpLunaLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportBLunaLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportRedLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportSayveLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportLunaStlunaFarmInfoService, multi: true},
 
-    {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportStbLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportStblStbFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportStbLunaFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportAstroInjFarmInfoService, multi: true},
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

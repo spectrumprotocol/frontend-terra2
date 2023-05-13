@@ -70,8 +70,10 @@ export class UrlPipe implements PipeTransform {
             return `/assets/stLuna.svg`;
           case 'xASTRO':
             return `/assets/xASTRO.png`;
+          case 'INJ':
+            return `/assets/INJ.png`;
           default:
-            return null;
+            return `/assets/default.png`;
         }
       case 'trade':
         switch (symbolOrContract) {

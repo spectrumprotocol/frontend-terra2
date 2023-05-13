@@ -14,14 +14,13 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: process.env.CHAIN_ID || 'phoenix-1', // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: 'injective-888', // 'phoenix-1', // 'injective-1',
   IS_TERRA: false,
 };
 
 CONFIG.IS_TERRA = CONFIG.CHAIN_ID === 'phoenix-1' || CONFIG.CHAIN_ID === 'pisco-1';
 
 // HACK
-
 if (CONFIG.CHAIN_ID.startsWith('injective')) {
   const oldAccountFromData = Account.fromData;
   Account.fromData = (data: any, isClassic?: boolean) => {

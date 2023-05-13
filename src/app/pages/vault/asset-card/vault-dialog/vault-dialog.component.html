@@ -210,8 +210,8 @@
                   <div class="row">
                     <ng-container *ngIf="showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">
                       Spectrum will auto
-                      <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{swap_asset_a_amount | unit}} {{vault.baseSymbol}} to {{return_b_amount | unit}} {{vault.denomSymbol}} </ng-container>
-                      <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{swap_asset_b_amount | unit}} {{vault.denomSymbol}} to {{return_a_amount | unit}} {{vault.baseSymbol}} </ng-container>
+                      <ng-container *ngIf="+swap_asset_a_amount > 0"> swap {{ swap_asset_a_amount | unit : vault.baseDecimals }} {{vault.baseSymbol}} to {{ return_b_amount | unit : vault.denomDecimals }} {{vault.denomSymbol}} </ng-container>
+                      <ng-container *ngIf="+swap_asset_b_amount > 0"> swap {{ swap_asset_b_amount | unit : vault.denomDecimals }} {{vault.denomSymbol}} to {{ return_a_amount | unit : vault.baseDecimals }} {{vault.baseSymbol}} </ng-container>
                       to keep 1:1 ratio required to create LP.
                     </ng-container>
                     <ng-container *ngIf="!showFreeRatioMessage && freeTokenTokenRatio && vault.poolInfo.poolType === 'xyk'">

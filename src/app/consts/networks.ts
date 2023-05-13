@@ -52,8 +52,12 @@ export interface ISettings {
   astroportStblStbFarmCompoundProxy?: string;
   astroportStbLunaFarm?: string;
   astroportStbLunaFarmCompoundProxy?: string;
+  astroportAstroInjFarm?: string;
+  astroportAstroInjFarmCompoundProxy?: string;
+  injToken?: string;
   stbToken?: string;
   stblToken?: string;
+  usdcToken?: string;
   // TESTNET ONLY
   lcd: string;
   fcd: string;
@@ -173,6 +177,11 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       specAPI: 'https://terra2-testapi.spec.finance/api',
       chainID: 'injective-888',
       finder: 'https://testnet.explorer.injective.network',
-      astroport_gql: 'astroport_multichain'
+      astroport_gql: 'astroport_multichain',
+      astroportAstroInjFarm: 'inj1pdf6w4qxf0c9zneju6l92zswpfx772ynhd4rfv',
+      astroportAstroInjFarmCompoundProxy: 'inj1r5h0gwyj8r264zmelk4vnjmt0qyfmhjlzfq204',
+      astroToken: 'ibc/E8AC6B792CDE60AB208CA060CA010A3881F682A7307F624347AB71B6A0B0BF89',
+      injToken: 'inj',
+      usdcToken: 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc',
     }
   };

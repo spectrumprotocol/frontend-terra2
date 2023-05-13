@@ -8,7 +8,7 @@ import { floorSixDecimal, gt, ceilSixDecimal, times } from '../../../../libs/mat
 import { TerrajsService } from '../../../../services/terrajs.service';
 import { Vault } from '../../vault.component';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
-import { CompoundStat, InfoService } from '../../../../services/info.service';
+import { CompoundStat, InfoService, isNativeToken } from '../../../../services/info.service';
 import { Subscription } from 'rxjs';
 import BigNumber from 'bignumber.js';
 import { debounce, memoizeAsync } from 'utils-decorators';
@@ -157,8 +157,8 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
-    this.buildRewardSymbolsPrint();
+  async ngOnInit() {
+    //this.buildRewardSymbolsPrint();
     if (this.vault.poolInfo.farmType === 'LP') {
       this.depositMode = 'tokentoken';
       this.withdrawMode = 'tokentoken';
@@ -419,7 +419,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
       const msgs: MsgExecuteContract[] = [];
       const coins: Coin[] = [];
 
-      if (this.config.NATIVE_TOKEN_DENOMS.has(this.vault.poolInfo.baseTokenContract) && +assetBaseAmount > 0) {
+      if (isNativeToken(this.vault.poolInfo.baseTokenContract) && +assetBaseAmount > 0) {
         coins.push(new Coin(this.vault.poolInfo.baseTokenContract, assetBaseAmount));
       } else if (+assetBaseAmount > 0) {
         msgs.push(new MsgExecuteContract(
@@ -433,7 +433,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
           }
         ));
       }
-      if (this.config.NATIVE_TOKEN_DENOMS.has(this.vault.poolInfo.denomTokenContract) && +assetDenomAmount > 0) {
+      if (isNativeToken(this.vault.poolInfo.denomTokenContract) && +assetDenomAmount > 0) {
         coins.push(new Coin(this.vault.poolInfo.denomTokenContract, assetDenomAmount));
       } else if (+assetDenomAmount > 0) {
         msgs.push(new MsgExecuteContract(
@@ -693,7 +693,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
 
-  @memoizeAsync(60 * 1000)
+  //@memoizeAsync(60 * 1000)
   private async getTotalBondAmountAndFarmState() {
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {

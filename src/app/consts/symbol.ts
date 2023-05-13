@@ -7,4 +7,5 @@ export const SYMBOLS = {
   SAYVE: 'SAYVE',
   STLUNA: 'stLUNA',
   XASTRO: 'xASTRO',
+  INJ: 'INJ',
 };

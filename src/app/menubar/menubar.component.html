@@ -75,6 +75,9 @@
           <li>
             <button (click)="copy()" class="dropdown-item" type="button">Copy address</button>
           </li>
+          <li>
+            <input type="file" (change)="handleFiles($event.target['files'])" style="width: 100%;" />Upload
+          </li>
           <li><a (click)="dropdown.hide()"
                 class="dropdown-item"
                 [href]="finderLink"
