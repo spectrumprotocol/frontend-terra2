@@ -105,7 +105,7 @@ export interface FarmInfoService {
 
   refreshContractOnNetwork();
 
-  queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number, ampStablePairs: Record<string, string>): Promise<Record<string, PairStat>>;
+  queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, chainTokenUSDPrice: number, ampStablePairs: Record<string, string>): Promise<Record<string, PairStat>>;
 
   queryReward(): Promise<RewardInfoResponseItem>;
 

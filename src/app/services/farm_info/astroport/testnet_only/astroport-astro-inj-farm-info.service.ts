@@ -69,7 +69,7 @@ export class AstroportAstroInjFarmInfoService implements FarmInfoService {
   }
 
   // no LP APR calculation, return 0 to use Astroport API
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, injPrice: number): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.baseTokenContract}|${this.denomTokenContract}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
@@ -79,11 +79,12 @@ export class AstroportAstroInjFarmInfoService implements FarmInfoService {
     });
     const pairs: Record<string, PairStat> = {};
 
+    //TODO broken
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-    const uluna = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
-    if (!uluna) {
+    const inj = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
+    if (!inj) {
       return;
     }
     pairs[key] = {
@@ -94,8 +95,8 @@ export class AstroportAstroInjFarmInfoService implements FarmInfoService {
       vaultFee: 0
     };
     const pair = pairs[key];
-    const totalUlunaValueUSD = times(ulunaPrice, uluna.amount);
-    pair.tvl = new BigNumber(totalUlunaValueUSD)
+    const totalInjValueUSD = times(injPrice, inj.amount);
+    pair.tvl = new BigNumber(totalInjValueUSD)
       .times(depositAmount)
       .times(2)
       .div(p.total_share)

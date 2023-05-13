@@ -4,7 +4,7 @@ import {TokenService} from './api/token.service';
 import {BankService} from './api/bank.service';
 import {PoolResponse} from './api/terraswap_pair/pool_response';
 import {div, plus} from '../libs/math';
-import {CONFIG} from '../consts/config';
+import {CONFIG, INJECTIVE_TESTNET_CHAINID, TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID} from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
@@ -176,6 +176,7 @@ export class InfoService {
   portfolio: Portfolio;
   astroportPoolsData: AstroportPools;
   ulunaUSDPrice: number; // to get testnet uluna/usd price
+  injUSDPrice: number;
   compoundStat: Record<string, CompoundStat> = {};
 
   DISABLED_VAULTS: Set<string> = new Set([]);
@@ -495,7 +496,8 @@ export class InfoService {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
         }
-        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, this.ulunaUSDPrice, this.ampStablePairs);
+        const chainTokenUSDPrice = CONFIG.IS_TERRA ? this.ulunaUSDPrice : this.injUSDPrice;
+        const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, chainTokenUSDPrice, this.ampStablePairs);
         const keys = Object.keys(pairStats);
         for (const key of keys) {
           const farmConfig = this.poolInfos[key]?.farmConfig || defaultFarmConfig;
@@ -687,6 +689,17 @@ export class InfoService {
 
       poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
         .then(it => poolResponses[poolResponseKey] = it));
+    }
+    if (!CONFIG.IS_TERRA && this.loadedChainId === INJECTIVE_TESTNET_CHAINID){
+      const injUsdcPoolTestnet = 'inj1akax66g89c8sp29f2reyxs4rwv0ljr0ljsnmy5';
+      const usdcTestnet = 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc';
+      poolTasks.push(bundler.query(injUsdcPoolTestnet, {pool: {}})
+          .then(pool => {
+            poolResponses[`Astroport|${Denom.INJ}|${usdcTestnet}`] = pool;
+            const axlUsdcAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === usdcTestnet)?.amount || 0;
+            const injAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.INJ)?.amount || 0;
+            this.injUSDPrice = +div(axlUsdcAmount, injAmount);
+          }));
     }
 
     bundler.flush();
