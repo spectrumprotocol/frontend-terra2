@@ -25,8 +25,8 @@ export class PricePipe implements PipeTransform {
     const asset1Token: string = poolResponse.assets[1].info.token
       ? poolResponse.assets[1].info.token?.['contract_addr']
       : poolResponse.assets[1].info.native_token?.['denom'];
-    const asset0Decimals = asset0Token.startsWith('inj') ? 18 : isNativeToken(asset0Token) ? 6 : this.info.tokenInfos[asset0Token]?.decimals || 6;
-    const asset1Decimals = asset1Token.startsWith('inj') ? 18 : isNativeToken(asset1Token) ? 6 : this.info.tokenInfos[asset1Token]?.decimals || 6;
+    const asset0Decimals = this.info.getDecimals(asset0Token);
+    const asset1Decimals = this.info.getDecimals(asset1Token);
     const baseToken = key.split('|')[1];
     if (asset0Token === baseToken) {
       return this.toUIPrice(div(poolResponse.assets[1].amount, poolResponse.assets[0].amount),

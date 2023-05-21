@@ -63,7 +63,7 @@ export interface ISettings {
   injToken?: string;
   stbToken?: string;
   stblToken?: string;
-  usdcToken?: string;
+  usdcToken: string;
   // TESTNET ONLY
   lcd: string;
   fcd: string;
@@ -83,6 +83,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       astroportFactory: 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r',
       valkyrieToken: 'terra1gy73st560m2j0esw5c5rjmr899hvtv4rhh4seeajt3clfhr4aupszjss4j',
       astroToken: 'terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26',
+      usdcToken: 'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4',
       axlUsdcToken: 'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4',
       axlUsdtToken: 'ibc/CBF67A2BCF6CAE343FDF251E510C8E18C361FC02B23430C121116E0811835DEF',
       lunaXToken: 'terra14xsm2wzvu7xaf567r693vgfkhmvfs08l68h4tjj5wjgyn5ky8e2qvzyanh',
@@ -134,6 +135,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       astroportFactory: 'terra1z3y69xas85r7egusa0c7m5sam0yk97gsztqmh8f2cc6rr4s4anysudp7k0',
       valkyrieToken: 'terra1xqtstvlwcpz3kpcpw6vqh2grstw34wcezws5pawll95uuysu0hnqk6muds',
       astroToken: 'terra167dsqkh2alurx997wmycw9ydkyu54gyswe3ygmrs4lwume3vmwks8ruqnv',
+      usdcToken: '',
       astroportGov: '',
       astroportGenerator: 'terra1pplp2s7u3h9cn3qddm7yfw7stajl8fqlu7tzr097697jx3ahtkqsnzvedu', // 'terra1gc4d4v82vjgkz0ag28lrmlxx3tf6sq69tmaujjpe7jwmnqakkx0qm28j2l',
       // TESTNET ONLY
@@ -171,7 +173,8 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       specAPI: 'https://terra2-testapi.spec.finance/api',
       chainID: INJECTIVE_MAINNET_CHAINID,
       finder: 'https://explorer.injective.network',
-      astroport_gql: 'astroport_multichain'
+      astroport_gql: 'astroport_multichain',
+      usdcToken: '',
     },
     testnet: {
       specToken: '',

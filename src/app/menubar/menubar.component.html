@@ -7,18 +7,18 @@
       <!--        <a class="nav-link text-center" routerLink="/dashboard" routerLinkActive="active"><i-->
       <!--          class="fas fa-tachometer-alt"></i> Dashboard</a>-->
       <!--      </li>-->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link text-center" routerLink="/vaults" routerLinkActive="active"><i class="fas fa-shield-alt"></i>
           Vaults</a>
-      </li>
+      </li> -->
 <!--      <li class="nav-item">-->
 <!--        <a [href]="tradeSpecUrl" class="nav-link text-center" target="_blank"><i-->
 <!--          class="fas fa-exchange-alt"></i> Trade SPEC</a>-->
 <!--      </li>-->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link text-center" routerLink="/airdrop" routerLinkActive="active"><i class="fas fa-parachute-box"></i>
           Airdrop</a>
-      </li>
+      </li> -->
       <!--      <li class="nav-item">-->
       <!--        <a class="nav-link text-center" routerLink="/gov" routerLinkActive="active"><i class="fas fa-balance-scale"></i>-->
       <!--          Gov</a>-->
@@ -31,7 +31,7 @@
     <div class="d-flex align-items-center">
       <div #selectNetworkDropdown class="selectNetworkDropdown me-2" mdbDropdown>
         <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
-          <img [src]='"/assets/luna.png"' class="network-logo me-1">Terra
+          <img [src]='"/assets/INJ.png"' class="network-logo me-1">Injective
         </button>
         <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
           <li>
@@ -41,7 +41,12 @@
             <div class="solid-line"></div>
           </li>
           <li><a (click)="selectNetworkDropdown.hide()"
-            class="dropdown-item"><img [src]='"/assets/luna.png"' class="network-logo"> Terra</a>
+            class="dropdown-item"><img [src]='"/assets/INJ.png"' class="network-logo"> Injective</a>
+          </li>
+          <li><a (click)="selectNetworkDropdown.hide()"
+            class="dropdown-item"
+            href="https://terra.spec.finance"
+            target="_blank"><img [src]='"/assets/luna.png"' class="network-logo"> Terra</a>
           </li>
           <li><a (click)="selectNetworkDropdown.hide()"
             class="dropdown-item"
@@ -75,9 +80,6 @@
           <li>
             <button (click)="copy()" class="dropdown-item" type="button">Copy address</button>
           </li>
-          <li>
-            <input type="file" (change)="handleFiles($event.target['files'])" style="width: 100%;" />Upload
-          </li>
           <li><a (click)="dropdown.hide()"
                 class="dropdown-item"
                 [href]="finderLink"
@@ -95,7 +97,7 @@
           {{walletText}} </span></button>
 
 
-      <button
+      <!-- <button
         (click)="mobileMenu.toggle()"
         aria-controls="navbarToggleMobileMenu"
         aria-expanded="false"
@@ -106,7 +108,7 @@
         type="button"
       >
         <i class="fas fa-bars"></i>
-      </button>
+      </button> -->
       <!--- right links -->
     </div>
   </div>

@@ -30,6 +30,8 @@ import {WasmService} from './api/wasm.service';
 import {ConfigService} from './config.service';
 import {fromBase64} from '../libs/base64';
 import { lp_balance_transform } from './calc/balance_calc';
+import { Bech32Address } from "@keplr-wallet/cosmos";
+import { getChainInfo } from './connect-options/chain-info';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -145,7 +147,15 @@ const ASTROPORT_POOLS_GQL = gql`
 
 
 export const isNativeToken = (input: string) => {
-  return input.startsWith('u') || input.startsWith('ibc') || input.startsWith('inj');
+  if (
+    (input.startsWith("terra") && input.length == 64) ||
+    (input.startsWith("inj") && input.length == 42) ||
+    (input.startsWith("kujira") && input.length == 65)
+  ) {
+    return false;
+  } else {
+    return true;
+  }
 };
 
 @Injectable({
@@ -866,11 +876,10 @@ export class InfoService {
       const vault: Vault = {
         baseSymbol,
         denomSymbol,
-        // TODO: Fix this
-        baseDecimals: baseTokenContract.startsWith('inj') ? 18 : isNativeToken(baseTokenContract) ? CONFIG.DIGIT : this.tokenInfos[baseTokenContract]?.decimals,
-        baseUnit: baseTokenContract.startsWith('inj') ? 1000000000000000000 : isNativeToken(baseTokenContract) ? CONFIG.UNIT : this.tokenInfos[baseTokenContract]?.unit,
-        denomDecimals: denomTokenContract.startsWith('inj') ? 18 : isNativeToken(denomTokenContract) ? CONFIG.DIGIT : this.tokenInfos[denomTokenContract]?.decimals,
-        denomUnit: denomTokenContract.startsWith('inj') ? 1000000000000000000 : isNativeToken(denomTokenContract) ? CONFIG.UNIT : this.tokenInfos[denomTokenContract]?.unit,
+        baseDecimals: this.getDecimals(baseTokenContract),
+        baseUnit: this.getUnits(baseTokenContract),
+        denomDecimals: this.getDecimals(denomTokenContract),
+        denomUnit: this.getUnits(denomTokenContract),
         baseAssetInfo: isNativeToken(baseTokenContract)
           ? {native_token: {denom: baseTokenContract}}
           : {token: {contract_addr: baseTokenContract}},
@@ -902,6 +911,23 @@ export class InfoService {
 
   findPoolAPRBySymbol(pairStat: PairStat, symbol: string) {
     return pairStat.poolAprs.find(poolAPR => poolAPR.rewardSymbol === symbol);
+  }
+
+  getDecimals = (denom: string) => {
+    const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
+    if (denom === chainInfo.stakeCurrency.coinMinimalDenom) {
+      return chainInfo.stakeCurrency.coinDecimals;
+    } else if (isNativeToken(denom)) {
+      return CONFIG.UNIT;
+    } else if (!isNaN(this.tokenInfos[denom]?.decimals)) {
+      return this.tokenInfos[denom]?.decimals
+    } else {
+      return CONFIG.UNIT;
+    }
+  }
+
+  getUnits = (denom: string) => {
+    return 10 ** this.getDecimals(denom);
   }
 
   private cleanSymbol(symbol: string) {
@@ -950,7 +976,6 @@ export class InfoService {
     const [poolResponse, ulunaPriceResponse] = await Promise.all(tasks);
     this.astroportPoolsData = poolResponse.data;
     if (!this.terrajs.isMainnet) {
-      console.log(ulunaPriceResponse)
       this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
     }
   }

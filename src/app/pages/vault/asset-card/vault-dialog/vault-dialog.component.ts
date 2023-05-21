@@ -513,7 +513,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (this.terrajs.network?.name === 'testnet') {
       return Denom.LUNA;
     } else {
-      return this.terrajs.settings.axlUsdcToken;
+      return this.terrajs.settings.usdcToken;
     }
   }
 

@@ -79,7 +79,7 @@ export class UrlPipe implements PipeTransform {
         switch (symbolOrContract) {
           default: {
             if (dex === 'Astroport') {
-              return `https://app.astroport.fi/swap?from=${this.terrajs.settings.axlUsdcToken}&to=${symbolOrContract}`;
+              return `https://app.astroport.fi/swap?from=${this.terrajs.settings.usdcToken}&to=${symbolOrContract}`;
             } else {
               return 'https://app.terraswap.io/#Swap';
             }
