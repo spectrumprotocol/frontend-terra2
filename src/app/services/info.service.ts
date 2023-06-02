@@ -918,11 +918,11 @@ export class InfoService {
     if (denom === chainInfo.stakeCurrency.coinMinimalDenom) {
       return chainInfo.stakeCurrency.coinDecimals;
     } else if (isNativeToken(denom)) {
-      return CONFIG.UNIT;
+      return CONFIG.DIGIT;
     } else if (!isNaN(this.tokenInfos[denom]?.decimals)) {
-      return this.tokenInfos[denom]?.decimals
+      return this.tokenInfos[denom]?.decimals;
     } else {
-      return CONFIG.UNIT;
+      return CONFIG.DIGIT;
     }
   }
 
