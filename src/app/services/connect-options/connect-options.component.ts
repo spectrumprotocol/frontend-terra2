@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { ExtensionInfo } from '@terra-money/wallet-controller/modules/extension-router/multiChannel';
 import { NetworkInfo } from '@terra-money/wallet-provider';
 import { NgForm } from '@angular/forms';
-import { CONFIG } from '../../consts/config';
+import {CONFIG, getCTokenRecipientPattern, getCTokenRecipientPlaceHolder} from '../../consts/config';
 import { KeplrExtensionConnector } from './keplr-extension-connector';
 import { LCDClient } from '@terra-money/terra.js';
 
@@ -93,5 +93,13 @@ export class ConnectOptionsComponent {
 
   findWalletExtensionIdentifier(identifier: string) {
     return !!this.walletExtensions.find((w) => w.identifier === identifier);
+  }
+
+  get cTokenRecipientPlaceHolder() {
+    return getCTokenRecipientPlaceHolder();
+  }
+
+  get cTokenRecipientPattern() {
+    return getCTokenRecipientPattern();
   }
 }

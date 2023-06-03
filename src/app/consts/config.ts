@@ -68,3 +68,20 @@ export class InjectivePublicKey extends SimplePublicKey {
     return any;
   }
 }
+
+
+export const getCTokenRecipientPlaceHolder = (): string => {
+  if (CONFIG.IS_TERRA){
+    return 'Input Terra Address';
+  } else {
+    return 'Input Injective Address';
+  }
+};
+
+export const getCTokenRecipientPattern = (): string => {
+  if (CONFIG.IS_TERRA){
+    return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
+  } else {
+    return '(^inj1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';
+  }
+};

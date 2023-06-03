@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { Coin, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../../consts/animations';
-import { CONFIG } from '../../../../consts/config';
+import {CONFIG, getCTokenRecipientPattern, getCTokenRecipientPlaceHolder} from '../../../../consts/config';
 import { toBase64 } from '../../../../libs/base64';
 import { floorSixDecimal, gt, ceilSixDecimal, times } from '../../../../libs/math';
 import { TerrajsService } from '../../../../services/terrajs.service';
@@ -97,6 +97,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   earlyWithdrawal = false;
   private heightChanged: Subscription;
   APRAPYTooltipHTML = '';
+  cTokenRecipient: string;
+  transferAmtCTokenInput: number;
+  disableTransferCTokenButton: boolean;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -692,8 +695,17 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     }
     this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
+  get cTokenRecipientPlaceHolder() {
+    return getCTokenRecipientPlaceHolder();
+  }
+
+  get cTokenRecipientPattern() {
+    return getCTokenRecipientPattern();
+  }
+
 
   //@memoizeAsync(60 * 1000)
+
   private async getTotalBondAmountAndFarmState() {
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
@@ -766,5 +778,16 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   copyFarmAddress() {
     this.clipboard.copy(this.vault.poolInfo.farmContract);
     this.modalService.notify('cToken address copied');
+  }
+
+  doTransferCToken() {
+    
+  }
+
+  setMaxCTokenTransfer() {
+    const rewardInfo = this.info.rewardInfos?.[this.vault.poolInfo.key];
+    if (rewardInfo) {
+      this.transferAmtCTokenInput = +rewardInfo.bond_share / CONFIG.UNIT;
+    }
   }
 }

@@ -23,10 +23,11 @@
           [mdbTooltip]="'If installed, please turn on Prioritise XDEFI to allow connection'"></i>
       </a>
     </ng-container>
+<!--    TODO inj view only mode in the future-->
     <form #formViewOnly="ngForm" novalidate *ngIf="isTerra">
       <div class="input-group">
         <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress" class="form-control fix-border"
-          placeholder="Input Terra Address" pattern="(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)"
+          [placeholder]="cTokenRecipientPlaceHolder" [pattern]="cTokenRecipientPattern"
           #viewOnlyAddressCtl="ngModel"
           [class.is-invalid]="(formViewOnly.submitted || viewOnlyAddressCtl.touched) && viewOnlyAddressCtl.invalid">
         <div class="dropdown btn-group" mdbDropdown>

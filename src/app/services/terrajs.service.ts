@@ -76,6 +76,7 @@ export class TerrajsService implements OnDestroy {
   private posting = false;
   private subscription: Subscription;
   isReadOnly = false;
+  public extension: string;
 
   constructor(
     private httpClient: HttpClient,
@@ -239,6 +240,7 @@ export class TerrajsService implements OnDestroy {
     localStorage.setItem('connect', connectType);
     if (identifier) {
       localStorage.setItem('extension', identifier);
+      this.extension = identifier;
     }
     if (this.isReadOnly) {
       localStorage.setItem('readonly_state', JSON.stringify(state));
