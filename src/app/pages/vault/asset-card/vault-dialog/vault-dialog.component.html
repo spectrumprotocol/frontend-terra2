@@ -481,8 +481,10 @@
           </form>
         </mdb-tab>
         <mdb-tab title="Transfer">
-          <div class="p-3" *ngIf="terrajs.extension === 'station'">
+          <ng-container *ngTemplateOutlet="transferModeSection"></ng-container>
+          <div class="p-3" *ngIf="transferMode === 'extension'">
             <p>Spectrum {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP cToken represents your share of deposited LP of this vault</p>
+
             <p>You can copy this {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP Spectrum cToken address below and paste into "Add tokens" in your wallet to transfer and view balance.</p>
             <div class="input-group">
               <input [readonly]="true" class="form-control fix-border" [value]="vault.poolInfo.farmContract"
@@ -492,8 +494,9 @@
               </button>
             </div>
           </div>
-          <div class="p-3">
-          <form #formCTokenTransfer="ngForm" class="needs-validation p-3" novalidate>
+          <div class="p-3" *ngIf="transferMode === 'auto'">
+            <p>Spectrum {{ vault.baseSymbol }}-{{ vault.denomSymbol }} LP cToken represents your share of deposited LP of this vault</p>
+            <form #formCTokenTransfer="ngForm" class="needs-validation" novalidate>
             <input class="form-control fix-border" [(ngModel)]="cTokenRecipient" required #cTokenRecipientCtl="ngModel"
                    name="cTokenRecipient" [placeholder]="cTokenRecipientPlaceHolder" [pattern]="cTokenRecipientPattern"/>
             <div class="text-end small mt-3 mb-1 fw-bold">
@@ -641,4 +644,18 @@
   </ng-container>
 
 
+</ng-template>
+
+<ng-template #transferModeSection>
+  <div class="auto-container mb-1 p-3">
+      <span class="btn-group w-100">
+         <button (click)="transferMode = 'auto'; changeTransferMode('auto')"
+                        [ngClass]="transferMode === 'auto' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          Auto Transfer Form
+        </button>
+        <button (click)="transferMode = 'extension'; changeTransferMode('extension')"
+                [ngClass]="transferMode === 'extension' ? 'btn-auto': 'btn-outline-auto'" class="btn" type="button">
+          Add To Wallet</button>
+      </span>
+  </div>
 </ng-template>

@@ -37,6 +37,7 @@ import { ModalService } from '../../../../services/modal.service';
 const DEPOSIT_FEE = '0';
 export type DEPOSIT_WITHDRAW_MODE_ENUM = 'tokentoken' | 'lp';
 export type WITHDRAW_INPUT_TYPE = 'lp' | 'ctoken';
+export type TRANSFER_MODE_ENUM = 'auto' | 'extension';
 
 @Component({
   selector: 'app-vault-dialog',
@@ -100,6 +101,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   APRAPYTooltipHTML = '';
   cTokenRecipient: string;
   transferAmtCTokenInput: number;
+  transferMode: TRANSFER_MODE_ENUM = 'auto';
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -713,7 +715,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
 
   //@memoizeAsync(60 * 1000)
-
   private async getTotalBondAmountAndFarmState() {
     const totalBondAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
@@ -801,5 +802,9 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     if (rewardInfo) {
       this.transferAmtCTokenInput = +rewardInfo.bond_share / CONFIG.UNIT;
     }
+  }
+
+  changeTransferMode(mode: TRANSFER_MODE_ENUM) {
+    setTimeout(() => this.transferMode = mode, 0);
   }
 }
