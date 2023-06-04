@@ -31,7 +31,8 @@
     <div class="d-flex align-items-center">
       <div #selectNetworkDropdown class="selectNetworkDropdown me-2" mdbDropdown>
         <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
-          <img [src]='"/assets/INJ.png"' class="network-logo me-1">Injective
+          <ng-container *ngIf="isTerra"><img [src]='"/assets/luna.png"' class="network-logo me-1">Terra</ng-container>
+          <ng-container *ngIf="!isTerra"><img [src]='"/assets/INJ.png"' class="network-logo me-1">Injective</ng-container>
         </button>
         <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
           <li>

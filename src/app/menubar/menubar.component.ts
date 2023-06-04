@@ -39,6 +39,10 @@ export class MenubarComponent implements OnInit, OnDestroy {
       : 'Injective Explorer';
   }
 
+  get isTerra() {
+    return CONFIG.IS_TERRA;
+  }
+
   constructor(
     public terrajs: TerrajsService,
     public info: InfoService,
