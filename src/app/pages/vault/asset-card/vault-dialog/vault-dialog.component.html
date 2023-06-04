@@ -494,17 +494,15 @@
           </div>
           <div class="p-3">
           <form #formCTokenTransfer="ngForm" class="needs-validation p-3" novalidate>
-              <div class="text-end small mt-3 mb-1 fw-bold">
-                <span class="sub-topic">cToken Balance: </span>
-                <span class="text-white">
+            <input class="form-control fix-border" [(ngModel)]="cTokenRecipient" required #cTokenRecipientCtl="ngModel"
+                   name="cTokenRecipient" [placeholder]="cTokenRecipientPlaceHolder" [pattern]="cTokenRecipientPattern"/>
+            <div class="text-end small mt-3 mb-1 fw-bold">
+              <span class="sub-topic">cToken Balance: </span>
+              <span class="text-white">
                {{ info.rewardInfos[vault.poolInfo.key]?.bond_share || '0' | unit: 6}}
                 </span>
-              </div>
-              <div class="input-group p-3">
-                <input class="form-control fix-border" [(ngModel)]="cTokenRecipient" required #cTokenRecipientCtl="ngModel"
-                       name="cTokenRecipient" [placeholder]="cTokenRecipientPlaceHolder" [pattern]="cTokenRecipientPattern"/>
-              </div>
-              <div class="input-group p-3">
+            </div>
+              <div class="input-group">
                 <input #transferCTokenAmtCtl="ngModel" [(ngModel)]="transferAmtCTokenInput"
                        [class.is-invalid]="(formCTokenTransfer.submitted || transferCTokenAmtCtl.touched) && transferCTokenAmtCtl.invalid"
                        [max]="+info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT" [min]="0.000001"
@@ -520,6 +518,8 @@
               </span>
               <span *ngIf="cTokenRecipientCtl.errors?.pattern" class="invalid-feedback-custom">
               Invalid address
+              </span><span *ngIf="transferAmtCTokenInput > +info.rewardInfos[vault.poolInfo.key]?.bond_share / UNIT && !(+info.rewardInfos[vault.poolInfo.key]?.bond_share === 0 || !info.rewardInfos[vault.poolInfo.key]?.bond_share)"
+                      class="invalid-feedback-custom">Amount must be between 0 and {{info.rewardInfos[vault.poolInfo.key]?.bond_share | unit }}
               </span>
               <button (click)="doTransferCToken()" [disabled]="disableTransferCTokenButton" class="btn btn-primary"
                       type="submit">Transfer cToken

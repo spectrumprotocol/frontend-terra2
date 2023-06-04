@@ -49,6 +49,7 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   vault: Vault;
   @ViewChild('formDeposit') formDeposit: NgForm;
   @ViewChild('formWithdraw') formWithdraw: NgForm;
+  @ViewChild('formCTokenTransfer') formCTokenTransfer: NgForm;
   @ViewChild('depositTokenAAmtTokenTokenCtl') depositTokenAAmtTokenTokenCtl: NgModel;
   @ViewChild('depositTokenBAmtTokenTokenCtl') depositTokenBAmtTokenTokenCtl: NgModel;
 
@@ -99,7 +100,6 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
   APRAPYTooltipHTML = '';
   cTokenRecipient: string;
   transferAmtCTokenInput: number;
-  disableTransferCTokenButton: boolean;
 
   constructor(
     public modalRef: MdbModalRef<VaultDialogComponent>,
@@ -134,6 +134,14 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
 
   get showFreeRatioMessage() {
     return +this.swap_asset_a_amount > 0 || +this.swap_asset_b_amount > 0 || +this.return_a_amount > 0 || +this.return_b_amount > 0;
+  }
+
+  get disableTransferCTokenButton() {
+    if (!this.formCTokenTransfer) {
+      // prevent error when deposit form is not yet completely initialized
+      return true;
+    }
+    return this.formCTokenTransfer?.invalid || !this.cTokenRecipient || !this.transferAmtCTokenInput;
   }
 
   get disableDepositButton() {
@@ -780,8 +788,12 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.modalService.notify('cToken address copied');
   }
 
-  doTransferCToken() {
-    
+  async doTransferCToken() {
+    const msg = {transfer: {
+        amount: times(this.transferAmtCTokenInput, CONFIG.UNIT),
+        recipient: this.cTokenRecipient
+      }};
+    await this.tokenService.handle(this.vault.poolInfo.farmContract, msg);
   }
 
   setMaxCTokenTransfer() {
