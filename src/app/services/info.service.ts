@@ -204,7 +204,8 @@ export class InfoService {
   ) {
     try {
       const infoSchemaVersion = localStorage.getItem('infoSchemaVersion');
-      if (infoSchemaVersion && +infoSchemaVersion >= 1) {
+      const chainIdData = localStorage.getItem('chainIdData');
+      if (infoSchemaVersion && +infoSchemaVersion >= 1 && chainIdData === this.terrajs.settings.chainID) {
         const poolJson = localStorage.getItem('poolInfos');
         if (poolJson) {
           this.poolInfos = JSON.parse(poolJson);
@@ -240,6 +241,7 @@ export class InfoService {
           this.compoundStat = JSON.parse(compoundStatJson);
         }
       } else {
+        console.log('localStorage clearing triggered.')
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
         localStorage.removeItem('stat');
@@ -840,6 +842,7 @@ export class InfoService {
       localStorage.setItem('infoSchemaVersion', '1');
     // } finally {
       this.loadedChainId = this.terrajs.settings.chainID;
+      localStorage.setItem('chainIdData', this.loadedChainId);
     // }
   }
 
