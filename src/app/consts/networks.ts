@@ -22,6 +22,7 @@ export interface ISettings {
   redToken?: string;
   sayveToken?: string;
   stLUNAToken?: string;
+  roarToken?: string;
   xAstroToken?: string;
   astroportGov?: string;
   astroportGenerator?: string;
@@ -48,6 +49,8 @@ export interface ISettings {
   astroportSayveLunaFarmCompoundProxy?: string;
   astroportLunaStLunaFarm?: string;
   astroportLunaStLunaFarmCompoundProxy?: string;
+  astroportRoarLunaFarm: string;
+  astroportRoarLunaFarmCompoundProxy: string;
   // MAINNET ONLY
   // TESTNET ONLY
   astroportAstroLunaFarm?: string;
@@ -93,6 +96,7 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       redToken: 'terra1xe8umegahlqphtpvjsuwfzfvyjfvag5h8rffsx6ezm0el4xzsf8s7uzezk',
       sayveToken: 'terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3',
       stLUNAToken: 'ibc/08095CEDEA29977C9DD0CE9A48329FDA622C183359D5F90CF04CC4FF80CBE431',
+    roarToken: 'terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv',
       xAstroToken: 'terra1x62mjnme4y0rdnag3r8rfgjuutsqlkkyuh4ndgex0wl3wue25uksau39q8',
       astroportGov: '',
       astroportGenerator: 'terra1vf9ceekuxx8kycm7yv6hs96hgwsmrzt4la6s84skrgvfu7t09huqqdg09d', // 'terra1ksvlfex49desf4c452j6dewdjs6c48nafemetuwjyj6yexd7x3wqvwa7j9',
@@ -119,6 +123,8 @@ export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
       astroportSayveLunaFarmCompoundProxy: 'terra1cgya885wdlqvu2ad0fengce39lyvq02ccczh7w7hkt7yylll2klsw62urq',
       astroportLunaStLunaFarm: 'terra1n8lx9uhysjfxsc9cqanydrkqlm3wrenew8kc0vqzjr6gw0u92teqrmvxcv', // pair: terra1re0yj0j6e9v2szg7kp02ut6u8jjea586t6pnpq6628wl36fphtpqwt6l7p lp : terra14n22zd24nath0tf8fwn468nz7753rjuks67ppddrcqwq37x2xsxsddqxqc
       astroportLunaStLunaFarmCompoundProxy: 'terra18v87nv8nhxtmynetmtg228lee2cgx7dk828szuglkjnvwhr6ye0qaz48w5',
+    astroportRoarLunaFarm: 'terra1fz4x56u96fkgzvtdxaq2969qlmfk4wnwq0fqhlrklpqc629ah9qs4h8v50', // pair: terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q, lp: terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4
+    astroportRoarLunaFarmCompoundProxy: 'terra14l4nwrfcdgjd2dtucd8f66p8w0fanxvus7twuuupq96cmw82w4usw2wjc3',
       // MAINNET ONLY
       lcd: 'https://phoenix-lcd.terra.dev',
       fcd: 'https://phoenix-fcd.terra.dev',

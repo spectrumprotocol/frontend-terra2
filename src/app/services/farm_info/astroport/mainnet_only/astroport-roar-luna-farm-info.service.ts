@@ -6,7 +6,7 @@ import {
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
-  CHAIN_ID_ENUM,
+  NETWORK_NAME_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -19,26 +19,24 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
 import {Denom} from '../../../../consts/denom';
-import {getStablePrice} from '../../../../libs/stable';
-import {TERRA2_MAINNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
-export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
-  readonly farm = 'Stride';
-  readonly farmColor = '#E91279';
+export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
+  readonly farm = 'Lion DAO';
+  readonly farmColor = '#F5F412';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
   readonly dex: DEX = 'Astroport';
   baseTokenContract: string;
   denomTokenContract: string;
-  readonly highlight = false;
+  readonly highlight = true;
   readonly notUseAstroportGqlApr = false;
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([TERRA2_MAINNET_CHAINID]);
+  readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
-  readonly poolType = 'stable';
+  readonly poolType = 'xyk';
 
   constructor(
     private farmService: SpectrumAstroportGenericFarmService,
@@ -49,12 +47,12 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = Denom.LUNA;
-    this.denomTokenContract = this.terrajs.settings.stLUNAToken;
+    this.baseTokenContract = this.terrajs.settings.roarToken;
+    this.denomTokenContract = Denom.LUNA;
     this.poolAprs =  [{
       apr: 0,
-      rewardSymbol: SYMBOLS.XASTRO,
-      rewardContract: this.terrajs.settings.xAstroToken
+      rewardSymbol: SYMBOLS.ROAR,
+      rewardContract: this.terrajs.settings.roarToken
     },
     {
       apr: 0,
@@ -62,13 +60,13 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
       rewardContract: this.terrajs.settings.astroToken
     }
     ];
-    this.farmContract = this.terrajs.settings.astroportLunaStLunaFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportLunaStLunaFarmCompoundProxy;
+    this.farmContract = this.terrajs.settings.astroportRoarLunaFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportRoarLunaFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
   // no LP APR calculation, return 0 to use Astroport API
-  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number, ampStablePairs: Record<string, string>): Promise<Record<string, PairStat>> {
+  async queryPairStats(poolInfos: Record<string, PoolInfo>, poolResponses: Record<string, PoolResponse>, govVaults: VaultsResponse, pairInfos: Record<string, PairInfo>, tokenInfos: Record<string, TokenInfo>, ulunaPrice: number): Promise<Record<string, PairStat>> {
     const key = `${this.dex}|${this.baseTokenContract}|${this.denomTokenContract}`;
     const depositAmountTask = this.wasm.query(this.terrajs.settings.astroportGenerator, {
       deposit: {
@@ -81,7 +79,10 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-    
+    const uluna = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
+    if (!uluna) {
+      return;
+    }
     pairs[key] = {
       poolAprs: this.poolAprs,
       poolApy: 0,
@@ -89,28 +90,13 @@ export class AstroportLunaStlunaFarmInfoService implements FarmInfoService {
       multiplier: 0,
       vaultFee: 0
     };
-
-    const [ulunaAsset, stLUNAsset] = p.assets[0].info?.['native_token']?.['denom'] === Denom.LUNA
-        ? [p.assets[0], p.assets[1]]
-        : [p.assets[1], p.assets[0]];
-    if (!ulunaAsset) {
-      return;
-    }
-    const amp = ampStablePairs[key];
-    const stLunaPrice = getStablePrice(+stLUNAsset.amount, +ulunaAsset.amount, +amp);
-    const stLunaSwap = new BigNumber(depositAmount)
-        .times(stLUNAsset.amount)
-        .div(p.total_share)
-        .times(stLunaPrice)
-        .integerValue(BigNumber.ROUND_DOWN);
-
     const pair = pairs[key];
-    pair.tvl = new BigNumber(depositAmount)
-        .times(ulunaAsset.amount)
-        .div(p.total_share)
-        .plus(stLunaSwap)
-        .times(ulunaPrice)
-        .toString();
+    pair.tvl = new BigNumber(uluna.amount)
+      .times(depositAmount)
+      .times(ulunaPrice)
+      .times(2)
+      .div(p.total_share)
+      .toString();
 
     return pairs;
   }
