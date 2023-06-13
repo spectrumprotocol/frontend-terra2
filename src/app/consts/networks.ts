@@ -3,7 +3,8 @@ import {
   INJECTIVE_MAINNET_CHAINID,
   INJECTIVE_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
-  TERRA2_TESTNET_CHAINID
+  TERRA2_TESTNET_CHAINID,
+  getCurrentChainBrand
 } from './config';
 
 export interface ISettings {
@@ -77,7 +78,7 @@ export interface ISettings {
   astroport_gql: string;
 }
 
-export const networks: Record<string, ISettings> = CONFIG.IS_TERRA
+export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'Terra'
   ? {
     mainnet: {
       specToken: '',

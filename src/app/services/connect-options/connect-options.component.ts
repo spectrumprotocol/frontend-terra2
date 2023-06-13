@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { ExtensionInfo } from '@terra-money/wallet-controller/modules/extension-router/multiChannel';
 import { NetworkInfo } from '@terra-money/wallet-provider';
 import { NgForm } from '@angular/forms';
-import {CONFIG, getCTokenRecipientPattern, getCTokenRecipientPlaceHolder} from '../../consts/config';
+import {CONFIG, getCTokenRecipientPattern, getCTokenRecipientPlaceHolder, getCurrentChainBrand} from '../../consts/config';
 import { KeplrExtensionConnector } from './keplr-extension-connector';
 import { LCDClient } from '@terra-money/terra.js';
 
@@ -30,7 +30,7 @@ export class ConnectOptionsComponent {
   isPhoneOrTablet: boolean;
   viewOnlyAddress: string;
   @ViewChild('formViewOnly') formViewOnly: NgForm;
-  isTerra = CONFIG.IS_TERRA;
+  isTerra = getCurrentChainBrand() === 'Terra';
 
   constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
     this.setInstallableExtensions();
@@ -61,7 +61,7 @@ export class ConnectOptionsComponent {
   }
 
   private async setInstallableExtensions() {
-    if (CONFIG.IS_TERRA) {
+    if (getCurrentChainBrand() === 'Terra') {
       this.walletExtensionsForInstall = await firstValueFrom(getExtensions());
       this.walletExtensions = window.terraWallets ?? (window.terraWallets = []);
     } else {

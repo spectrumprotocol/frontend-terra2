@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { CreateTxOptions, Fee, Msg, SignerOptions, Tx } from '@terra-money/terra.js';
-import { CONFIG } from '../../consts/config';
+import { CONFIG, getCurrentChainBrand } from '../../consts/config';
 import { TerrajsService } from '../terrajs.service';
 import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
@@ -47,7 +47,6 @@ export class TxPostComponent implements OnInit {
     showTicksValues: false,
     hideLimitLabels: true,
   };
-  isTerra = CONFIG.IS_TERRA;
   currency: Currency;
 
   constructor(
@@ -103,7 +102,7 @@ export class TxPostComponent implements OnInit {
       // simulate
       this.loadingMsg = 'Simulating...';
       const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
-      const feeDenoms = CONFIG.IS_TERRA
+      const feeDenoms = getCurrentChainBrand() === 'Terra'
         ? [Denom.LUNA]
         : [Denom.INJ]
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
@@ -172,7 +171,7 @@ export class TxPostComponent implements OnInit {
       }
       this.txhash = res.result.txhash;
       if (this.txhash) {
-        this.link = CONFIG.IS_TERRA
+        this.link = getCurrentChainBrand() === 'Terra'
           ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/tx/${this.txhash}`
           : `${this.terrajs.settings.finder}/transaction/${this.txhash}`;
       }

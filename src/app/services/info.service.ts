@@ -4,7 +4,7 @@ import {TokenService} from './api/token.service';
 import {BankService} from './api/bank.service';
 import {PoolResponse} from './api/terraswap_pair/pool_response';
 import {div, plus} from '../libs/math';
-import {CONFIG, INJECTIVE_TESTNET_CHAINID, TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID} from '../consts/config';
+import {CONFIG, INJECTIVE_TESTNET_CHAINID, TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID, getCurrentChainBrand} from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
@@ -508,7 +508,7 @@ export class InfoService {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
         }
-        const chainTokenUSDPrice = CONFIG.IS_TERRA ? this.ulunaUSDPrice : this.injUSDPrice;
+        const chainTokenUSDPrice = getCurrentChainBrand() === 'Terra' ? this.ulunaUSDPrice : this.injUSDPrice;
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, chainTokenUSDPrice, this.ampStablePairs);
         const keys = Object.keys(pairStats);
         for (const key of keys) {
@@ -702,7 +702,7 @@ export class InfoService {
       poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
         .then(it => poolResponses[poolResponseKey] = it));
     }
-    if (!CONFIG.IS_TERRA && this.loadedChainId === INJECTIVE_TESTNET_CHAINID){
+    if (getCurrentChainBrand() !== 'Terra' && this.loadedChainId === INJECTIVE_TESTNET_CHAINID){
       const injUsdcPoolTestnet = 'inj1akax66g89c8sp29f2reyxs4rwv0ljr0ljsnmy5';
       const usdcTestnet = 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc';
       poolTasks.push(bundler.query(injUsdcPoolTestnet, {pool: {}})

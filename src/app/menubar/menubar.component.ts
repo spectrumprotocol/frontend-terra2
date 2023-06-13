@@ -8,7 +8,7 @@ import {Subscription, switchMap, tap} from 'rxjs';
 import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
 import { Currency } from '@keplr-wallet/types';
 import { getChainInfo } from '../services/connect-options/chain-info';
-import { CONFIG } from '../consts/config';
+import { CONFIG, getCurrentChainBrand } from '../consts/config';
 import { WasmService } from '../services/api/wasm.service';
 import { toBase64 } from '../libs/base64';
 import * as zlib from 'pako';
@@ -28,19 +28,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
   currency: Currency;
 
   get finderLink() {
-    return CONFIG.IS_TERRA
+    return getCurrentChainBrand() === 'Terra'
       ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/account/${this.terrajs.address}`
       : `${this.terrajs.settings.finder}/account/${this.terrajs.address}`;
   }
 
   get finderName() {
-    return CONFIG.IS_TERRA
+    return getCurrentChainBrand() === 'Terra'
       ? 'Terra Finder'
       : 'Injective Explorer';
   }
 
   get isTerra() {
-    return CONFIG.IS_TERRA;
+    return getCurrentChainBrand() === 'Terra'
   }
 
   constructor(

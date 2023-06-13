@@ -6,6 +6,8 @@ export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
 export const TERRA2_TESTNET_CHAINID = 'pisco-1';
 export const INJECTIVE_MAINNET_CHAINID = 'injective-1';
 export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
+export type CHAIN_BRAND = 'Terra' | 'Injective'
+
 export const CONFIG = {
   DIGIT: 6,
   UNIT: 1000000,  // 10^DIGIT
@@ -18,11 +20,23 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: INJECTIVE_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
-  IS_TERRA: false,
+  CHAIN_ID: TERRA2_MAINNET_CHAINID, // 'phoenix-1', // 'injective-1',
 };
 
-CONFIG.IS_TERRA = CONFIG.CHAIN_ID === TERRA2_MAINNET_CHAINID || CONFIG.CHAIN_ID === TERRA2_TESTNET_CHAINID;
+export const getCurrentChainBrand = (): CHAIN_BRAND => {
+  switch (CONFIG.CHAIN_ID){
+    case TERRA2_MAINNET_CHAINID:
+      return 'Terra' as CHAIN_BRAND;
+    case TERRA2_TESTNET_CHAINID:
+      return 'Terra' as CHAIN_BRAND;
+    case INJECTIVE_MAINNET_CHAINID:
+      return 'Injective' as CHAIN_BRAND;
+    case INJECTIVE_TESTNET_CHAINID:
+      return 'Injective' as CHAIN_BRAND;
+    default:
+      return 'Terra' as CHAIN_BRAND;
+  }
+};
 
 // HACK
 if (CONFIG.CHAIN_ID.startsWith('injective')) {
@@ -71,7 +85,7 @@ export class InjectivePublicKey extends SimplePublicKey {
 
 
 export const getCTokenRecipientPlaceHolder = (): string => {
-  if (CONFIG.IS_TERRA){
+  if (getCurrentChainBrand() !== 'Terra'){
     return 'Input Terra Address';
   } else {
     return 'Input Injective Address';
@@ -79,7 +93,7 @@ export const getCTokenRecipientPlaceHolder = (): string => {
 };
 
 export const getCTokenRecipientPattern = (): string => {
-  if (CONFIG.IS_TERRA){
+  if (getCurrentChainBrand() !== 'Terra'){
     return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
   } else {
     return '(^inj1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';

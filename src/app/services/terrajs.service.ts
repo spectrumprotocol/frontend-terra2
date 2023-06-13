@@ -14,7 +14,7 @@ import {
 } from '@terra-money/wallet-provider';
 import { throttleAsync } from 'utils-decorators';
 import { MdbModalService } from 'mdb-angular-ui-kit/modal';
-import { CONFIG } from '../consts/config';
+import { CONFIG, getCurrentChainBrand } from '../consts/config';
 import { getChainInfo } from './connect-options/chain-info';
 
 export const BLOCK_TIME = CONFIG.CHAIN_ID.startsWith('injective') ? 1100 : 6500; // 6.5s
@@ -133,7 +133,7 @@ export class TerrajsService implements OnDestroy {
 
   async initLcdClient() {
     let gasPrices: Record<string, string>;
-    if (CONFIG.IS_TERRA) {
+    if (getCurrentChainBrand() === 'Terra') {
       gasPrices = await firstValueFrom(this.httpClient.get<Record<string, string>>(`${this.settings.fcd}/v1/txs/gas_prices`));
     } else {
       gasPrices = {};
