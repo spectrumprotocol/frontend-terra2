@@ -6,7 +6,10 @@ export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
 export const TERRA2_TESTNET_CHAINID = 'pisco-1';
 export const INJECTIVE_MAINNET_CHAINID = 'injective-1';
 export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
-export type CHAIN_BRAND = 'Terra' | 'Injective'
+export const NEUTRON_MAINNET_CHAINID = 'neutron-1';
+export const NEUTRON_TESTNET_CHAINID = 'pion-1';
+export const SEI_TESTNET_CHAINID = 'atlantic-2';
+export type CHAIN_BRAND = 'Terra' | 'Injective' | 'Neutron' | 'Sei'
 
 export const CONFIG = {
   DIGIT: 6,
@@ -20,7 +23,7 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: TERRA2_MAINNET_CHAINID, // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: NEUTRON_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
 };
 
 export const getCurrentChainBrand = (): CHAIN_BRAND => {
@@ -33,6 +36,12 @@ export const getCurrentChainBrand = (): CHAIN_BRAND => {
       return 'Injective' as CHAIN_BRAND;
     case INJECTIVE_TESTNET_CHAINID:
       return 'Injective' as CHAIN_BRAND;
+    case NEUTRON_MAINNET_CHAINID:
+      return 'Neutron' as CHAIN_BRAND;
+    case NEUTRON_TESTNET_CHAINID:
+      return 'Neutron' as CHAIN_BRAND;
+    case SEI_TESTNET_CHAINID:
+      return 'Sei' as CHAIN_BRAND;
     default:
       return 'Terra' as CHAIN_BRAND;
   }

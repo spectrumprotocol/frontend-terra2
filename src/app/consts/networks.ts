@@ -2,6 +2,8 @@ import {
   CONFIG,
   INJECTIVE_MAINNET_CHAINID,
   INJECTIVE_TESTNET_CHAINID,
+  NEUTRON_MAINNET_CHAINID,
+  NEUTRON_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
   TERRA2_TESTNET_CHAINID,
   getCurrentChainBrand
@@ -166,7 +168,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       astroport_gql: 'astroport_multichain'
     },
   }
-  : // CONFIG.CHAIN_ID.startsWith('injective')
+  : getCurrentChainBrand() === 'Injective' ?
   {
     mainnet: {
       specToken: '',
@@ -202,4 +204,35 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       injToken: 'inj',
       usdcToken: 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc',
     }
-  };
+  } : { // Neutron
+      mainnet: {
+        specToken: '',
+        airdrop: '',
+        usdcToken: '',
+        astroportRouter: '',
+        astroportFactory: '',
+        astroportGenerator: '',
+        lcd: 'https://multichain-nodes.astroport.fi/neutron-1/rpc/', // 
+        fcd: '',
+        querier: '',
+        specAPI: '',
+        chainID: NEUTRON_MAINNET_CHAINID,
+        finder: 'https://www.mintscan.io/neutron/', // TODO override format https://www.mintscan.io/neutron/account/*
+        astroport_gql: 'astroport_multichain',
+      },
+      testnet: {
+        specToken: '',
+        airdrop: '',
+        usdcToken: '',
+        astroportRouter: '',
+        astroportFactory: '',
+        astroportGenerator: '',
+        lcd: 'https://rpc-palvus.pion-1.ntrn.tech/',
+        fcd: '',
+        querier: '',
+        specAPI: '',
+        chainID: NEUTRON_TESTNET_CHAINID,
+        finder: 'https://explorer.rs-testnet.polypore.xyz',
+        astroport_gql: 'astroport_multichain',
+      }
+    };
