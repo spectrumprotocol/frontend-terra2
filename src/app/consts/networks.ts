@@ -212,7 +212,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
-        lcd: 'https://multichain-nodes.astroport.fi/neutron-1/rpc/', // 
+        lcd: 'https://lcd-neutron.keplr.app',
         fcd: '',
         querier: '',
         specAPI: '',
@@ -227,7 +227,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
-        lcd: 'https://rpc-palvus.pion-1.ntrn.tech/',
+        lcd: 'https://rpc-palvus.pion-1.ntrn.tech',
         fcd: '',
         querier: '',
         specAPI: '',
