@@ -706,11 +706,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
   get cTokenRecipientPlaceHolder() {
-    return getCTokenRecipientPlaceHolder();
+    return getAddressPlaceHolder();
   }
 
   get cTokenRecipientPattern() {
-    return getCTokenRecipientPattern();
+    return getAddressPattern();
   }
 
 
