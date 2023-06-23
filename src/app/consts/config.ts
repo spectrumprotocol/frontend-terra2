@@ -84,7 +84,7 @@ export class InjectivePublicKey extends SimplePublicKey {
 }
 
 
-export const getCTokenRecipientPlaceHolder = (): string => {
+export const getAddressPlaceHolder = (): string => {
   if (getCurrentChainBrand() !== 'Terra'){
     return 'Input Terra Address';
   } else {
@@ -92,7 +92,7 @@ export const getCTokenRecipientPlaceHolder = (): string => {
   }
 };
 
-export const getCTokenRecipientPattern = (): string => {
+export const getAddressPattern = (): string => {
   if (getCurrentChainBrand() !== 'Terra'){
     return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
   } else {

@@ -27,9 +27,9 @@
     <form #formViewOnly="ngForm" novalidate *ngIf="isTerra">
       <div class="input-group">
         <input [(ngModel)]="viewOnlyAddress" name="viewOnlyAddress" class="form-control fix-border"
-          [placeholder]="cTokenRecipientPlaceHolder" [pattern]="cTokenRecipientPattern"
-          #viewOnlyAddressCtl="ngModel"
-          [class.is-invalid]="(formViewOnly.submitted || viewOnlyAddressCtl.touched) && viewOnlyAddressCtl.invalid">
+               [placeholder]="addressPlaceHolder" [pattern]="addressRecipientPattern"
+               #viewOnlyAddressCtl="ngModel"
+               [class.is-invalid]="(formViewOnly.submitted || viewOnlyAddressCtl.touched) && viewOnlyAddressCtl.invalid">
         <div class="dropdown btn-group" mdbDropdown>
           <button aria-expanded="false" class="btn btn-max last" mdbDropdownToggle type="button"
             [disabled]="viewOnlyAddressCtl.invalid">
