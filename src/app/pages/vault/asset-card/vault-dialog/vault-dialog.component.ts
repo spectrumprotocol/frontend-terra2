@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { Coin, MsgExecuteContract } from '@terra-money/terra.js';
 import { fade } from '../../../../consts/animations';
-import {CONFIG, getCTokenRecipientPattern, getCTokenRecipientPlaceHolder} from '../../../../consts/config';
+import {CONFIG, getAddressPattern, getAddressPlaceHolder} from '../../../../consts/config';
 import { toBase64 } from '../../../../libs/base64';
 import { floorSixDecimal, gt, ceilSixDecimal, times } from '../../../../libs/math';
 import { TerrajsService } from '../../../../services/terrajs.service';
@@ -706,11 +706,11 @@ export class VaultDialogComponent implements OnInit, OnDestroy {
     this.calcGrossCToken(response.lp_amount, 'deposit', 'lp');
   }
   get cTokenRecipientPlaceHolder() {
-    return getCTokenRecipientPlaceHolder();
+    return getAddressPlaceHolder();
   }
 
   get cTokenRecipientPattern() {
-    return getCTokenRecipientPattern();
+    return getAddressPattern();
   }
 
 
