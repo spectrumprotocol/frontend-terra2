@@ -7,5 +7,6 @@ export const SYMBOLS = {
   SAYVE: 'SAYVE',
   STLUNA: 'stLUNA',
   XASTRO: 'xASTRO',
-  ROAR: 'ROAR'
+  ROAR: 'ROAR',
+  CAPA: 'CAPA',
 };
