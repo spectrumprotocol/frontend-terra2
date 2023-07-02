@@ -1,4 +1,4 @@
-import { Any } from "@injectivelabs/core-proto-ts/cjs/google/protobuf/any";
+import { Any } from '@terra-money/terra.proto/google/protobuf/any';
 import { AccAddress, Account, BaseAccount, PublicKey, SimplePublicKey } from "@terra-money/terra.js";
 import { bech32 } from 'bech32';
 
@@ -24,7 +24,7 @@ export const CONFIG = {
 };
 
 export const getCurrentChainBrand = (): CHAIN_BRAND => {
-  switch (CONFIG.CHAIN_ID){
+  switch (CONFIG.CHAIN_ID) {
     case TERRA2_MAINNET_CHAINID:
       return 'Terra' as CHAIN_BRAND;
     case TERRA2_TESTNET_CHAINID:
@@ -81,11 +81,11 @@ export class InjectivePublicKey extends SimplePublicKey {
     any.typeUrl = '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
     return any;
   }
-}
+  }
 
 
 export const getAddressPlaceHolder = (): string => {
-  if (getCurrentChainBrand() !== 'Terra'){
+  if (getCurrentChainBrand() !== 'Terra') {
     return 'Input Terra Address';
   } else {
     return 'Input Injective Address';
@@ -93,7 +93,7 @@ export const getAddressPlaceHolder = (): string => {
 };
 
 export const getAddressPattern = (): string => {
-  if (getCurrentChainBrand() !== 'Terra'){
+  if (getCurrentChainBrand() !== 'Terra') {
     return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
   } else {
     return '(^inj1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';

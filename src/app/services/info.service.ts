@@ -1,10 +1,10 @@
-import {Inject, Injectable} from '@angular/core';
-import {BLOCK_TIME, TerrajsService} from './terrajs.service';
-import {TokenService} from './api/token.service';
-import {BankService} from './api/bank.service';
-import {PoolResponse} from './api/terraswap_pair/pool_response';
-import {div, plus} from '../libs/math';
-import {CONFIG, INJECTIVE_TESTNET_CHAINID, TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID, getCurrentChainBrand} from '../consts/config';
+import { Inject, Injectable } from '@angular/core';
+import { BLOCK_TIME, TerrajsService } from './terrajs.service';
+import { TokenService } from './api/token.service';
+import { BankService } from './api/bank.service';
+import { PoolResponse } from './api/terraswap_pair/pool_response';
+import { div, plus } from '../libs/math';
+import { CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand } from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
@@ -16,21 +16,20 @@ import {
   RewardInfoResponseItem,
   FarmConfig
 } from './farm_info/farm-info.service';
-import {fromEntries} from '../libs/core';
-import {PairInfo} from './api/astroport_pair/pair_info';
-import {Vault} from '../pages/vault/vault.component';
-import {HttpClient} from '@angular/common/http';
-import {memoize} from 'utils-decorators';
-import {Denom} from '../consts/denom';
-import {Apollo, gql} from 'apollo-angular';
-import {BalanceResponse} from './api/gov/balance_response';
-import {StateInfo} from './api/gov/state_info';
-import {QueryBundler} from './querier-bundler';
-import {WasmService} from './api/wasm.service';
-import {ConfigService} from './config.service';
-import {fromBase64} from '../libs/base64';
+import { fromEntries } from '../libs/core';
+import { PairInfo } from './api/astroport_pair/pair_info';
+import { Vault } from '../pages/vault/vault.component';
+import { HttpClient } from '@angular/common/http';
+import { memoize } from 'utils-decorators';
+import { Denom } from '../consts/denom';
+import { Apollo, gql } from 'apollo-angular';
+import { BalanceResponse } from './api/gov/balance_response';
+import { StateInfo } from './api/gov/state_info';
+import { QueryBundler } from './querier-bundler';
+import { WasmService } from './api/wasm.service';
+import { ConfigService } from './config.service';
+import { fromBase64 } from '../libs/base64';
 import { lp_balance_transform } from './calc/balance_calc';
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { getChainInfo } from './connect-options/chain-info';
 
 export interface Stat {
@@ -365,7 +364,7 @@ export class InfoService {
     this.poolInfos = poolInfos;
   }
 
-  poolAprsToRewardTokenContracts(poolAprs: PoolAPR[]){
+  poolAprsToRewardTokenContracts(poolAprs: PoolAPR[]) {
     return poolAprs.map(poolApr => poolApr.rewardContract);
   }
 
@@ -387,9 +386,9 @@ export class InfoService {
         continue;
       }
       const tokenA = isNativeToken(baseTokenContract) ?
-        {native_token: {denom: baseTokenContract}} : {token: {contract_addr: baseTokenContract}};
+        { native_token: { denom: baseTokenContract } } : { token: { contract_addr: baseTokenContract } };
       const tokenB = isNativeToken(denomTokenContract) ?
-        {native_token: {denom: denomTokenContract}} : {token: {contract_addr: denomTokenContract}};
+        { native_token: { denom: denomTokenContract } } : { token: { contract_addr: denomTokenContract } };
 
       let factory: string;
       if (this.poolInfos[key].dex === 'Astroport') {
@@ -415,20 +414,20 @@ export class InfoService {
     }
   }
 
-  async ensureAmpStablePairs(){
+  async ensureAmpStablePairs() {
     const pairInfoKeys = Object.keys(this.pairInfos);
     const tasks: Promise<any>[] = [];
     const bundler = new QueryBundler(this.wasm);
-    for (const pairInfoKey of pairInfoKeys){
+    for (const pairInfoKey of pairInfoKeys) {
       const pairInfo = this.pairInfos[pairInfoKey];
-      if (pairInfo.pair_type?.['stable']){
+      if (pairInfo.pair_type?.['stable']) {
         const task = bundler.query(pairInfo.contract_addr, {
           config: {}
         }).then(value => {
           try {
             const params = fromBase64<any>(value.params);
             this.ampStablePairs[pairInfoKey] = params.amp;
-          } catch (e){
+          } catch (e) {
             console.error('ensureAmpStablePairs', pairInfo, e);
           }
         });
@@ -467,7 +466,7 @@ export class InfoService {
       if (this.tokenInfos[key]) {
         continue;
       }
-      const task = bundler.query(key, {token_info: {}})
+      const task = bundler.query(key, { token_info: {} })
         .then(it => this.tokenInfos[key] = {
           name: it.name,
           symbol: this.cleanSymbol(it.symbol),
@@ -503,7 +502,7 @@ export class InfoService {
     const vaults = null; // await vaultsTask; TODO
     const tasks = this.farmInfos.filter(farmInfo => this.shouldEnableFarmInfo(farmInfo)).map(async farmInfo => {
       const farmPoolInfos = fromEntries(Object.entries(this.poolInfos)
-          .filter(it => it[1].farmContract === farmInfo.farmContract));
+        .filter(it => it[1].farmContract === farmInfo.farmContract));
       try {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
@@ -632,7 +631,7 @@ export class InfoService {
           reward_info: {
             staker_addr: this.terrajs.address,
           }
-        }).then(({reward_info: reward}: { reward_info: RewardInfoResponseItem }) => processRewards(farmInfo, reward));
+        }).then(({ reward_info: reward }: { reward_info: RewardInfoResponseItem }) => processRewards(farmInfo, reward));
       }
       tasks.push(task);
     }
@@ -674,7 +673,7 @@ export class InfoService {
     } else {
       tasks.push(this.refreshNativeTokens());
     }
-    tasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
+    tasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
       .then(it => this.poolResponses[key] = it));
 
     tasks.push(bundler.query(pairInfo.liquidity_token, balanceQuery)
@@ -699,19 +698,19 @@ export class InfoService {
       }
       const pairInfo = this.pairInfos[poolResponseKey];
 
-      poolTasks.push(bundler.query(pairInfo.contract_addr, {pool: {}})
+      poolTasks.push(bundler.query(pairInfo.contract_addr, { pool: {} })
         .then(it => poolResponses[poolResponseKey] = it));
     }
-    if (getCurrentChainBrand() !== 'Terra' && this.loadedChainId === INJECTIVE_TESTNET_CHAINID){
+    if (getCurrentChainBrand() !== 'Terra' && this.loadedChainId === INJECTIVE_TESTNET_CHAINID) {
       const injUsdcPoolTestnet = 'inj1akax66g89c8sp29f2reyxs4rwv0ljr0ljsnmy5';
       const usdcTestnet = 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc';
-      poolTasks.push(bundler.query(injUsdcPoolTestnet, {pool: {}})
-          .then(pool => {
-            poolResponses[`Astroport|${Denom.INJ}|${usdcTestnet}`] = pool;
-            const axlUsdcAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === usdcTestnet)?.amount || 0;
-            const injAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.INJ)?.amount || 0;
-            this.injUSDPrice = +div(axlUsdcAmount, injAmount);
-          }));
+      poolTasks.push(bundler.query(injUsdcPoolTestnet, { pool: {} })
+        .then(pool => {
+          poolResponses[`Astroport|${Denom.INJ}|${usdcTestnet}`] = pool;
+          const axlUsdcAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === usdcTestnet)?.amount || 0;
+          const injAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.INJ)?.amount || 0;
+          this.injUSDPrice = +div(axlUsdcAmount, injAmount);
+        }));
     }
 
     bundler.flush();
@@ -781,7 +780,7 @@ export class InfoService {
       }
       bond_amount = bond_amount / CONFIG.UNIT || 0;
       if (!portfolio.farms.get(vault.poolInfo.farm)) {
-        portfolio.farms.set(vault.poolInfo.farm, {bond_amount_ust: 0});
+        portfolio.farms.set(vault.poolInfo.farm, { bond_amount_ust: 0 });
       }
       portfolio.farms.get(vault.poolInfo.farm).bond_amount_ust += bond_amount;
       tvl += bond_amount;
@@ -838,11 +837,11 @@ export class InfoService {
     //   // fallback if api die
     //   console.error('Error in retrieveCachedStat: fallback local info service data init');
     //   console.error(ex);
-      await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
-      localStorage.setItem('infoSchemaVersion', '1');
+    await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
+    localStorage.setItem('infoSchemaVersion', '1');
     // } finally {
-      this.loadedChainId = this.terrajs.settings.chainID;
-      localStorage.setItem('chainIdData', this.loadedChainId);
+    this.loadedChainId = this.terrajs.settings.chainID;
+    localStorage.setItem('chainIdData', this.loadedChainId);
     // }
   }
 
@@ -884,11 +883,11 @@ export class InfoService {
         denomDecimals: this.getDecimals(denomTokenContract),
         denomUnit: this.getUnits(denomTokenContract),
         baseAssetInfo: isNativeToken(baseTokenContract)
-          ? {native_token: {denom: baseTokenContract}}
-          : {token: {contract_addr: baseTokenContract}},
+          ? { native_token: { denom: baseTokenContract } }
+          : { token: { contract_addr: baseTokenContract } },
         denomAssetInfo: isNativeToken(denomTokenContract)
-          ? {native_token: {denom: denomTokenContract}}
-          : {token: {contract_addr: denomTokenContract}},
+          ? { native_token: { denom: denomTokenContract } }
+          : { token: { contract_addr: denomTokenContract } },
         lpToken: this.pairInfos[key]?.liquidity_token,
         pairStat,
         poolInfo,
@@ -951,7 +950,7 @@ export class InfoService {
   }
 
   @memoize(30000)
-  private async ensureAstroportData() {
+  async ensureAstroportData() {
     const apollo = this.apollo.use(this.terrajs.settings.astroport_gql);
     const poolsQuery = apollo.query<any>({
       variables: {

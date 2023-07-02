@@ -55,6 +55,16 @@ interface ConnectedState {
   wallets?: WalletInfo[];
 }
 
+// hack to setup terra extension
+// if extension is available, terraWallets must not be null
+setTimeout(() => {
+  if (window.keplr) {
+    if (!window['terraWallets']) {
+      window['terraWallets'] = [];
+    }
+  }
+}, 500);
+
 @Injectable({
   providedIn: 'root'
 })
@@ -190,7 +200,7 @@ export class TerrajsService implements OnDestroy {
           if (!this.lcdClient) {
             await this.initLcdClient();
           }
-          modal.ConnectOptionsComponent.ensureKeplr(window.terraWallets, [], this.lcdClient);
+          modal.ConnectOptionsComponent.ensureKeplr(window['terraWallets'], [], this.lcdClient);
         }
       }
     } else { // CLICK CONNECT

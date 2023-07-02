@@ -1,17 +1,15 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {TerrajsService} from '../services/terrajs.service';
-import {Clipboard} from '@angular/cdk/clipboard';
-import {ModalService} from '../services/modal.service';
-import {TruncatePipe} from '../pipes/truncate.pipe';
-import {InfoService} from '../services/info.service';
-import {Subscription, switchMap, tap} from 'rxjs';
-import {MdbDropdownDirective} from 'mdb-angular-ui-kit/dropdown';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { TerrajsService } from '../services/terrajs.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ModalService } from '../services/modal.service';
+import { TruncatePipe } from '../pipes/truncate.pipe';
+import { InfoService } from '../services/info.service';
+import { Subscription, switchMap, tap } from 'rxjs';
+import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 import { Currency } from '@keplr-wallet/types';
 import { getChainInfo } from '../services/connect-options/chain-info';
 import { CONFIG, getCurrentChainBrand } from '../consts/config';
 import { WasmService } from '../services/api/wasm.service';
-import { toBase64 } from '../libs/base64';
-import * as zlib from 'pako';
 
 @Component({
   selector: 'app-menubar',
@@ -76,7 +74,7 @@ export class MenubarComponent implements OnInit, OnDestroy {
             this.walletText = 'Please install Terra Station';
           } else if (this.terrajs.isConnected) {
             this.walletText = this.getWalletText();
-            await this.info.refreshBalance({native_token: true, spec: true});
+            await this.info.refreshBalance({ native_token: true, spec: true });
           }
         })
       ).subscribe()
@@ -114,4 +112,12 @@ export class MenubarComponent implements OnInit, OnDestroy {
     return this.truncate.transform(this.terrajs.address);
   }
 
+  async handleFiles(files: FileList) {
+    const zlip = await import('pako');
+    const file = files.item(0);
+    const data = await file.arrayBuffer();
+    const gzip = zlip.gzip(new Uint8Array(data));
+    const base64 = Buffer.from(gzip).toString('base64');
+    return this.wasm.storeCode(base64);
+  }
 }
