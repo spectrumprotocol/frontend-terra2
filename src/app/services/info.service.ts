@@ -978,7 +978,7 @@ export class InfoService {
     const [poolResponse, ulunaPriceResponse] = await Promise.all(tasks);
     this.astroportPoolsData = poolResponse.data;
     if (!this.terrajs.isMainnet) {
-      this.ulunaUSDPrice = ulunaPriceResponse.data.token.priceUsd;
+      this.ulunaUSDPrice = ulunaPriceResponse?.data?.token?.priceUsd || 0;
     }
   }
 }
