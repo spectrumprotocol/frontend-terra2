@@ -102,12 +102,9 @@ export class TxPostComponent implements OnInit {
       // simulate
       this.loadingMsg = 'Simulating...';
       const singerOptions: SignerOptions[] = [{ address: this.terrajs.address }];
-      const feeDenoms = getCurrentChainBrand() === 'Terra'
-        ? [Denom.LUNA]
-        : [Denom.INJ]
       this.signMsg = await this.terrajs.lcdClient.tx.create(singerOptions, {
         msgs: this.msgs,
-        feeDenoms,
+        feeDenoms: [chainInfo.feeCurrencies[0].coinMinimalDenom],
       });
       this.gasLimit = this.signMsg.auth_info.fee.gas_limit;
       this.calculateFee();

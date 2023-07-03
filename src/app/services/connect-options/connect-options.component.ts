@@ -63,9 +63,9 @@ export class ConnectOptionsComponent {
   private async setInstallableExtensions() {
     if (getCurrentChainBrand() === 'Terra') {
       this.walletExtensionsForInstall = await firstValueFrom(getExtensions());
-      this.walletExtensions = window.terraWallets ?? (window.terraWallets = []);
+      this.walletExtensions = window['terraWallets'] ?? (window['terraWallets'] = []);
     } else {
-      this.walletExtensions = window.terraWallets = [];
+      this.walletExtensions = window['terraWallets'] = [];
     }
     ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall, this.lcdClient);
   }
