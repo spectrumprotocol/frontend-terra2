@@ -10,12 +10,27 @@ import {
   TERRA2_TESTNET_CHAINID
 } from 'src/app/consts/config';
 
+export const INJECTIVE_MAINNET_RPC = 'https://tm.injective.network';
+export const INJECTIVE_MAINNET_REST = 'https://lcd.injective.network';
+export const INJECTIVE_TESTNET_RPC = 'https://k8s.testnet.tm.injective.network:443';
+export const INJECTIVE_TESTNET_REST = 'https://k8s.testnet.lcd.injective.network';
+export const TERRA2_MAINNET_RPC = 'https://mainnet-rpc-router.axelar-dev.workers.dev/chain/terra';
+export const TERRA2_MAINNET_REST = 'https://phoenix-lcd.terra.dev';
+export const TERRA2_TESTNET_RPC = 'https://terra-testnet-rpc.polkachu.com';
+export const TERRA2_TESTNET_REST = 'https://pisco-lcd.terra.dev';
+export const NEUTRON_MAINNET_RPC = 'https://rpc-neutron.keplr.app';
+export const NEUTRON_MAINNET_REST = 'https://lcd-neutron.keplr.app';
+export const NEUTRON_TESTNET_RPC = 'https://rpc-palvus.pion-1.ntrn.tech';
+export const NEUTRON_TESTNET_REST = 'https://rest-palvus.pion-1.ntrn.tech';
+export const SEI_TESTNET_RPC = 'https://rpc.wallet.atlantic-2.sei.io';
+export const SEI_TESTNET_REST = 'https://rest.wallet.atlantic-2.sei.io';
+
 export function getChainInfo(chainId: string): ChainInfo {
   switch (chainId) {
     case INJECTIVE_MAINNET_CHAINID:
       return {
-        rpc: 'https://tm.injective.network', // 'https://k8s.global.mainnet.tm.injective.network:443',
-        rest: 'https://lcd.injective.network', // 'https://k8s.global.mainnet.lcd.injective.network:443',
+        rpc: INJECTIVE_MAINNET_RPC, // 'https://k8s.global.mainnet.tm.injective.network:443',
+        rest: INJECTIVE_MAINNET_REST, // 'https://k8s.global.mainnet.lcd.injective.network:443',
         chainId: INJECTIVE_MAINNET_CHAINID,
         chainName: 'Injective',
         stakeCurrency: {
@@ -55,8 +70,8 @@ export function getChainInfo(chainId: string): ChainInfo {
       };
     case INJECTIVE_TESTNET_CHAINID:
       return {
-        rpc: 'https://k8s.testnet.tm.injective.network:443',
-        rest: 'https://k8s.testnet.lcd.injective.network',
+        rpc: INJECTIVE_TESTNET_RPC,
+        rest: INJECTIVE_TESTNET_REST,
         chainId: INJECTIVE_TESTNET_CHAINID,
         chainName: 'Injective Testnet',
         stakeCurrency: {
@@ -97,8 +112,8 @@ export function getChainInfo(chainId: string): ChainInfo {
       };
     case TERRA2_MAINNET_CHAINID:
       return {
-        rpc: 'https://mainnet-rpc-router.axelar-dev.workers.dev/chain/terra',
-        rest: 'https://phoenix-lcd.terra.dev',
+        rpc: TERRA2_MAINNET_RPC,
+        rest: TERRA2_MAINNET_REST,
         chainId: TERRA2_MAINNET_CHAINID,
         chainName: 'Terra',
         stakeCurrency: {
@@ -136,8 +151,8 @@ export function getChainInfo(chainId: string): ChainInfo {
       };
     case TERRA2_TESTNET_CHAINID:
       return {
-        rpc: 'https://terra-testnet-rpc.polkachu.com',
-        rest: 'https://pisco-lcd.terra.dev',
+        rpc: TERRA2_TESTNET_RPC,
+        rest: TERRA2_TESTNET_REST,
         chainId: TERRA2_TESTNET_CHAINID,
         chainName: 'Terra Testnet',
         stakeCurrency: {
@@ -175,8 +190,8 @@ export function getChainInfo(chainId: string): ChainInfo {
       };
     case NEUTRON_MAINNET_CHAINID:
       return {
-        rpc: 'https://rpc-neutron.keplr.app',
-        rest: 'https://lcd-neutron.keplr.app',
+        rpc: NEUTRON_MAINNET_RPC,
+        rest: NEUTRON_MAINNET_REST,
         chainId: NEUTRON_MAINNET_CHAINID,
         chainName: 'Neutron',
         chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/neutron/chain.png',
@@ -245,8 +260,8 @@ export function getChainInfo(chainId: string): ChainInfo {
       };
       case NEUTRON_TESTNET_CHAINID:
         return {
-          rpc: 'https://rpc-palvus.pion-1.ntrn.tech',
-          rest: 'https://rest-palvus.pion-1.ntrn.tech',
+          rpc: NEUTRON_TESTNET_RPC,
+          rest: NEUTRON_TESTNET_REST,
           chainId: NEUTRON_TESTNET_CHAINID,
           chainName: 'Neutron Testnet',
           chainSymbolImageUrl: 'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/neutron/chain.png',
@@ -289,8 +304,8 @@ export function getChainInfo(chainId: string): ChainInfo {
         };
       case SEI_TESTNET_CHAINID:
         return {
-          rpc: 'https://rpc.wallet.atlantic-2.sei.io',
-          rest: 'https://rest.wallet.atlantic-2.sei.io',
+          rpc: SEI_TESTNET_RPC,
+          rest: SEI_TESTNET_REST,
           chainId: SEI_TESTNET_CHAINID,
           chainName: 'Sei Testnet',
           chainSymbolImageUrl: 'https://raw.githubusercontent.com/neutron-org/chain-registry/master/testnets/seitestnet/images/sei.png',

@@ -6,8 +6,14 @@ import {
   NEUTRON_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
   TERRA2_TESTNET_CHAINID,
-  getCurrentChainBrand
+  getCurrentChainBrand, SEI_TESTNET_CHAINID
 } from './config';
+import {
+  INJECTIVE_TESTNET_REST,
+  SEI_TESTNET_RPC,
+  TERRA2_MAINNET_REST,
+  TERRA2_TESTNET_REST
+} from '../services/connect-options/chain-info';
 
 export interface ISettings {
   specToken: string;
@@ -129,7 +135,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       astroportRoarLunaFarm: 'terra1fz4x56u96fkgzvtdxaq2969qlmfk4wnwq0fqhlrklpqc629ah9qs4h8v50', // pair: terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q, lp: terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4
       astroportRoarLunaFarmCompoundProxy: 'terra14l4nwrfcdgjd2dtucd8f66p8w0fanxvus7twuuupq96cmw82w4usw2wjc3',
       // MAINNET ONLY
-      lcd: 'https://phoenix-lcd.terra.dev',
+      lcd: TERRA2_MAINNET_REST,
       fcd: 'https://phoenix-fcd.terra.dev',
       querier: '',
       specAPI: 'https://spec-api-eeh8efcmd2b0fffh.z01.azurefd.net/api',
@@ -159,7 +165,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       stbToken: 'terra1s50rr0vz05xmmkz5wnc2kqkjq5ldwjrdv4sqzf983pzfxuj7jgsq4ehcu2', // terra10kypagsdkrc769dnxs0th3wk87t84vu6gvrfzfg9ee93rfanu32qqfluee stb-luna pair
       stblToken: 'terra1dw6s040xnv2sp8lfgeu8jjtwp0jtws6ahtmw2a3h9j9r0eddy47qesq8j2', // terra15207c4rlvz49sr692flm4v4q87c8fhszk7j74avxuzv5kefaywvquthwjq stbl-stb pair
       // TESTNET ONLY
-      lcd: 'https://pisco-lcd.terra.dev',
+      lcd: TERRA2_TESTNET_REST,
       fcd: 'https://pisco-fcd.terra.dev',
       querier: '',
       specAPI: 'https://terra2-testapi.spec.finance/api',
@@ -191,7 +197,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       astroportRouter: '',
       astroportFactory: 'inj1c4e2787cwawlqslph0yzn62wq4xpzzq9y9kjwj',
       astroportGenerator: 'inj17fmw9nc6hkzafujnnjn29c3xa9r927j9tk02mw',
-      lcd: 'https://k8s.testnet.lcd.injective.network',
+      lcd: INJECTIVE_TESTNET_REST,
       fcd: '',
       querier: '',
       specAPI: 'https://terra2-testapi.spec.finance/api',
@@ -204,7 +210,9 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       injToken: 'inj',
       usdcToken: 'factory/inj17vytdwqczqz72j65saukplrktd4gyfme5agf6c/usdc',
     }
-  } : { // Neutron
+  }
+ : getCurrentChainBrand() === 'Neutron' ?
+  {
       mainnet: {
         specToken: '',
         airdrop: '',
@@ -235,4 +243,37 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         finder: 'https://explorer.rs-testnet.polypore.xyz',
         astroport_gql: 'astroport_multichain',
       }
-    };
+    }
+    : // Sei
+    {
+  mainnet: {
+    specToken: '',
+        airdrop: '',
+        usdcToken: '',
+        astroportRouter: '',
+        astroportFactory: '',
+        astroportGenerator: '',
+        lcd: '',
+        fcd: '',
+        querier: '',
+        specAPI: '',
+        chainID: '',
+        finder: '',
+        astroport_gql: 'astroport_multichain',
+  },
+  testnet: {
+    specToken: '',
+        airdrop: '',
+        usdcToken: '',
+        astroportRouter: '',
+        astroportFactory: '',
+        astroportGenerator: '',
+        lcd: SEI_TESTNET_RPC,
+        fcd: '',
+        querier: '',
+        specAPI: '',
+        chainID: SEI_TESTNET_CHAINID,
+        finder: '',
+        astroport_gql: 'astroport_multichain',
+  }
+};

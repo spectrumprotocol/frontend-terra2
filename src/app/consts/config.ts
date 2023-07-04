@@ -9,7 +9,7 @@ export const INJECTIVE_TESTNET_CHAINID = 'injective-888';
 export const NEUTRON_MAINNET_CHAINID = 'neutron-1';
 export const NEUTRON_TESTNET_CHAINID = 'pion-1';
 export const SEI_TESTNET_CHAINID = 'atlantic-2';
-export type CHAIN_BRAND = 'Terra' | 'Injective' | 'Neutron' | 'Sei'
+export type CHAIN_BRAND = 'Terra' | 'Injective' | 'Neutron' | 'Sei';
 
 export const CONFIG = {
   DIGIT: 6,
