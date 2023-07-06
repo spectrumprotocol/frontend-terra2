@@ -23,7 +23,7 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: NEUTRON_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: SEI_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
 };
 
 export const getCurrentChainBrand = (): CHAIN_BRAND => {

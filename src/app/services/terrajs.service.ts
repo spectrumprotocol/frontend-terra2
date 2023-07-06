@@ -230,6 +230,7 @@ export class TerrajsService implements OnDestroy {
     if (connectCallbackData && !(connectCallbackData.type === 'WALLETCONNECT' && auto)) {
       await this.walletController.connect(connectCallbackData.type, connectCallbackData.identifier);
     }
+    // NOTE comment out AccAddress.validate(extensionStates.wallet.terraAddress) in controller.js line 530
     const state: ConnectedState = await firstValueFrom(this.walletController.states()
       .pipe(filter((it: WalletStates) => it.status === WalletStatus.WALLET_CONNECTED))); // ONLY EXTENSION AND WALLET CONNECT, NOT CUSTOM READ ONLY
     await this.finalConnectStep(state, connectCallbackData.type, connectCallbackData.identifier);

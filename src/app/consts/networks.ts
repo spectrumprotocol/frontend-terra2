@@ -9,7 +9,7 @@ import {
   getCurrentChainBrand, SEI_TESTNET_CHAINID
 } from './config';
 import {
-  INJECTIVE_TESTNET_REST,
+  INJECTIVE_TESTNET_REST, SEI_TESTNET_REST,
   SEI_TESTNET_RPC,
   TERRA2_MAINNET_REST,
   TERRA2_TESTNET_REST
@@ -268,7 +268,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
-        lcd: SEI_TESTNET_RPC,
+        lcd: SEI_TESTNET_REST,
         fcd: '',
         querier: '',
         specAPI: '',
