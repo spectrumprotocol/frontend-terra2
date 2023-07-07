@@ -21,7 +21,7 @@ export interface ISettings {
   astroportRouter: string;
   astroportFactory: string;
   valkyrieToken?: string;
-  astroToken?: string;
+  astroToken: string;
   axlUsdcToken?: string;
   axlUsdtToken?: string;
   lunaXToken?: string;
@@ -179,6 +179,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
     mainnet: {
       specToken: '',
       airdrop: '',
+      astroToken: '',
       astroportRouter: '',
       astroportFactory: '',
       astroportGenerator: '',
@@ -217,6 +218,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         specToken: '',
         airdrop: '',
         usdcToken: '',
+        astroToken: '',
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
@@ -232,6 +234,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         specToken: '',
         airdrop: '',
         usdcToken: '',
+        astroToken: 'ibc/EFB00E728F98F0C4BBE8CA362123ACAB466EDA2826DC6837E49F4C1902F21BBA',
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
@@ -248,32 +251,34 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
     {
   mainnet: {
     specToken: '',
-        airdrop: '',
-        usdcToken: '',
-        astroportRouter: '',
-        astroportFactory: '',
-        astroportGenerator: '',
-        lcd: '',
-        fcd: '',
-        querier: '',
-        specAPI: '',
-        chainID: '',
-        finder: '',
-        astroport_gql: 'astroport_multichain',
+    airdrop: '',
+    usdcToken: '',
+    astroToken: '',
+    astroportRouter: '',
+    astroportFactory: '',
+    astroportGenerator: '',
+    lcd: '',
+    fcd: '',
+    querier: '',
+    specAPI: '',
+    chainID: '',
+    finder: '',
+    astroport_gql: 'astroport_multichain',
   },
   testnet: {
     specToken: '',
-        airdrop: '',
-        usdcToken: '',
-        astroportRouter: '',
-        astroportFactory: '',
-        astroportGenerator: '',
-        lcd: SEI_TESTNET_REST,
-        fcd: '',
-        querier: '',
-        specAPI: '',
-        chainID: SEI_TESTNET_CHAINID,
-        finder: '',
-        astroport_gql: 'astroport_multichain',
+    airdrop: '',
+    usdcToken: '',
+    astroToken: '',
+    astroportRouter: '',
+    astroportFactory: '',
+    astroportGenerator: '',
+    lcd: SEI_TESTNET_REST,
+    fcd: '',
+    querier: '',
+    specAPI: '',
+    chainID: SEI_TESTNET_CHAINID,
+    finder: '',
+    astroport_gql: 'astroport_multichain',
   }
 };
