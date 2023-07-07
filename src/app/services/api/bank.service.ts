@@ -22,13 +22,15 @@ export class BankService {
     return coins;
   }
 
-  // transfers(value: { from_address?: string; to_address: string; amount: Coin.Data[] }) {
-  //   return this.terrajs.post(MsgSend.fromData({
-  //     type: 'bank/MsgSend',
-  //     value: {
-  //       from_address: this.terrajs.address,
-  //       ...value
-  //     }
-  //   }));
-  // }
+  // example how to use transfer
+  // const abc = Coins.fromData([{
+  //   denom: this.terrajs.settings.astroToken,
+  //   amount: '1'
+  // }]);
+  // await this.bank.transfer(this.terrajs.address, abc.toData());
+  transfer(to_address: string, amount: Coins.Data ) {
+    return this.terrajs.post(MsgSend.fromData({
+      '@type': '/cosmos.bank.v1beta1.MsgSend', amount, from_address: this.terrajs.address, to_address,
+    }));
+  }
 }
