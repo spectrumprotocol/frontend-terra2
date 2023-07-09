@@ -496,6 +496,11 @@ input[type="number"] {
   border: solid 1px $roar;
 }
 
+.bg-Capapult {
+  background: $capa-bg;
+  border: solid 1px $capa;
+}
+
 .bg-your-rewards {
   background: #ed7b84;
   background: -webkit-linear-gradient(315deg, darken(#ed7b84, 7%) 0%, #ed7b84 50%);

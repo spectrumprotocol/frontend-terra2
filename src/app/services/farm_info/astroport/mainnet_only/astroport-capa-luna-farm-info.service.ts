@@ -21,15 +21,15 @@ import {SYMBOLS} from '../../../../consts/symbol';
 import {Denom} from '../../../../consts/denom';
 
 @Injectable()
-export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
-  readonly farm = 'Lion DAO';
-  readonly farmColor = '#F5F412';
+export class AstroportCapaLunaFarmInfoService implements FarmInfoService {
+  readonly farm = 'Capapult';
+  readonly farmColor = '#f50bfb';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
   readonly dex: DEX = 'Astroport';
   baseTokenContract: string;
   denomTokenContract: string;
-  readonly highlight = false;
+  readonly highlight = true;
   readonly notUseAstroportGqlApr = false;
   poolAprs: PoolAPR[];
   farmContract: string;
@@ -47,12 +47,12 @@ export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = this.terrajs.settings.roarToken;
+    this.baseTokenContract = this.terrajs.settings.capaToken;
     this.denomTokenContract = Denom.LUNA;
     this.poolAprs =  [{
       apr: 0,
-      rewardSymbol: SYMBOLS.ROAR,
-      rewardContract: this.terrajs.settings.roarToken
+      rewardSymbol: SYMBOLS.CAPA,
+      rewardContract: this.terrajs.settings.capaToken
     },
     {
       apr: 0,
@@ -60,8 +60,8 @@ export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
       rewardContract: this.terrajs.settings.astroToken
     }
     ];
-    this.farmContract = this.terrajs.settings.astroportRoarLunaFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportRoarLunaFarmCompoundProxy;
+    this.farmContract = this.terrajs.settings.astroportCapaLunaFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportCapaLunaFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
