@@ -76,6 +76,8 @@ export class UrlPipe implements PipeTransform {
             return `/assets/roar.png`;
           case 'CAPA':
             return `/assets/capa.svg`;
+          case 'SOLID':
+              return `/assets/solid.svg`;
           default:
             return null;
         }
