@@ -147,9 +147,10 @@ const ASTROPORT_POOLS_GQL = gql`
 
 export const isNativeToken = (input: string) => {
   if (
-    (input.startsWith("terra") && input.length == 64) ||
-    (input.startsWith("inj") && input.length == 42) ||
-    (input.startsWith("kujira") && input.length == 65)
+    (input.startsWith('terra') && input.length === 64) ||
+    (input.startsWith('inj') && input.length === 42) ||
+    (input.startsWith('kujira') && input.length === 65) ||
+    (input.startsWith('neutron') && input.length === 66)
   ) {
     return false;
   } else {

@@ -107,6 +107,9 @@ import {
   AstroportRoarLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-roar-luna-farm-info.service';
 import { AstroportAstroInjFarmInfoService } from './services/farm_info/astroport/testnet_only/astroport-astro-inj-farm-info.service';
+import {
+  AstroportNeutronAstroUsdcFarmInfoService
+} from './services/farm_info/astroport/testnet_only/astroport-neutron-astro-usdc-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -201,7 +204,11 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportStbLunaFarmInfoService, multi: true},
+
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroInjFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportNeutronAstroUsdcFarmInfoService, multi: true},
+
+
     TruncatePipe,
     DecimalPipe,
     UnitPipe,

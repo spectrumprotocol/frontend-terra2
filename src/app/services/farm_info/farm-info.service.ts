@@ -10,7 +10,7 @@ import {PairInfo} from '../api/astroport_pair/pair_info';
 import {TokenInfo} from '../info.service';
 import {
   INJECTIVE_MAINNET_CHAINID,
-  INJECTIVE_TESTNET_CHAINID,
+  INJECTIVE_TESTNET_CHAINID, NEUTRON_MAINNET_CHAINID, NEUTRON_TESTNET_CHAINID, SEI_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
   TERRA2_TESTNET_CHAINID
 } from '../../consts/config';
@@ -72,7 +72,7 @@ export const defaultFarmConfig: FarmConfig = {
 };
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
-export type CHAIN_ID_ENUM = typeof TERRA2_MAINNET_CHAINID | typeof TERRA2_TESTNET_CHAINID | typeof INJECTIVE_MAINNET_CHAINID | typeof INJECTIVE_TESTNET_CHAINID;
+export type CHAIN_ID_ENUM = typeof TERRA2_MAINNET_CHAINID | typeof TERRA2_TESTNET_CHAINID | typeof INJECTIVE_MAINNET_CHAINID | typeof INJECTIVE_TESTNET_CHAINID | typeof NEUTRON_MAINNET_CHAINID | typeof NEUTRON_TESTNET_CHAINID | typeof SEI_TESTNET_CHAINID;
 
 export interface FarmInfoService {
   // name of farm
