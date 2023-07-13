@@ -23,7 +23,7 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: SEI_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: NEUTRON_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
 };
 
 export const getCurrentChainBrand = (): CHAIN_BRAND => {
@@ -57,19 +57,21 @@ if (CONFIG.CHAIN_ID.startsWith('injective')) {
     return oldAccountFromData(data, isClassic);
   };
 
-  const oldAccAddressValidate = AccAddress.validate;
-  AccAddress.validate = (data) => {
-    const terraAddr = toChainAddress(data, 'terra');
-    return oldAccAddressValidate(terraAddr);
-  };
-
   const oldPublicKeyFromProto = PublicKey.fromProto;
   PublicKey.fromProto = (data) => {
     if (data.typeUrl === '/injective.crypto.v1beta1.ethsecp256k1.PubKey') {
       return new InjectivePublicKey(Buffer.from(data.value).toString('base64'));
     }
     return oldPublicKeyFromProto(data);
-  }
+  };
+}
+
+if (getCurrentChainBrand() !== 'Terra'){
+  const oldAccAddressValidate = AccAddress.validate;
+  AccAddress.validate = (data) => {
+    const terraAddr = toChainAddress(data, 'terra');
+    return oldAccAddressValidate(terraAddr);
+  };
 }
 
 function toChainAddress(addr: string, prefix: string) {
@@ -94,17 +96,27 @@ export class InjectivePublicKey extends SimplePublicKey {
 
 
 export const getAddressPlaceHolder = (): string => {
-  if (getCurrentChainBrand() !== 'Terra') {
-    return 'Input Terra Address';
-  } else {
-    return 'Input Injective Address';
+  switch (getCurrentChainBrand()){
+    case 'Terra':
+      return 'Input Terra Address';
+    case 'Injective':
+      return 'Input Injective Address';
+    case 'Neutron':
+      return 'Input Neutron Address';
+    case 'Sei':
+      return 'Input Sei Address';
   }
 };
 
 export const getAddressPattern = (): string => {
-  if (getCurrentChainBrand() !== 'Terra') {
-    return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
-  } else {
-    return '(^inj1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';
+  switch (getCurrentChainBrand()){
+    case 'Terra':
+      return '(^terra1[a-z0-9]{38}$)|(^terra1[a-z0-9]{58}$)';
+    case 'Injective':
+      return '(^inj1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';
+    case 'Neutron':
+      return '(^neutron1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';
+    case 'Sei':
+      return '(^sei1[a-z0-9]{38}$)|(^inj1[a-z0-9]{58}$)';
   }
 };
