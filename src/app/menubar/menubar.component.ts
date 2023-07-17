@@ -8,7 +8,13 @@ import { Subscription, switchMap, tap } from 'rxjs';
 import { MdbDropdownDirective } from 'mdb-angular-ui-kit/dropdown';
 import { Currency } from '@keplr-wallet/types';
 import { getChainInfo } from '../services/connect-options/chain-info';
-import { CONFIG, getCurrentChainBrand } from '../consts/config';
+import {
+  CHAIN_BRAND,
+  CONFIG, getChainNetwork,
+  getCurrentChainBrand, INJECTIVE_MAINNET_CHAINID, INJECTIVE_TESTNET_CHAINID, LSKEY_CHAIN_ID_TO_LOAD, NETWORK_TYPE,
+  TERRA2_MAINNET_CHAINID,
+  TERRA2_TESTNET_CHAINID
+} from '../consts/config';
 import { WasmService } from '../services/api/wasm.service';
 
 @Component({
@@ -37,8 +43,26 @@ export class MenubarComponent implements OnInit, OnDestroy {
       : 'Injective Explorer';
   }
 
-  get isTerra() {
-    return getCurrentChainBrand() === 'Terra'
+
+  getCurrentChainBrandForHTML(){
+    return getCurrentChainBrand();
+  }
+
+  get chainNetworkForHTML(){
+    // if (!this.terrajs.network?.chainID){
+    //   return '';
+    // }
+    // return getChainNetwork(this.terrajs.network.chainID);
+    switch (this.terrajs.networkName) {
+      case 'mainnet':
+        return 'Mainnet';
+      case 'testnet':
+        return 'Testnet';
+      case 'devnet':
+        return 'Devnet';
+      default:
+        return '';
+    }
   }
 
   constructor(
@@ -119,5 +143,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
     const gzip = zlip.gzip(new Uint8Array(data));
     const base64 = Buffer.from(gzip).toString('base64');
     return this.wasm.storeCode(base64);
+  }
+
+  changeNetwork(newChainBrand: CHAIN_BRAND, network: NETWORK_TYPE){
+    switch (newChainBrand) {
+      case 'Terra':
+        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? TERRA2_MAINNET_CHAINID : TERRA2_TESTNET_CHAINID);
+        break;
+      case 'Injective':
+        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? INJECTIVE_MAINNET_CHAINID : INJECTIVE_TESTNET_CHAINID);
+        break;
+      default:
+        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, TERRA2_MAINNET_CHAINID);
+    }
+    location.reload();
   }
 }
