@@ -65,6 +65,17 @@ export class MenubarComponent implements OnInit, OnDestroy {
     }
   }
 
+  getChainIconPath(chainBrand: CHAIN_BRAND) {
+    switch (chainBrand) {
+      case 'Terra':
+        return '/assets/luna.png';
+      case 'Injective':
+        return '/assets/INJ.png';
+      default:
+        return '';
+    }
+  }
+
   constructor(
     public terrajs: TerrajsService,
     public info: InfoService,
