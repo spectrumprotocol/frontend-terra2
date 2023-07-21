@@ -228,7 +228,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         astroportRouter: '',
         astroportFactory: '',
         astroportGenerator: '',
-        lcd: '', // TODO
+        lcd: NEUTRON_MAINNET_REST, // TODO
         fcd: '',
         querier: '',
         specAPI: '',
