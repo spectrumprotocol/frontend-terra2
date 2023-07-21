@@ -6,7 +6,6 @@ import {
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
-  CHAIN_ID_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -20,7 +19,7 @@ import {TokenInfo} from '../../../info.service';
 import {Denom} from '../../../../consts/denom';
 import {getStablePrice} from '../../../../libs/stable';
 import {SYMBOLS} from '../../../../consts/symbol';
-import {TERRA2_MAINNET_CHAINID} from '../../../../consts/config';
+import {CHAIN_ID_ENUM, TERRA2_MAINNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
 export class AstroportBLunaLunaFarmInfoService implements FarmInfoService {

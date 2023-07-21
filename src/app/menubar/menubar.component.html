@@ -31,8 +31,7 @@
     <div class="d-flex align-items-center">
       <div #selectNetworkDropdown class="selectNetworkDropdown me-2" mdbDropdown>
         <button class="btn btn-dark dropdown-toggle btn-sm" mdbDropdownToggle type="button">
-          <ng-container *ngIf="isTerra"><img [src]='"/assets/luna.png"' class="network-logo me-1">Terra</ng-container>
-          <ng-container *ngIf="!isTerra"><img [src]='"/assets/INJ.png"' class="network-logo me-1">Injective</ng-container>
+          <img [src]='getChainIconPath(getCurrentChainBrandForHTML())' class="network-logo me-1">{{getCurrentChainBrandForHTML()}} {{chainNetworkForHTML}}
         </button>
         <ul aria-labelledby="dropdownMenuButton" class="dropdown-menu dropdown-menu-end" mdbDropdownMenu>
           <li>
@@ -41,13 +40,19 @@
           <li class="dropdown-item disabled">
             <div class="solid-line"></div>
           </li>
-          <li><a (click)="selectNetworkDropdown.hide()"
-            class="dropdown-item"><img [src]='"/assets/INJ.png"' class="network-logo"> Injective</a>
+          <li><a (click)="changeNetwork('Injective', 'Mainnet')"
+            class="dropdown-item"><img [src]="getChainIconPath('Injective')" class="network-logo"> Injective Mainnet</a>
           </li>
-          <li><a (click)="selectNetworkDropdown.hide()"
+          <li><a (click)="changeNetwork('Injective', 'Testnet')"
+                 class="dropdown-item"><img [src]="getChainIconPath('Injective')" class="network-logo"> Injective Testnet</a>
+          </li>
+          <li><a (click)="changeNetwork('Terra', 'Mainnet')"
             class="dropdown-item"
-            href="https://terra.spec.finance"
-            target="_blank"><img [src]='"/assets/luna.png"' class="network-logo"> Terra</a>
+            target="_blank"><img [src]="getChainIconPath('Terra')" class="network-logo"> Terra Mainnet</a>
+          </li>
+          <li><a (click)="changeNetwork('Terra', 'Testnet')"
+                 class="dropdown-item"
+                 target="_blank"><img [src]="getChainIconPath('Terra')" class="network-logo"> Terra Testnet</a>
           </li>
           <li><a (click)="selectNetworkDropdown.hide()"
             class="dropdown-item"

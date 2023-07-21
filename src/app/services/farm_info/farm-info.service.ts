@@ -1,4 +1,3 @@
-import {RewardInfoResponseItem as SpecRewardInfoResponseItem} from '../api/spectrum_spec_farm/reward_info_response';
 import {
   RewardInfoResponseItem as AstroportFarmRewardInfoResponseItem
 } from '../api/spectrum_astroport_farm/reward_info_response';
@@ -8,12 +7,7 @@ import {PoolResponse} from '../api/terraswap_pair/pool_response';
 import {VaultsResponse} from '../api/gov/vaults_response';
 import {PairInfo} from '../api/astroport_pair/pair_info';
 import {TokenInfo} from '../info.service';
-import {
-  INJECTIVE_MAINNET_CHAINID,
-  INJECTIVE_TESTNET_CHAINID, NEUTRON_MAINNET_CHAINID, NEUTRON_TESTNET_CHAINID, SEI_TESTNET_CHAINID,
-  TERRA2_MAINNET_CHAINID,
-  TERRA2_TESTNET_CHAINID
-} from '../../consts/config';
+import {CHAIN_ID_ENUM} from '../../consts/config';
 
 export type FARM_TYPE_ENUM = 'LP';
 
@@ -72,7 +66,6 @@ export const defaultFarmConfig: FarmConfig = {
 };
 
 export const FARM_INFO_SERVICE = new InjectionToken('FARM_INFO_SERVICE');
-export type CHAIN_ID_ENUM = typeof TERRA2_MAINNET_CHAINID | typeof TERRA2_TESTNET_CHAINID | typeof INJECTIVE_MAINNET_CHAINID | typeof INJECTIVE_TESTNET_CHAINID | typeof NEUTRON_MAINNET_CHAINID | typeof NEUTRON_TESTNET_CHAINID | typeof SEI_TESTNET_CHAINID;
 
 export interface FarmInfoService {
   // name of farm

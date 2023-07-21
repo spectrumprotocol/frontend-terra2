@@ -4,12 +4,11 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
 import { div, plus } from '../libs/math';
-import { CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand } from '../consts/config';
+import {CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand, CHAIN_ID_ENUM} from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
   FarmInfoService,
-  CHAIN_ID_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo,

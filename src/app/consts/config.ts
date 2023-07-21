@@ -1,6 +1,6 @@
-import { Any } from '@terra-money/terra.proto/google/protobuf/any';
-import { AccAddress, Account, BaseAccount, PublicKey, SimplePublicKey } from "@terra-money/terra.js";
-import { bech32 } from 'bech32';
+import {Any} from '@terra-money/terra.proto/google/protobuf/any';
+import {AccAddress, Account, BaseAccount, PublicKey, SimplePublicKey} from '@terra-money/terra.js';
+import {bech32} from 'bech32';
 
 export const TERRA2_MAINNET_CHAINID = 'phoenix-1';
 export const TERRA2_TESTNET_CHAINID = 'pisco-1';
@@ -10,6 +10,22 @@ export const NEUTRON_MAINNET_CHAINID = 'neutron-1';
 export const NEUTRON_TESTNET_CHAINID = 'pion-1';
 export const SEI_TESTNET_CHAINID = 'atlantic-2';
 export type CHAIN_BRAND = 'Terra' | 'Injective' | 'Neutron' | 'Sei';
+
+export const LSKEY_CHAIN_ID_TO_LOAD = 'chainIdToLoad';
+
+export const SUPPORTED_CHAIN_IDS = [TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID, INJECTIVE_MAINNET_CHAINID, INJECTIVE_TESTNET_CHAINID, NEUTRON_MAINNET_CHAINID, NEUTRON_TESTNET_CHAINID, SEI_TESTNET_CHAINID];
+export const getChainIdToLoad = () => {
+  const chainIdToLoad = localStorage.getItem(LSKEY_CHAIN_ID_TO_LOAD);
+  const DEFAULT_CHAIN_ID = TERRA2_MAINNET_CHAINID;
+  if (!chainIdToLoad){
+    return DEFAULT_CHAIN_ID;
+  }
+  if (!SUPPORTED_CHAIN_IDS.includes(chainIdToLoad)){
+    console.log(`unsupported ${LSKEY_CHAIN_ID_TO_LOAD} ${chainIdToLoad}`);
+    return DEFAULT_CHAIN_ID;
+  }
+  return chainIdToLoad;
+};
 
 export const CONFIG = {
   DIGIT: 6,
@@ -23,7 +39,7 @@ export const CONFIG = {
   SLIPPAGE_TOLERANCE: '0.01',
   COMPOUND_TIMES_PER_YEAR: 365,
   BOND_ASSETS_MIN_RECEIVE_SLIPPAGE_TOLERANCE: 0.01,
-  CHAIN_ID: NEUTRON_TESTNET_CHAINID, // 'phoenix-1', // 'injective-1',
+  CHAIN_ID: getChainIdToLoad(), // 'phoenix-1', // 'injective-1',
 };
 
 export const getCurrentChainBrand = (): CHAIN_BRAND => {
@@ -46,6 +62,26 @@ export const getCurrentChainBrand = (): CHAIN_BRAND => {
       return 'Terra' as CHAIN_BRAND;
   }
 };
+
+export type NETWORK_TYPE = 'Mainnet' | 'Testnet' | 'Devnet';
+
+export const getChainNetwork = (chainId: string): NETWORK_TYPE => {
+  switch (chainId) {
+    case TERRA2_MAINNET_CHAINID:
+      return 'Mainnet';
+    case TERRA2_TESTNET_CHAINID:
+      return 'Testnet';
+    case INJECTIVE_MAINNET_CHAINID:
+      return 'Mainnet';
+    case INJECTIVE_TESTNET_CHAINID:
+      return 'Testnet';
+    default:
+      return 'Mainnet';
+  }
+};
+
+export type CHAIN_ID_ENUM = typeof SUPPORTED_CHAIN_IDS[number];
+
 
 // HACK
 if (CONFIG.CHAIN_ID.startsWith('injective')) {
@@ -80,7 +116,7 @@ function toChainAddress(addr: string, prefix: string) {
   }
   const data = bech32.decode(addr);
   return bech32.encode(prefix, data.words);
-};
+}
 
 export class InjectivePublicKey extends SimplePublicKey {
   constructor(key: string) {

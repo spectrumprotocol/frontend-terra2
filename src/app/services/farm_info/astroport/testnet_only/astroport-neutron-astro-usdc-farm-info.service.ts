@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import {RewardInfoResponseItem} from '../../../api/spectrum_astroport_farm/reward_info_response';
 import {TerrajsService} from '../../../terrajs.service';
 import {
-  CHAIN_ID_ENUM,
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
@@ -20,7 +19,7 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {times} from '../../../../libs/math';
 import {SYMBOLS} from '../../../../consts/symbol';
-import {INJECTIVE_TESTNET_CHAINID, NEUTRON_TESTNET_CHAINID} from 'src/app/consts/config';
+import {CHAIN_ID_ENUM, INJECTIVE_TESTNET_CHAINID, NEUTRON_TESTNET_CHAINID} from 'src/app/consts/config';
 
 @Injectable()
 export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService {
@@ -74,7 +73,7 @@ export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService
     });
     const pairs: Record<string, PairStat> = {};
 
-    //TODO broken
+    // TODO broken
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
