@@ -12,6 +12,8 @@ import {
   CHAIN_BRAND,
   CONFIG, getChainNetwork,
   getCurrentChainBrand, INJECTIVE_MAINNET_CHAINID, INJECTIVE_TESTNET_CHAINID, LSKEY_CHAIN_ID_TO_LOAD, NETWORK_TYPE,
+  NEUTRON_MAINNET_CHAINID,
+  NEUTRON_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
   TERRA2_TESTNET_CHAINID
 } from '../consts/config';
@@ -163,6 +165,9 @@ export class MenubarComponent implements OnInit, OnDestroy {
         break;
       case 'Injective':
         localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? INJECTIVE_MAINNET_CHAINID : INJECTIVE_TESTNET_CHAINID);
+        break;
+      case 'Neutron':
+        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? NEUTRON_MAINNET_CHAINID : NEUTRON_TESTNET_CHAINID);
         break;
       default:
         localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, TERRA2_MAINNET_CHAINID);

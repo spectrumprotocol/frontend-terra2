@@ -54,6 +54,14 @@
                  class="dropdown-item"
                  target="_blank"><img [src]="getChainIconPath('Terra')" class="network-logo"> Terra Testnet</a>
           </li>
+          <li><a (click)="changeNetwork('Neutron', 'Mainnet')"
+            class="dropdown-item"
+            target="_blank"><img [src]="getChainIconPath('Neutron')" class="network-logo"> Neutron Mainnet</a>
+          </li>
+          <li><a (click)="changeNetwork('Neutron', 'Testnet')"
+                 class="dropdown-item"
+                 target="_blank"><img [src]="getChainIconPath('Neutron')" class="network-logo"> Neutron Testnet</a>
+          </li>
           <li><a (click)="selectNetworkDropdown.hide()"
             class="dropdown-item"
             href="https://aptos.spec.finance"
