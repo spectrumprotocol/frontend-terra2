@@ -108,6 +108,7 @@ import {
   AstroportRoarLunaFarmInfoService
 } from './services/farm_info/astroport/mainnet_only/astroport-roar-luna-farm-info.service';
 import { AstroportSolidAxlUsdcFarmInfoService } from './services/farm_info/astroport/mainnet_only/astroport-solid-axl-usdc-farm-info.service';
+import { AstroportCapaSolidFarmInfoService } from './services/farm_info/astroport/mainnet_only/astroport-capa-solid-farm-info.service';
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
 locale[ɵLocaleDataIndex.NumberFormats][NumberFormatStyle.Percent] = '#,##0.##%';
@@ -199,6 +200,7 @@ registerLocaleData(locale, 'en');
     {provide: FARM_INFO_SERVICE, useClass: AstroportLunaStlunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportRoarLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportSolidAxlUsdcFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportCapaSolidFarmInfoService, multi: true},
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
