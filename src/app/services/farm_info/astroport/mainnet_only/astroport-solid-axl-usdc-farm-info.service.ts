@@ -59,7 +59,7 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
       rewardContract: this.terrajs.settings.astroToken
     }];
     this.farmContract = this.terrajs.settings.astroportSolidAxlUsdcFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportSolidAxlUsdcFarmCompoundProxy;
+    this.compoundProxyContract = this.terrajs.settings.astroportSolidAxlUsdcCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
