@@ -57,7 +57,9 @@ export interface ISettings {
   astroportCapaLunaFarm: string;
   astroportCapaLunaFarmCompoundProxy: string;
   astroportSolidAxlUsdcFarm: string;
-  astroportSolidAxlUsdcFarmCompoundProxy: string;
+  astroportSolidAxlUsdcCompoundProxy: string;
+  astroportCapaSolidFarm: string;
+  astroportCapaSolidCompoundProxy: string;
   // MAINNET ONLY
   // TESTNET ONLY
   astroportAstroLunaFarm: string;
@@ -140,7 +142,9 @@ export const networks: Record<string, ISettings> = {
     astroportCapaLunaFarm: 'terra1z8q3gq26fnvdfaj0yrf04unmlkt2uge2d0j9ve25zpyfj9u2r9jsxw8msm', // pair: terra1a0druggg6c7u88ps37q03jxuexznjmq0xnhg8c8d7xnfaelq4t0qype5j3, lp: terra1eae46l4etn6j9zh3rrzalzdkw4j7wwf974v7ep882utkvtvy6h5qcjms7l
     astroportCapaLunaFarmCompoundProxy: 'terra1utu92kjw2gze05wgl0gvac9y69u2w0d2utkmn9zgkfu8kaq6wf4suffr5a',
     astroportSolidAxlUsdcFarm: 'terra1fe83u43uz65smen45vwvj7w5838nerehv2la6utvhsr9c87ykr0qsvshqu', // pair: terra1jd04eztujfgt4z0uyw7lkm0gujs0gpxs6pd5gv8ltt5xccmq3v8sppm7wg, lp: terra1rdjm94n3r4uvhfh23s98tfcgzedkuvjwvkcjqa503amef9afya7sddv098
-    astroportSolidAxlUsdcFarmCompoundProxy: 'terra12957ajdm5exxv5lz45vydr4nf2dwyjmzrgnrkhe6eyym6r99amuqppcp4t',
+    astroportSolidAxlUsdcCompoundProxy: 'terra12957ajdm5exxv5lz45vydr4nf2dwyjmzrgnrkhe6eyym6r99amuqppcp4t',
+    astroportCapaSolidFarm: 'terra1rasvh4nv8znpjg6jtkzxjskfynze98h9zv4qn8ese7tkwf0zjaaq0z60t8', // pair: terra1g6z93vtttdrwfdtj06ha2nwc6qdxsfy8appge5l5g7wenfzg5mjq8s3r9n, lp: terra1d4ltsnke3grgw90dad5qf3jle7l0t9z8zsshqzp6g8v3j0ecvpksevz5z7
+    astroportCapaSolidCompoundProxy: 'terra1x6m9v42s9drr7dcpatuy850w7t9secpyx5v97j3x6mxp2fn0l0uq68v20u',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: '',
@@ -221,7 +225,9 @@ export const networks: Record<string, ISettings> = {
     astroportCapaLunaFarm: '',
     astroportCapaLunaFarmCompoundProxy: '',
     astroportSolidAxlUsdcFarm: '',
-    astroportSolidAxlUsdcFarmCompoundProxy: '',
+    astroportSolidAxlUsdcCompoundProxy: '',
+    astroportCapaSolidFarm: '',
+    astroportCapaSolidCompoundProxy: '',
     // MAINNET ONLY
     // TESTNET ONLY
     astroportAstroLunaFarm: 'terra1e9xfd3zxnra963meea5e7vvdm89dwd2tgvg4cq96q33c2s204cuqgl3wxq',

@@ -20,7 +20,7 @@ import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
 
 @Injectable()
-export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
+export class AstroportCapaSolidFarmInfoService implements FarmInfoService {
   readonly farm = 'Capapult';
   readonly farmColor = '#f50bfb';
   readonly auditWarning = false;
@@ -35,7 +35,7 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
   compoundProxyContract: string;
   readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
-  readonly poolType = 'stable';
+  readonly poolType = 'xyk';
 
   constructor(
     private farmService: SpectrumAstroportGenericFarmService,
@@ -46,8 +46,8 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = this.terrajs.settings.solidToken;
-    this.denomTokenContract = this.terrajs.settings.axlUsdcToken;
+    this.baseTokenContract = this.terrajs.settings.capaToken;
+    this.denomTokenContract = this.terrajs.settings.solidToken;
     this.poolAprs = [{
       apr: 0,
       rewardSymbol: SYMBOLS.CAPA,
@@ -58,8 +58,8 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
       rewardSymbol: SYMBOLS.ASTRO,
       rewardContract: this.terrajs.settings.astroToken
     }];
-    this.farmContract = this.terrajs.settings.astroportSolidAxlUsdcFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportSolidAxlUsdcCompoundProxy;
+    this.farmContract = this.terrajs.settings.astroportCapaSolidFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportCapaSolidCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
@@ -77,7 +77,10 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-
+    const solid = p.assets.find(a => a.info['token']?.['contract_addr'] === this.denomTokenContract);
+    if (!solid) {
+      return;
+    }
     pairs[key] = {
       poolAprs: this.poolAprs,
       poolApy: 0,
@@ -86,14 +89,12 @@ export class AstroportSolidAxlUsdcFarmInfoService implements FarmInfoService {
       vaultFee: 0
     };
     const pair = pairs[key];
-    const amount1 = new BigNumber(depositAmount)
-      .times(p.assets[0].amount)
-      .div(p.total_share);
-    const amount2 = new BigNumber(depositAmount)
-      .times(p.assets[1].amount)
-      .div(p.total_share);
-    pair.tvl = amount1.plus(amount2).toString();
-    // based on USDC and USDT value is equal to USD
+    pair.tvl = new BigNumber(solid.amount)
+      .times(depositAmount)
+      .times(2)
+      .div(p.total_share)
+      .toString();
+
     return pairs;
   }
 
