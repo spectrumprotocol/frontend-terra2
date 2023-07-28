@@ -8,5 +8,6 @@ export const SYMBOLS = {
   STLUNA: 'stLUNA',
   XASTRO: 'xASTRO',
   ROAR: 'ROAR',
+  CAPA: 'CAPA',
   INJ: 'INJ',
 };

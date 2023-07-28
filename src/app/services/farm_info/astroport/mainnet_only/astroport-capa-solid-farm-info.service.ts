@@ -6,6 +6,7 @@ import {
   DEX,
   FARM_TYPE_ENUM,
   FarmInfoService,
+  NETWORK_NAME_ENUM,
   PairStat,
   PoolAPR,
   PoolInfo
@@ -17,24 +18,22 @@ import {WasmService} from '../../../api/wasm.service';
 import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
-import {Denom} from '../../../../consts/denom';
-import {CHAIN_ID_ENUM, TERRA2_MAINNET_CHAINID} from 'src/app/consts/config';
 
 @Injectable()
-export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
-  readonly farm = 'Lion DAO';
-  readonly farmColor = '#F5F412';
+export class AstroportCapaSolidFarmInfoService implements FarmInfoService {
+  readonly farm = 'Capapult';
+  readonly farmColor = '#f50bfb';
   readonly auditWarning = false;
   readonly farmType: FARM_TYPE_ENUM = 'LP';
   readonly dex: DEX = 'Astroport';
   baseTokenContract: string;
   denomTokenContract: string;
-  readonly highlight = false;
+  readonly highlight = true;
   readonly notUseAstroportGqlApr = false;
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([TERRA2_MAINNET_CHAINID]);
+  readonly availableNetworks = new Set<NETWORK_NAME_ENUM>(['mainnet']);
   contractOnNetwork: string;
   readonly poolType = 'xyk';
 
@@ -47,21 +46,20 @@ export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = this.terrajs.settings.roarToken;
-    this.denomTokenContract = Denom.LUNA;
-    this.poolAprs =  [{
+    this.baseTokenContract = this.terrajs.settings.capaToken;
+    this.denomTokenContract = this.terrajs.settings.solidToken;
+    this.poolAprs = [{
       apr: 0,
-      rewardSymbol: SYMBOLS.ROAR,
-      rewardContract: this.terrajs.settings.roarToken
+      rewardSymbol: SYMBOLS.CAPA,
+      rewardContract: this.terrajs.settings.capaToken
     },
     {
       apr: 0,
       rewardSymbol: SYMBOLS.ASTRO,
       rewardContract: this.terrajs.settings.astroToken
-    }
-    ];
-    this.farmContract = this.terrajs.settings.astroportRoarLunaFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportRoarLunaFarmCompoundProxy;
+    }];
+    this.farmContract = this.terrajs.settings.astroportCapaSolidFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportCapaSolidCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
@@ -79,8 +77,8 @@ export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-    const uluna = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
-    if (!uluna) {
+    const solid = p.assets.find(a => a.info['token']?.['contract_addr'] === this.denomTokenContract);
+    if (!solid) {
       return;
     }
     pairs[key] = {
@@ -91,9 +89,8 @@ export class AstroportRoarLunaFarmInfoService implements FarmInfoService {
       vaultFee: 0
     };
     const pair = pairs[key];
-    pair.tvl = new BigNumber(uluna.amount)
+    pair.tvl = new BigNumber(solid.amount)
       .times(depositAmount)
-      .times(ulunaPrice)
       .times(2)
       .div(p.total_share)
       .toString();
