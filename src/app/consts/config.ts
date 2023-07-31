@@ -37,7 +37,7 @@ interface Brand {
 type ChainInfoEx = ChainInfo & Brand;
 
 export const chainInfos: Record<string, ChainInfoEx> = {
-  INJECTIVE_MAINNET_CHAINID: {
+  [INJECTIVE_MAINNET_CHAINID]: {
     rpc: INJECTIVE_MAINNET_RPC, // 'https://k8s.global.mainnet.tm.injective.network:443',
     rest: INJECTIVE_MAINNET_REST, // 'https://k8s.global.mainnet.lcd.injective.network:443',
     chainId: INJECTIVE_MAINNET_CHAINID,
@@ -83,7 +83,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     ],
     features: ['ibc-transfer', 'ibc-go', 'eth-address-gen', 'eth-key-sign'],
   },
-  INJECTIVE_TESTNET_CHAINID: {
+  [INJECTIVE_TESTNET_CHAINID]: {
     rpc: INJECTIVE_TESTNET_RPC,
     rest: INJECTIVE_TESTNET_REST,
     chainId: INJECTIVE_TESTNET_CHAINID,
@@ -130,7 +130,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     coinType: 60,
     features: ['ibc-transfer', 'ibc-go', 'eth-address-gen', 'eth-key-sign'],
   },
-  TERRA2_MAINNET_CHAINID: {
+  [TERRA2_MAINNET_CHAINID]: {
     rpc: TERRA2_MAINNET_RPC,
     rest: TERRA2_MAINNET_REST,
     chainId: TERRA2_MAINNET_CHAINID,
@@ -174,7 +174,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     ],
     features: ['ibc-transfer', 'ibc-go'],
   },
-  TERRA2_TESTNET_CHAINID: {
+  [TERRA2_TESTNET_CHAINID]: {
     rpc: TERRA2_TESTNET_RPC,
     rest: TERRA2_TESTNET_REST,
     chainId: TERRA2_TESTNET_CHAINID,
@@ -218,7 +218,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     ],
     features: ['ibc-transfer', 'ibc-go'],
   },
-  NEUTRON_MAINNET_CHAINID: {
+  [NEUTRON_MAINNET_CHAINID]: {
     rpc: NEUTRON_MAINNET_RPC,
     rest: NEUTRON_MAINNET_REST,
     chainId: NEUTRON_MAINNET_CHAINID,
@@ -293,7 +293,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     ],
     features: ['cosmwasm']
   },
-  NEUTRON_TESTNET_CHAINID: {
+  [NEUTRON_TESTNET_CHAINID]: {
     rpc: NEUTRON_TESTNET_RPC,
     rest: NEUTRON_TESTNET_REST,
     chainId: NEUTRON_TESTNET_CHAINID,
@@ -342,7 +342,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     ],
     features: []
   },
-  SEI_TESTNET_CHAINID: {
+  [SEI_TESTNET_CHAINID]: {
     rpc: SEI_TESTNET_RPC,
     rest: SEI_TESTNET_REST,
     chainId: SEI_TESTNET_CHAINID,
@@ -401,7 +401,7 @@ export const getChainIdToLoad = () => {
     case 'injective.spec.finance':
       return INJECTIVE_MAINNET_CHAINID;
     default:
-      return NEUTRON_TESTNET_CHAINID;
+      return INJECTIVE_TESTNET_CHAINID;
   }
 };
 
