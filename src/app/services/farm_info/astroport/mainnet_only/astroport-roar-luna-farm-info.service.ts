@@ -18,7 +18,7 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {SYMBOLS} from '../../../../consts/symbol';
 import {Denom} from '../../../../consts/denom';
-import {CHAIN_ID_ENUM, TERRA2_MAINNET_CHAINID} from 'src/app/consts/config';
+import {CHAIN_ID_ENUM, TERRA2_MAINNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
 export class AstroportRoarLunaFarmInfoService implements FarmInfoService {

@@ -6,14 +6,16 @@ import {
   NEUTRON_TESTNET_CHAINID,
   TERRA2_MAINNET_CHAINID,
   TERRA2_TESTNET_CHAINID,
-  getCurrentChainBrand, SEI_TESTNET_CHAINID
-} from './config';
-import {
-  INJECTIVE_TESTNET_REST, NEUTRON_MAINNET_REST, NEUTRON_TESTNET_REST, SEI_TESTNET_REST,
+  getCurrentChainBrand, 
+  SEI_TESTNET_CHAINID,
+  INJECTIVE_TESTNET_REST, 
+  NEUTRON_MAINNET_REST, 
+  NEUTRON_TESTNET_REST, 
+  SEI_TESTNET_REST,
   SEI_TESTNET_RPC,
   TERRA2_MAINNET_REST,
-  TERRA2_TESTNET_REST
-} from '../services/connect-options/chain-info';
+  TERRA2_TESTNET_REST,
+} from './config';
 
 export interface ISettings {
   specToken: string;
@@ -62,12 +64,12 @@ export interface ISettings {
   astroportLunaStLunaFarmCompoundProxy?: string;
   astroportRoarLunaFarm?: string;
   astroportRoarLunaFarmCompoundProxy?: string;
-  astroportCapaLunaFarm: string;
-  astroportCapaLunaFarmCompoundProxy: string;
-  astroportSolidAxlUsdcFarm: string;
-  astroportSolidAxlUsdcCompoundProxy: string;
-  astroportCapaSolidFarm: string;
-  astroportCapaSolidCompoundProxy: string;
+  astroportCapaLunaFarm?: string;
+  astroportCapaLunaFarmCompoundProxy?: string;
+  astroportSolidAxlUsdcFarm?: string;
+  astroportSolidAxlUsdcCompoundProxy?: string;
+  astroportCapaSolidFarm?: string;
+  astroportCapaSolidCompoundProxy?: string;
   // MAINNET ONLY
   // TESTNET ONLY
   astroportAstroLunaFarm?: string;
@@ -120,8 +122,8 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       sayveToken: 'terra1xp9hrhthzddnl7j5du83gqqr4wmdjm5t0guzg9jp6jwrtpukwfjsjgy4f3',
       stLUNAToken: 'ibc/08095CEDEA29977C9DD0CE9A48329FDA622C183359D5F90CF04CC4FF80CBE431',
       roarToken: 'terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv',
-    capaToken: 'terra1t4p3u8khpd7f8qzurwyafxt648dya6mp6vur3vaapswt6m24gkuqrfdhar',
-    solidToken: 'terra10aa3zdkrc7jwuf8ekl3zq7e7m42vmzqehcmu74e4egc7xkm5kr2s0muyst',
+      capaToken: 'terra1t4p3u8khpd7f8qzurwyafxt648dya6mp6vur3vaapswt6m24gkuqrfdhar',
+      solidToken: 'terra10aa3zdkrc7jwuf8ekl3zq7e7m42vmzqehcmu74e4egc7xkm5kr2s0muyst',
       xAstroToken: 'terra1x62mjnme4y0rdnag3r8rfgjuutsqlkkyuh4ndgex0wl3wue25uksau39q8',
       astroportGov: '',
       astroportGenerator: 'terra1vf9ceekuxx8kycm7yv6hs96hgwsmrzt4la6s84skrgvfu7t09huqqdg09d', // 'terra1ksvlfex49desf4c452j6dewdjs6c48nafemetuwjyj6yexd7x3wqvwa7j9',
@@ -150,12 +152,12 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       astroportLunaStLunaFarmCompoundProxy: 'terra18v87nv8nhxtmynetmtg228lee2cgx7dk828szuglkjnvwhr6ye0qaz48w5',
       astroportRoarLunaFarm: 'terra1fz4x56u96fkgzvtdxaq2969qlmfk4wnwq0fqhlrklpqc629ah9qs4h8v50', // pair: terra1c7g9pmz2xxe66g8ujpe5tlmj3pawjp290f57cl43j6vswkdtrvwqkgme9q, lp: terra1qmr5wagmeej33hsnqdmqyvkq6rg3sfkvflmu6gd6drhtjfpx4y5sew88s4
       astroportRoarLunaFarmCompoundProxy: 'terra14l4nwrfcdgjd2dtucd8f66p8w0fanxvus7twuuupq96cmw82w4usw2wjc3',
-    astroportCapaLunaFarm: 'terra1z8q3gq26fnvdfaj0yrf04unmlkt2uge2d0j9ve25zpyfj9u2r9jsxw8msm', // pair: terra1a0druggg6c7u88ps37q03jxuexznjmq0xnhg8c8d7xnfaelq4t0qype5j3, lp: terra1eae46l4etn6j9zh3rrzalzdkw4j7wwf974v7ep882utkvtvy6h5qcjms7l
-    astroportCapaLunaFarmCompoundProxy: 'terra1utu92kjw2gze05wgl0gvac9y69u2w0d2utkmn9zgkfu8kaq6wf4suffr5a',
-    astroportSolidAxlUsdcFarm: 'terra1fe83u43uz65smen45vwvj7w5838nerehv2la6utvhsr9c87ykr0qsvshqu', // pair: terra1jd04eztujfgt4z0uyw7lkm0gujs0gpxs6pd5gv8ltt5xccmq3v8sppm7wg, lp: terra1rdjm94n3r4uvhfh23s98tfcgzedkuvjwvkcjqa503amef9afya7sddv098
-    astroportSolidAxlUsdcCompoundProxy: 'terra12957ajdm5exxv5lz45vydr4nf2dwyjmzrgnrkhe6eyym6r99amuqppcp4t',
-    astroportCapaSolidFarm: 'terra1rasvh4nv8znpjg6jtkzxjskfynze98h9zv4qn8ese7tkwf0zjaaq0z60t8', // pair: terra1g6z93vtttdrwfdtj06ha2nwc6qdxsfy8appge5l5g7wenfzg5mjq8s3r9n, lp: terra1d4ltsnke3grgw90dad5qf3jle7l0t9z8zsshqzp6g8v3j0ecvpksevz5z7
-    astroportCapaSolidCompoundProxy: 'terra1x6m9v42s9drr7dcpatuy850w7t9secpyx5v97j3x6mxp2fn0l0uq68v20u',
+      astroportCapaLunaFarm: 'terra1z8q3gq26fnvdfaj0yrf04unmlkt2uge2d0j9ve25zpyfj9u2r9jsxw8msm', // pair: terra1a0druggg6c7u88ps37q03jxuexznjmq0xnhg8c8d7xnfaelq4t0qype5j3, lp: terra1eae46l4etn6j9zh3rrzalzdkw4j7wwf974v7ep882utkvtvy6h5qcjms7l
+      astroportCapaLunaFarmCompoundProxy: 'terra1utu92kjw2gze05wgl0gvac9y69u2w0d2utkmn9zgkfu8kaq6wf4suffr5a',
+      astroportSolidAxlUsdcFarm: 'terra1fe83u43uz65smen45vwvj7w5838nerehv2la6utvhsr9c87ykr0qsvshqu', // pair: terra1jd04eztujfgt4z0uyw7lkm0gujs0gpxs6pd5gv8ltt5xccmq3v8sppm7wg, lp: terra1rdjm94n3r4uvhfh23s98tfcgzedkuvjwvkcjqa503amef9afya7sddv098
+      astroportSolidAxlUsdcCompoundProxy: 'terra12957ajdm5exxv5lz45vydr4nf2dwyjmzrgnrkhe6eyym6r99amuqppcp4t',
+      astroportCapaSolidFarm: 'terra1rasvh4nv8znpjg6jtkzxjskfynze98h9zv4qn8ese7tkwf0zjaaq0z60t8', // pair: terra1g6z93vtttdrwfdtj06ha2nwc6qdxsfy8appge5l5g7wenfzg5mjq8s3r9n, lp: terra1d4ltsnke3grgw90dad5qf3jle7l0t9z8zsshqzp6g8v3j0ecvpksevz5z7
+      astroportCapaSolidCompoundProxy: 'terra1x6m9v42s9drr7dcpatuy850w7t9secpyx5v97j3x6mxp2fn0l0uq68v20u',
       // MAINNET ONLY
       lcd: TERRA2_MAINNET_REST,
       fcd: 'https://phoenix-fcd.terra.dev',

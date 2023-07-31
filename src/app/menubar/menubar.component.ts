@@ -10,12 +10,9 @@ import { Currency } from '@keplr-wallet/types';
 import { getChainInfo } from '../services/connect-options/chain-info';
 import {
   CHAIN_BRAND,
-  CONFIG, getChainNetwork,
-  getCurrentChainBrand, INJECTIVE_MAINNET_CHAINID, INJECTIVE_TESTNET_CHAINID, LSKEY_CHAIN_ID_TO_LOAD, NETWORK_TYPE,
-  NEUTRON_MAINNET_CHAINID,
-  NEUTRON_TESTNET_CHAINID,
-  TERRA2_MAINNET_CHAINID,
-  TERRA2_TESTNET_CHAINID
+  CONFIG,
+  chainInfos,
+  getCurrentChainBrand,
 } from '../consts/config';
 import { WasmService } from '../services/api/wasm.service';
 
@@ -34,48 +31,19 @@ export class MenubarComponent implements OnInit, OnDestroy {
   currency: Currency;
 
   get finderLink() {
-    return getCurrentChainBrand() === 'Terra'
-      ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/account/${this.terrajs.address}`
-      : `${this.terrajs.settings.finder}/account/${this.terrajs.address}`;
+    return chainInfos[CONFIG.CHAIN_ID].finderUrl(this.terrajs.settings.finder, this.terrajs.networkName, this.terrajs.address);
   }
 
   get finderName() {
-    return getCurrentChainBrand() === 'Terra'
-      ? 'Terra Finder'
-      : 'Injective Explorer';
+    return chainInfos[CONFIG.CHAIN_ID].finderName;
   }
 
-
-  getCurrentChainBrandForHTML(){
-    return getCurrentChainBrand();
+  get chainName() {
+    return chainInfos[CONFIG.CHAIN_ID].chainName;
   }
 
-  get chainNetworkForHTML(){
-    // if (!this.terrajs.network?.chainID){
-    //   return '';
-    // }
-    // return getChainNetwork(this.terrajs.network.chainID);
-    switch (this.terrajs.networkName) {
-      case 'mainnet':
-        return 'Mainnet';
-      case 'testnet':
-        return 'Testnet';
-      case 'devnet':
-        return 'Devnet';
-      default:
-        return '';
-    }
-  }
-
-  getChainIconPath(chainBrand: CHAIN_BRAND) {
-    switch (chainBrand) {
-      case 'Terra':
-        return '/assets/luna.png';
-      case 'Injective':
-        return '/assets/INJ.png';
-      default:
-        return '';
-    }
+  get chainIcon() {
+    return chainInfos[CONFIG.CHAIN_ID].icon;
   }
 
   constructor(
@@ -156,22 +124,5 @@ export class MenubarComponent implements OnInit, OnDestroy {
     const gzip = zlip.gzip(new Uint8Array(data));
     const base64 = Buffer.from(gzip).toString('base64');
     return this.wasm.storeCode(base64);
-  }
-
-  changeNetwork(newChainBrand: CHAIN_BRAND, network: NETWORK_TYPE){
-    switch (newChainBrand) {
-      case 'Terra':
-        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? TERRA2_MAINNET_CHAINID : TERRA2_TESTNET_CHAINID);
-        break;
-      case 'Injective':
-        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? INJECTIVE_MAINNET_CHAINID : INJECTIVE_TESTNET_CHAINID);
-        break;
-      case 'Neutron':
-        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, network === 'Mainnet' ? NEUTRON_MAINNET_CHAINID : NEUTRON_TESTNET_CHAINID);
-        break;
-      default:
-        localStorage.setItem(LSKEY_CHAIN_ID_TO_LOAD, TERRA2_MAINNET_CHAINID);
-    }
-    location.reload();
   }
 }

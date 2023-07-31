@@ -19,7 +19,7 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {times} from '../../../../libs/math';
 import {SYMBOLS} from '../../../../consts/symbol';
-import {CHAIN_ID_ENUM, INJECTIVE_TESTNET_CHAINID} from 'src/app/consts/config';
+import {CHAIN_ID_ENUM, INJECTIVE_TESTNET_CHAINID} from '../../../../consts/config';
 
 @Injectable()
 export class AstroportAstroInjFarmInfoService implements FarmInfoService {
