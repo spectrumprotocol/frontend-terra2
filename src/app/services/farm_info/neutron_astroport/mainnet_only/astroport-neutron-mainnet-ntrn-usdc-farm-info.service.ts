@@ -19,10 +19,10 @@ import {PairInfo} from '../../../api/astroport_factory/pair_info';
 import {TokenInfo} from '../../../info.service';
 import {times} from '../../../../libs/math';
 import {SYMBOLS} from '../../../../consts/symbol';
-import {CHAIN_ID_ENUM, INJECTIVE_TESTNET_CHAINID, NEUTRON_TESTNET_CHAINID} from '../../../../consts/config';
+import {CHAIN_ID_ENUM, CONFIG, NEUTRON_MAINNET_CHAINID, NEUTRON_TESTNET_CHAINID} from 'src/app/consts/config';
 
 @Injectable()
-export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService {
+export class AstroportNeutronMainnetNtrnUsdcFarmInfoService implements FarmInfoService {
   readonly farm = 'Astroport';
   readonly farmColor = '#ffe646';
   readonly auditWarning = false;
@@ -35,7 +35,7 @@ export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService
   poolAprs: PoolAPR[];
   farmContract: string;
   compoundProxyContract: string;
-  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([NEUTRON_TESTNET_CHAINID]);
+  readonly availableNetworks = new Set<CHAIN_ID_ENUM>([NEUTRON_MAINNET_CHAINID]);
   contractOnNetwork: string;
   readonly poolType = 'xyk';
 
@@ -48,7 +48,7 @@ export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService
   }
 
   refreshContractOnNetwork() {
-    this.baseTokenContract = this.terrajs.settings.astroToken;
+    this.baseTokenContract = Denom.NTRN;
     this.denomTokenContract = this.terrajs.settings.usdcToken;
     this.poolAprs = [
       {
@@ -57,8 +57,8 @@ export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService
         rewardContract: this.terrajs.settings.astroToken
       },
     ];
-    this.farmContract = this.terrajs.settings.astroportAstroUsdcFarm;
-    this.compoundProxyContract = this.terrajs.settings.astroportAstroUsdcFarmCompoundProxy;
+    this.farmContract = this.terrajs.settings.astroportNtrnUsdcFarm;
+    this.compoundProxyContract = this.terrajs.settings.astroportNtrnUsdcFarmCompoundProxy;
     this.contractOnNetwork = this.terrajs.networkName;
   }
 
@@ -77,7 +77,7 @@ export class AstroportNeutronAstroUsdcFarmInfoService implements FarmInfoService
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
-    const usdc = p.assets.find(a => a.info['token']?.['contract_addr'] === this.denomTokenContract);
+    const usdc = p.assets.find(a => a.info['native_token']?.['denom'] === this.denomTokenContract);
     if (!usdc) {
       return;
     }

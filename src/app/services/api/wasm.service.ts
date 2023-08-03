@@ -23,7 +23,9 @@ export class WasmService {
   query(contract: string, msg: object) {
     if (contract) {
       // console.log(contract, msg);
-      return this.terrajs.lcdClient.wasm.contractQuery<any>(contract, msg);
+      return this.terrajs.lcdClient.wasm.contractQuery<any>(contract, msg).catch(e => {
+        console.error(contract, msg, e);
+      });
     }
   }
 
