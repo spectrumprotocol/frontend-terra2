@@ -77,6 +77,8 @@ export interface ISettings {
   // NEUTRON
   astroportAstroUsdcFarm?: string;
   astroportAstroUsdcFarmCompoundProxy?: string;
+  astroportNtrnUsdcFarm?: string;
+  astroportNtrnUsdcFarmCompoundProxy?: string;
   // NEUTRON
   injToken?: string;
   stbToken?: string;
@@ -223,11 +225,15 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       mainnet: {
         specToken: '',
         airdrop: '',
-        usdcToken: '',
-        astroToken: '',
-        astroportRouter: '',
-        astroportFactory: '',
-        astroportGenerator: '',
+        usdcToken: 'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349',
+        astroToken: 'ibc/5751B8BCDA688FD0A8EC0B292EEF1CDEAB4B766B63EC632778B196D317C40C3A',
+        astroportRouter: 'neutron1eeyntmsq448c68ez06jsy6h2mtjke5tpuplnwtjfwcdznqmw72kswnlmm0',
+        astroportFactory: 'neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e',
+        astroportGenerator: 'neutron1jz58yjay8uq8zkfw95ngyv3m2wfs2zjef9vdz75d9pa46fdtxc5sxtafny',
+        astroportAstroUsdcFarm: 'neutron167rl44fxyfr2gge2xax6fyknau02yx5fuanymw08kh39lztnprqsnsez50',
+        astroportAstroUsdcFarmCompoundProxy: 'neutron1lt0se040ft6qn3unznzjwytxjp8920t053dctzx6n4wk6zp7t68qp8r6z6',
+        astroportNtrnUsdcFarm: 'neutron1085xc4thjxpwn7ls9q3du98xmqfqaq8t7wctlua893xrqenncw2ql22ntp',
+        astroportNtrnUsdcFarmCompoundProxy: 'neutron10008ey4hpn4px7d4jca9evlwh8kft5newm82pnga3aee27fngrysjmvyf0',
         lcd: NEUTRON_MAINNET_REST, // TODO
         fcd: '',
         querier: '',
