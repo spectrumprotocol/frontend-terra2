@@ -36,6 +36,8 @@ export class UrlPipe implements PipeTransform {
             return `https://app.astroport.fi/tokens/dune.svg`;
           case 'axlUSDC':
             return `/assets/usdc.svg`;
+          case 'USDC':
+            return `/assets/usdc.svg`;
           case 'axlUSDT':
             return `/assets/usdt.svg`;
           case 'LunaX':
@@ -80,6 +82,8 @@ export class UrlPipe implements PipeTransform {
               return `/assets/solid.svg`;
           case 'INJ':
             return `/assets/INJ.png`;
+          case 'NTRN':
+            return `/assets/neutron.svg`;
           default:
             return `/assets/default.png`;
         }

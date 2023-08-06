@@ -7,7 +7,7 @@ import { GoogleAnalyticsService } from 'ngx-google-analytics';
 import { MdbModalRef } from 'mdb-angular-ui-kit/modal';
 import { InfoService } from '../info.service';
 import BigNumber from 'bignumber.js';
-import { Denom } from '../../consts/denom';
+import { ATOM_NEUTRON_MAINNET, Denom } from '../../consts/denom';
 import { getChainInfo } from '../connect-options/chain-info';
 import { Currency } from '@keplr-wallet/types';
 
@@ -33,6 +33,8 @@ export class TxPostComponent implements OnInit {
   gasLimit: number;
   fee: string;
   feeUSD: string;
+  fee2: string;
+  feeUSD2: string;
   coins: string[];
   isEnoughFee = true;
   selectedCoin: string;
@@ -48,6 +50,7 @@ export class TxPostComponent implements OnInit {
     hideLimitLabels: true,
   };
   currency: Currency;
+  currentChainBrand: string;
 
   constructor(
     private httpClient: HttpClient,
@@ -59,6 +62,7 @@ export class TxPostComponent implements OnInit {
 
   async ngOnInit() {
     try {
+      this.currentChainBrand = getCurrentChainBrand();
       if (!this.terrajs.isConnected) {
         throw new Error('please connect your wallet');
       }
@@ -120,6 +124,7 @@ export class TxPostComponent implements OnInit {
   }
 
   calculateFee() {
+    console.log(this.terrajs.lcdClient.config.gasPrices);
     this.userGasLimit = new BigNumber(this.gasLimit)
       .times(100 + this.gasBuffer).div(170)
       .integerValue(BigNumber.ROUND_UP)
@@ -128,11 +133,33 @@ export class TxPostComponent implements OnInit {
       .times(this.terrajs.lcdClient.config.gasPrices[this.selectedCoin])
       .integerValue(BigNumber.ROUND_UP)
       .toString();
-    this.feeUSD = new BigNumber(this.fee)
+    if (getCurrentChainBrand() === 'Terra'){
+      this.feeUSD = new BigNumber(this.fee)
       .times(this.info.ulunaUSDPrice)
       .div(10 ** (this.currency.coinDecimals - 6))
       .toString();
-    this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
+      this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
+    }
+    if (getCurrentChainBrand() === 'Injective'){
+      this.feeUSD = new BigNumber(this.fee)
+      .times(this.info.injUSDPrice)
+      .div(10 ** (this.currency.coinDecimals - 6))
+      .toString();
+      this.isEnoughFee = +this.info.tokenBalances[this.selectedCoin] >= +this.fee;
+    }
+    if (getCurrentChainBrand() === 'Neutron'){
+      this.feeUSD = new BigNumber(this.fee)
+      .times(this.info.ntrnUSDPrice)
+      .div(10 ** (this.currency.coinDecimals))
+      .toString();
+      this.feeUSD2 = new BigNumber(this.fee2)
+      .times(this.info.atomUSDPrice)
+      .div(10 ** (this.currency.coinDecimals - 6))
+      .toString();
+      // TODO fix this later
+      this.isEnoughFee = +this.info.tokenBalances[Denom.NTRN] >= +this.fee || +this.info.tokenBalances[ATOM_NEUTRON_MAINNET] >= +this.fee2;
+    }
+
   }
 
   async execute() {

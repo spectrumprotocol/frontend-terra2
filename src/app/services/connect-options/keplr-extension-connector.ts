@@ -69,7 +69,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   }
   close() {
     window.keplr?.disable(CONFIG.CHAIN_ID);
-  };
+  }
   requestApproval() { }
   refetchStates() { }
 
@@ -91,7 +91,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     const accounts = await this.signer.getAccounts();
     const account = accounts.find(it => it.address === terraAddress);
     if (!account) {
-      throw new Error("Failed to retrieve account from signer");
+      throw new Error('Failed to retrieve account from signer');
     }
 
     const txBody = new TxBody(tx.msgs, tx.memo, tx.timeoutHeight);

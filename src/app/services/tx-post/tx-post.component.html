@@ -26,11 +26,18 @@
     <div *ngIf="!failed && !executed && signMsg">
         <div class="row">
             <div class="col-6 small">Fee <i class="fas fa-info-circle info-icon"
-                    mdbTooltip="Fee paid to terra chain to execute this transaction"></i></div>
-            <div class="col-6 text-end small">
+                    mdbTooltip="Fee paid to chain to execute this transaction"></i></div>
+            <div *ngIf="currentChainBrand !== 'Neutron'" class="col-6 text-end small">
                 <span>{{ fee | unit : currency.coinDecimals }} </span>
                 <span>{{ selectedCoinName }}</span>
                 <span><br />({{ feeUSD | unit }} USD)</span>
+            </div>
+            <div *ngIf="currentChainBrand === 'Neutron'" class="col-6 text-end small">
+                <span>{{ fee | unit : currency.coinDecimals }} </span>
+                <span>NTRN</span>
+                <span>{{ fee2 | unit : 6 }} </span>/
+                <span>ATOM</span>
+                <span><br />({{ feeUSD | unit }} USD)({{ feeUSD2 | unit }} USD)</span>
             </div>
         </div>
         <div class="row mt-2 mb-1">
