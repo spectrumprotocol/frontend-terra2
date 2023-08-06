@@ -1,6 +1,7 @@
 export const Denom = {
   LUNA : 'uluna',
   INJ: 'inj',
+  NTRN: 'untrn',
   display: {
     ['uluna']: 'LUNA',
     ['inj']: 'INJ',
