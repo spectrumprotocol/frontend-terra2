@@ -4,7 +4,7 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
 import { div, plus } from '../libs/math';
-import {CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand, CHAIN_ID_ENUM} from '../consts/config';
+import {CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand, CHAIN_ID_ENUM, NEUTRON_MAINNET_CHAINID} from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
@@ -20,7 +20,7 @@ import { PairInfo } from './api/astroport_pair/pair_info';
 import { Vault } from '../pages/vault/vault.component';
 import { HttpClient } from '@angular/common/http';
 import { memoize } from 'utils-decorators';
-import { Denom } from '../consts/denom';
+import { ATOM_NEUTRON_MAINNET, Denom, NATIVE_TOKEN_LIST } from '../consts/denom';
 import { Apollo, gql } from 'apollo-angular';
 import { BalanceResponse } from './api/gov/balance_response';
 import { StateInfo } from './api/gov/state_info';
@@ -30,6 +30,7 @@ import { ConfigService } from './config.service';
 import { fromBase64 } from '../libs/base64';
 import { lp_balance_transform } from './calc/balance_calc';
 import { getChainInfo } from './connect-options/chain-info';
+import { NumberValueAccessor } from '@angular/forms';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -186,6 +187,8 @@ export class InfoService {
   astroportPoolsData: AstroportPools;
   ulunaUSDPrice: number; // to get testnet uluna/usd price
   injUSDPrice: number;
+  ntrnUSDPrice: number;
+  atomUSDPrice: number;
   compoundStat: Record<string, CompoundStat> = {};
 
   DISABLED_VAULTS: Set<string> = new Set([]);
@@ -240,7 +243,7 @@ export class InfoService {
           this.compoundStat = JSON.parse(compoundStatJson);
         }
       } else {
-        console.log('localStorage clearing triggered.')
+        console.log('localStorage clearing triggered.');
         localStorage.removeItem('poolInfos');
         localStorage.removeItem('pairInfos');
         localStorage.removeItem('stat');
@@ -260,6 +263,18 @@ export class InfoService {
 
   get USDC_LUNA_KEY() {
     return `Astroport|${this.terrajs.settings.axlUsdcToken}|${Denom.LUNA}`;
+  }
+
+  get INJ_USDC_KEY() {
+    return `Astroport|${Denom.INJ}|${this.terrajs.settings.usdcToken}`;
+  }
+
+  get NTRN_USDC_KEY() {
+    return `Astroport|${Denom.NTRN}|${this.terrajs.settings.usdcToken}`;
+  }
+
+  get ATOM_USDC_KEY() {
+    return `Astroport|${ATOM_NEUTRON_MAINNET}|${this.terrajs.settings.usdcToken}`;
   }
 
   shouldEnableFarmInfo(farmInfo: FarmInfoService) {
@@ -294,17 +309,22 @@ export class InfoService {
     for (const coin of it.toArray()) {
       this.tokenBalances[coin.denom] = coin.amount.toString() ?? '0';
     }
-    if (!this.tokenBalances[Denom.LUNA] || !it.toArray().find(coin => coin.denom === Denom.LUNA)) {
-      this.tokenBalances[Denom.LUNA] = '0';
-    }
-    if (this.terrajs.isMainnet) {
-      if (!this.tokenBalances[this.terrajs.settings.axlUsdcToken] || !it.toArray().find(coin => coin.denom === this.terrajs.settings.axlUsdcToken)) {
-        this.tokenBalances[this.terrajs.settings.axlUsdcToken] = '0';
-      }
-      if (!this.tokenBalances[this.terrajs.settings.axlUsdtToken] || !it.toArray().find(coin => coin.denom === this.terrajs.settings.axlUsdtToken)) {
-        this.tokenBalances[this.terrajs.settings.axlUsdtToken] = '0';
+
+    for (const nativeToken of NATIVE_TOKEN_LIST){
+      if (!this.tokenBalances[nativeToken] || !it.toArray().find(coin => coin.denom === nativeToken)) {
+        this.tokenBalances[nativeToken] = '0';
       }
     }
+
+
+    // if (this.terrajs.isMainnet) {
+    //   if (!this.tokenBalances[this.terrajs.settings.axlUsdcToken] || !it.toArray().find(coin => coin.denom === this.terrajs.settings.axlUsdcToken)) {
+    //     this.tokenBalances[this.terrajs.settings.axlUsdcToken] = '0';
+    //   }
+    //   if (!this.tokenBalances[this.terrajs.settings.axlUsdtToken] || !it.toArray().find(coin => coin.denom === this.terrajs.settings.axlUsdtToken)) {
+    //     this.tokenBalances[this.terrajs.settings.axlUsdtToken] = '0';
+    //   }
+    // }
   }
 
   @memoize(1000)
@@ -725,6 +745,25 @@ export class InfoService {
         const ulunaAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.LUNA)?.amount || 0;
         this.ulunaUSDPrice = +div(axlUsdcAmount, ulunaAmount);
       }
+    }
+
+    if (this.loadedChainId === NEUTRON_MAINNET_CHAINID){
+      const pool = this.poolResponses[this.NTRN_USDC_KEY];
+      if (pool) {
+        const usdcAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === this.terrajs.settings.usdcToken)?.amount || 0;
+        const ntrnAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.LUNA)?.amount || 0;
+        this.ntrnUSDPrice = +div(usdcAmount, ntrnAmount);
+      }
+
+      const ntrnAtomPool = 'neutron1e22zh5p8meddxjclevuhjmfj69jxfsa8uu3jvht72rv9d8lkhves6t8veq';
+      poolTasks.push(bundler.query(ntrnAtomPool, { pool: {} })
+      .then(pool2 => {
+        poolResponses[`Astroport|${Denom.NTRN}|${ATOM_NEUTRON_MAINNET}`] = pool;
+        const atomAmount = pool2.assets.find(asset => asset?.info?.native_token?.['denom'] === ATOM_NEUTRON_MAINNET)?.amount || 0;
+        const ntrnAmount = pool2.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.NTRN)?.amount || 0;
+        this.atomUSDPrice = +div(atomAmount, ntrnAmount) * this.ntrnUSDPrice;
+        console.log('this.atomUSDPrice', this.atomUSDPrice); // TODO fix this later
+      }));
     }
 
   }

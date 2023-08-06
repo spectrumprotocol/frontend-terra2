@@ -67,7 +67,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   }
   close() {
     window.keplr?.disable(CONFIG.CHAIN_ID);
-  };
+  }
   requestApproval() { }
   refetchStates() { }
 
@@ -89,20 +89,21 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     const accounts = await this.signer.getAccounts();
     const account = accounts.find(it => it.address === terraAddress);
     if (!account) {
-      throw new Error("Failed to retrieve account from signer");
+      throw new Error('Failed to retrieve account from signer');
     }
 
     const txBody = new TxBody(tx.msgs, tx.memo, tx.timeoutHeight);
     const pubkey = CONFIG.CHAIN_ID.startsWith('injective')
       ? new InjectivePublicKey(Buffer.from(account.pubkey).toString('base64'))
       : new SimplePublicKey(Buffer.from(account.pubkey).toString('base64'));
-    const modeInfo = this.signer.signDirect
-      ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
-      : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
+    // const modeInfo = this.signer.signDirect
+    //   ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
+    //   : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
+    const modeInfo =  new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON));
     const signerInfo = new SignerInfo(pubkey, accountInfo.getSequenceNumber(), modeInfo);
     const authInfo = new AuthInfo([signerInfo], tx.fee);
     const signDoc = new SignDoc(CONFIG.CHAIN_ID, accountInfo.getAccountNumber(), accountInfo.getSequenceNumber(), authInfo, txBody);
-    
+
     if (this.signer.signDirect) {
       const signature = await this.signer.signDirect(terraAddress, signDoc.toProto());
       const protoAuthInfo = ProtoAuthInfo.decode(signature.signed.authInfoBytes);

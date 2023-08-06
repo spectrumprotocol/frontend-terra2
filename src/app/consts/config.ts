@@ -46,7 +46,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     icon: '/assets/INJ.png',
     finderName: 'Injective Explorer',
     finderUrl(finder, _, address) {
-      return `${finder}/account/${address}`
+      return `${finder}/account/${address}`;
     },
     stakeCurrency: {
       coinDenom: 'INJ',
@@ -92,7 +92,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     icon: '/assets/INJ.png',
     finderName: 'Injective Explorer',
     finderUrl(finder, _, address) {
-      return `${finder}/account/${address}`
+      return `${finder}/account/${address}`;
     },
     stakeCurrency: {
       coinDenom: 'INJ',
@@ -224,7 +224,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     chainId: NEUTRON_MAINNET_CHAINID,
     chainName: 'Neutron',
     brand: 'Neutron',
-    icon: '/assets/luna.png',
+    icon: '/assets/neutron.svg',
     finderName: 'Neutron Explorer',
     finderUrl(finder, network, address) {
       return `${finder}/${network}/account/${address}`;
@@ -299,7 +299,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     chainId: NEUTRON_TESTNET_CHAINID,
     chainName: 'Neutron Testnet',
     brand: 'Neutron',
-    icon: '/assets/luna.png',
+    icon: '/assets/neutron.svg',
     finderName: 'Neutron Explorer',
     finderUrl(finder, network, address) {
       return `${finder}/${network}/account/${address}`;
@@ -351,7 +351,7 @@ export const chainInfos: Record<string, ChainInfoEx> = {
     icon: '/assets/luna.png',
     finderName: 'Sei Explorer',
     finderUrl(finder, _, address) {
-      return `${finder}/account/${address}`
+      return `${finder}/account/${address}`;
     },
     chainSymbolImageUrl: 'https://raw.githubusercontent.com/neutron-org/chain-registry/master/testnets/seitestnet/images/sei.png',
     bip44: {
@@ -400,8 +400,10 @@ export const getChainIdToLoad = () => {
       return TERRA2_MAINNET_CHAINID;
     case 'injective.spec.finance':
       return INJECTIVE_MAINNET_CHAINID;
+    case 'neutron.spec.finance':
+      return NEUTRON_MAINNET_CHAINID;
     default:
-      return INJECTIVE_TESTNET_CHAINID;
+      return NEUTRON_MAINNET_CHAINID;
   }
 };
 

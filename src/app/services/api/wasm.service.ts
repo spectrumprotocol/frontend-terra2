@@ -25,6 +25,7 @@ export class WasmService {
       // console.log(contract, msg);
       return this.terrajs.lcdClient.wasm.contractQuery<any>(contract, msg).catch(e => {
         console.error(contract, msg, e);
+        throw(e);
       });
     }
   }
