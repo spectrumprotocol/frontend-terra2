@@ -401,7 +401,7 @@ export const getChainIdToLoad = () => {
     case 'injective.spec.finance':
       return INJECTIVE_MAINNET_CHAINID;
     default:
-      return INJECTIVE_TESTNET_CHAINID;
+      return TERRA2_TESTNET_CHAINID;
   }
 };
 

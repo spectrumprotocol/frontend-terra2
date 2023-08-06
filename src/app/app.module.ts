@@ -209,7 +209,7 @@ registerLocaleData(locale, 'en');
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroLunaFarmInfoService, multi: true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportVkrLunaFarmInfoService, multi: true},
-    {provide: FARM_INFO_SERVICE, useClass: AstroportStbLunaFarmInfoService, multi: true},
+    // {provide: FARM_INFO_SERVICE, useClass: AstroportStbLunaFarmInfoService, multi: true},
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportAstroInjFarmInfoService, multi: true},
 

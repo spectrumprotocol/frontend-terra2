@@ -1,4 +1,4 @@
-import { Keplr, OfflineAminoSigner, OfflineDirectSigner } from '@keplr-wallet/types';
+import { Keplr, Key, OfflineAminoSigner, OfflineDirectSigner } from '@keplr-wallet/types';
 import {
   TerraWebExtensionConnector, WebExtensionStates, WebExtensionStatus,
   WebExtensionTxResult, WebExtensionTxStatus, WebExtensionPostPayload,
@@ -19,6 +19,7 @@ declare global {
 
 export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   private signer: OfflineAminoSigner & OfflineDirectSigner;
+  private key: Key;
 
   constructor(
     private lcdClient: LCDClient,
@@ -40,6 +41,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
       await hostWindow.keplr.experimentalSuggestChain(chainInfo);
       await hostWindow.keplr.enable(chainID);
       this.signer = hostWindow.getOfflineSigner(chainID);
+      this.key = await hostWindow.keplr.getKey(chainID);
       const accounts = await this.signer.getAccounts();
 
       statesObserver.next({
@@ -96,14 +98,15 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     const pubkey = CONFIG.CHAIN_ID.startsWith('injective')
       ? new InjectivePublicKey(Buffer.from(account.pubkey).toString('base64'))
       : new SimplePublicKey(Buffer.from(account.pubkey).toString('base64'));
-    const modeInfo = this.signer.signDirect
+    const signDirect = this.signer.signDirect && !this.key.isNanoLedger;
+    const modeInfo = signDirect
       ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
       : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
     const signerInfo = new SignerInfo(pubkey, accountInfo.getSequenceNumber(), modeInfo);
     const authInfo = new AuthInfo([signerInfo], tx.fee);
     const signDoc = new SignDoc(CONFIG.CHAIN_ID, accountInfo.getAccountNumber(), accountInfo.getSequenceNumber(), authInfo, txBody);
     
-    if (this.signer.signDirect) {
+    if (signDirect) {
       const signature = await this.signer.signDirect(terraAddress, signDoc.toProto());
       const protoAuthInfo = ProtoAuthInfo.decode(signature.signed.authInfoBytes);
       authInfo.fee = Fee.fromProto(protoAuthInfo.fee);
