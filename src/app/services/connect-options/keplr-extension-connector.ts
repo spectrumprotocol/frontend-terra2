@@ -6,9 +6,14 @@ import {
 } from '@terra-money/web-extension-interface';
 import { Observer, Subscribable, Subject } from 'rxjs';
 import { CONFIG, InjectivePublicKey } from '../../consts/config';
-import { AuthInfo, CreateTxOptions, Fee, LCDClient, ModeInfo, SignDoc, SignerInfo, SimplePublicKey, Tx, TxBody } from '@terra-money/terra.js';
+import { AuthInfo, CreateTxOptions, Fee, LCDClient, ModeInfo, MsgExecuteContract, SignDoc, SignerInfo, SimplePublicKey, Tx, TxBody } from '@terra-money/terra.js';
 import { getChainInfo } from './chain-info';
-import { AuthInfo as ProtoAuthInfo } from '@terra-money/terra.proto/cosmos/tx/v1beta1/tx';
+import { AuthInfo as ProtoAuthInfo, Tx as ProtoTx } from '@terra-money/terra.proto/cosmos/tx/v1beta1/tx';
+import { ExtensionOptionsWeb3Tx } from '@keplr-wallet/proto-types/ethermint/types/v1/web3';
+import { EthermintChainIdHelper } from '@keplr-wallet/cosmos';
+import { getEip712TypedDataBasedOnChainId } from '@keplr-wallet/stores/build/account/utils';
+import { InjectiveWasmxV1Beta1Tx } from '@injectivelabs/core-proto-ts';
+import { Any } from '@terra-money/terra.proto/google/protobuf/any';
 
 declare global {
   interface Window {
@@ -94,25 +99,79 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
       throw new Error('Failed to retrieve account from signer');
     }
 
+    const isInjective = CONFIG.CHAIN_ID.startsWith('injective');
+    const isEip712 = this.key.isNanoLedger && isInjective;
+    if (isEip712) {
+      tx.timeoutHeight = Number.MAX_SAFE_INTEGER;
+      tx.msgs = tx.msgs.map(it => {
+        if (it instanceof MsgExecuteContract) {
+          return new MsgExecuteContractCompat(it);
+        } else {
+          return it;
+        }
+      });
+      delete tx.fee.payer;
+    }
     const txBody = new TxBody(tx.msgs, tx.memo, tx.timeoutHeight);
-    const pubkey = CONFIG.CHAIN_ID.startsWith('injective')
+    const pubkey = isInjective
       ? new InjectivePublicKey(Buffer.from(account.pubkey).toString('base64'))
       : new SimplePublicKey(Buffer.from(account.pubkey).toString('base64'));
-    const signDirect = this.signer.signDirect && !this.key.isNanoLedger;
+    const signDirect = !this.key.isNanoLedger;
     const modeInfo = signDirect
       ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
       : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
     const signerInfo = new SignerInfo(pubkey, accountInfo.getSequenceNumber(), modeInfo);
     const authInfo = new AuthInfo([signerInfo], tx.fee);
     const signDoc = new SignDoc(CONFIG.CHAIN_ID, accountInfo.getAccountNumber(), accountInfo.getSequenceNumber(), authInfo, txBody);
-    
+
     if (signDirect) {
       const signature = await this.signer.signDirect(terraAddress, signDoc.toProto());
       const protoAuthInfo = ProtoAuthInfo.decode(signature.signed.authInfoBytes);
       authInfo.fee = Fee.fromProto(protoAuthInfo.fee);
       const signedTx = new Tx(txBody, authInfo, [signature.signature.signature]);
       return this.lcdClient.tx.broadcastSync(signedTx);
-  } else {
+    } else if (isEip712) {
+      const types = getEip712TypedDataBasedOnChainId(CONFIG.CHAIN_ID, {
+        aminoMsgs: [], protoMsgs: [], rlpTypes: this.getEip712Types(tx.msgs[0])
+      });
+      const data = signDoc.toAmino();
+      console.log(types);
+      console.log(data)
+      const signature = await window.keplr.experimentalSignEIP712CosmosTx_v0(
+        CONFIG.CHAIN_ID,
+        terraAddress,
+        types,
+        data,
+      );
+
+      const signedFee = signature.signed.fee;
+      authInfo.fee = Fee.fromData({
+        amount: signedFee.amount.map(it => it),
+        gas_limit: signedFee.gas,
+        granter: signedFee.granter,
+        payer: undefined,
+      });
+      const txBodyProto = txBody.toProto();
+      const web3Tx = ExtensionOptionsWeb3Tx.fromPartial({
+        typedDataChainId: EthermintChainIdHelper.parse(
+          CONFIG.CHAIN_ID
+        ).ethChainId.toString(),
+      });
+      txBodyProto.extensionOptions = [Any.fromPartial({
+        typeUrl: '/injective.types.v1beta1.ExtensionOptionsWeb3Tx',
+        value: ExtensionOptionsWeb3Tx.encode(web3Tx).finish()
+      })];
+      const signedTx = {
+        toBytes() {
+          return ProtoTx.encode({
+            body: txBodyProto,
+            authInfo: authInfo.toProto(),
+            signatures: [Buffer.from(signature.signature.signature, "base64")],
+          }).finish();
+        }
+      } as any;
+      return this.lcdClient.tx.broadcastSync(signedTx);
+    } else {
       const signature = await this.signer.signAmino(terraAddress, signDoc.toAmino());
       const signedFee = signature.signed.fee;
       authInfo.fee = Fee.fromData({
@@ -123,6 +182,24 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
       });
       const signedTx = new Tx(txBody, authInfo, [signature.signature.signature]);
       return this.lcdClient.tx.broadcastSync(signedTx);
+    }
+  }
+
+  private getEip712Types(msg: any): Record<string, {
+    name: string;
+    type: string;
+  }[]> {
+    if (msg instanceof MsgExecuteContractCompat) {
+      return {
+        MsgValue: [
+          { name: "sender", type: "string" },
+          { name: "contract", type: "string" },
+          { name: "msg", type: "string" },
+          { name: "funds", type: "string" },
+        ]
+      }
+    } else {
+      throw new Error('Type not support');
     }
   }
 
@@ -143,5 +220,39 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   }
   addNetwork(): never {
     throw new Error('not support: addNetwork');
+  }
+}
+
+class MsgExecuteContractCompat extends MsgExecuteContract {
+  constructor(msg: MsgExecuteContract) {
+    super(msg.sender, msg.contract, msg.execute_msg, msg.coins);
+  }
+
+  toAmino(): MsgExecuteContract.Amino {
+    return {
+      type: 'wasmx/MsgExecuteContractCompat',
+      value: {
+        sender: this.sender,
+        contract: this.contract,
+        msg: JSON.stringify(this.execute_msg),
+        funds: this.coins.toString() || '0',
+      },
+    } as any;
+  }
+
+  toProto(): MsgExecuteContract.Proto {
+    return InjectiveWasmxV1Beta1Tx.MsgExecuteContractCompat.fromPartial({
+      sender: this.sender,
+      contract: this.contract,
+      msg: JSON.stringify(this.execute_msg),
+      funds: this.coins.toString() || '0',
+    }) as any;
+  }
+
+  packAny(): Any {
+    return Any.fromPartial({
+      typeUrl: '/injective.wasmx.v1.MsgExecuteContractCompat',
+      value: InjectiveWasmxV1Beta1Tx.MsgExecuteContractCompat.encode(this.toProto() as any).finish()
+    });
   }
 }

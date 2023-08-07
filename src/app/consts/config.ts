@@ -403,7 +403,7 @@ export const getChainIdToLoad = () => {
     case 'neutron.spec.finance':
       return NEUTRON_MAINNET_CHAINID;
     default:
-      return TERRA2_TESTNET_CHAINID;
+      return INJECTIVE_TESTNET_CHAINID;
   }
 };
 
