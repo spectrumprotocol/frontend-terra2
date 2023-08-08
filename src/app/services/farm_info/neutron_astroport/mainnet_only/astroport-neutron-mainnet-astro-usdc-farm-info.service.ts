@@ -73,7 +73,6 @@ export class AstroportNeutronMainnetAstroUsdcFarmInfoService implements FarmInfo
     });
     const pairs: Record<string, PairStat> = {};
 
-    // TODO broken
     const [depositAmount] = await Promise.all([depositAmountTask]);
 
     const p = poolResponses[key];
@@ -89,9 +88,8 @@ export class AstroportNeutronMainnetAstroUsdcFarmInfoService implements FarmInfo
       vaultFee: 0
     };
     const pair = pairs[key];
-    const totalInjValueUSD = times(injPrice, usdc.amount);
-    pair.tvl = new BigNumber(totalInjValueUSD)
-      .times(depositAmount)
+    pair.tvl = new BigNumber(depositAmount)
+      .times(usdc.amount)
       .times(2)
       .div(p.total_share)
       .toString();
