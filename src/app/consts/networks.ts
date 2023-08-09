@@ -248,7 +248,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
           astroToken: ASTRO_NEUTRON_MAINNET,
           astroportRouter: 'neutron1eeyntmsq448c68ez06jsy6h2mtjke5tpuplnwtjfwcdznqmw72kswnlmm0',
           astroportFactory: 'neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e',
-          astroportGenerator: 'neutron1jz58yjay8uq8zkfw95ngyv3m2wfs2zjef9vdz75d9pa46fdtxc5sxtafny',
+          astroportGenerator: 'neutron1zlfq2a445zh9xhjervx8c5xhrwsyss6y20hw73mvp7nnefrgptfqg2vx55',
           astroportAstroUsdcFarm: 'neutron167rl44fxyfr2gge2xax6fyknau02yx5fuanymw08kh39lztnprqsnsez50',
           astroportAstroUsdcFarmCompoundProxy: 'neutron1lt0se040ft6qn3unznzjwytxjp8920t053dctzx6n4wk6zp7t68qp8r6z6',
           astroportNtrnUsdcFarm: 'neutron1085xc4thjxpwn7ls9q3du98xmqfqaq8t7wctlua893xrqenncw2ql22ntp',

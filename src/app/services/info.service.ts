@@ -31,6 +31,7 @@ import { fromBase64 } from '../libs/base64';
 import { lp_balance_transform } from './calc/balance_calc';
 import { getChainInfo } from './connect-options/chain-info';
 import { NumberValueAccessor } from '@angular/forms';
+import BigNumber from 'bignumber.js';
 
 export interface Stat {
   pairs: Record<string, PairStat>;
@@ -751,8 +752,8 @@ export class InfoService {
       const pool = this.poolResponses[this.NTRN_USDC_KEY];
       if (pool) {
         const usdcAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === this.terrajs.settings.usdcToken)?.amount || 0;
-        const ntrnAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.LUNA)?.amount || 0;
-        this.ntrnUSDPrice = +div(usdcAmount, ntrnAmount);
+        const ntrnAmount = pool.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.NTRN)?.amount || 0;
+        this.ntrnUSDPrice = new BigNumber(usdcAmount).div(ntrnAmount).toNumber();
       }
 
       const ntrnAtomPool = 'neutron1e22zh5p8meddxjclevuhjmfj69jxfsa8uu3jvht72rv9d8lkhves6t8veq';
@@ -761,8 +762,7 @@ export class InfoService {
         poolResponses[`Astroport|${Denom.NTRN}|${ATOM_NEUTRON_MAINNET}`] = pool;
         const atomAmount = pool2.assets.find(asset => asset?.info?.native_token?.['denom'] === ATOM_NEUTRON_MAINNET)?.amount || 0;
         const ntrnAmount = pool2.assets.find(asset => asset?.info?.native_token?.['denom'] === Denom.NTRN)?.amount || 0;
-        this.atomUSDPrice = +div(atomAmount, ntrnAmount) * this.ntrnUSDPrice;
-        console.log('this.atomUSDPrice', this.atomUSDPrice); // TODO fix this later
+        this.atomUSDPrice = new BigNumber(ntrnAmount).div(atomAmount).times(this.ntrnUSDPrice).toNumber();
       }));
     }
 
