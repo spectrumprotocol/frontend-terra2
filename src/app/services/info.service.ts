@@ -528,7 +528,21 @@ export class InfoService {
         if (farmInfo.contractOnNetwork !== this.terrajs.networkName) {
           farmInfo.refreshContractOnNetwork();
         }
-        const chainTokenUSDPrice = getCurrentChainBrand() === 'Terra' ? this.ulunaUSDPrice : this.injUSDPrice;
+        let chainTokenUSDPrice;
+        switch (getCurrentChainBrand()){
+          case 'Terra':
+            chainTokenUSDPrice = this.ulunaUSDPrice;
+            break;
+          case 'Injective':
+            chainTokenUSDPrice = this.injUSDPrice;
+            break;
+          case 'Neutron':
+            chainTokenUSDPrice = this.ntrnUSDPrice;
+            break;
+          default:
+            chainTokenUSDPrice = this.ulunaUSDPrice;
+            break;
+        }
         const pairStats = await farmInfo.queryPairStats(farmPoolInfos, this.poolResponses, vaults, this.pairInfos, this.tokenInfos, chainTokenUSDPrice, this.ampStablePairs);
         const keys = Object.keys(pairStats);
         for (const key of keys) {

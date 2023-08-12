@@ -114,6 +114,8 @@ import {
 } from './services/farm_info/neutron_astroport/testnet_only/astroport-neutron-testnet-astro-usdc-farm-info.service';
 import { AstroportNeutronMainnetAstroUsdcFarmInfoService } from './services/farm_info/neutron_astroport/mainnet_only/astroport-neutron-mainnet-astro-usdc-farm-info.service';
 import { AstroportNeutronMainnetNtrnUsdcFarmInfoService } from './services/farm_info/neutron_astroport/mainnet_only/astroport-neutron-mainnet-ntrn-usdc-farm-info.service';
+import { AstroportNeutronMainnetNtrnAtomFarmInfoService } from './services/farm_info/neutron_astroport/mainnet_only/astroport-neutron-mainnet-ntrn-atom-farm-info.service';
+import { AstroportNeutronMainnetUsdcUsdtFarmInfoService } from './services/farm_info/neutron_astroport/mainnet_only/astroport-neutron-mainnet-usdc-usdt-farm-info.service';
 
 // alter default decimal to 6
 locale[ɵLocaleDataIndex.NumberFormats][NumberSymbol.Decimal] = '#,##0.######';
@@ -217,6 +219,8 @@ registerLocaleData(locale, 'en');
 
     {provide: FARM_INFO_SERVICE, useClass: AstroportNeutronMainnetAstroUsdcFarmInfoService, multi : true},
     {provide: FARM_INFO_SERVICE, useClass: AstroportNeutronMainnetNtrnUsdcFarmInfoService, multi: true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportNeutronMainnetNtrnAtomFarmInfoService, multi : true},
+    {provide: FARM_INFO_SERVICE, useClass: AstroportNeutronMainnetUsdcUsdtFarmInfoService, multi: true},
 
     TruncatePipe,
     DecimalPipe,

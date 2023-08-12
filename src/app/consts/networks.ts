@@ -16,7 +16,7 @@ import {
   TERRA2_MAINNET_REST,
   TERRA2_TESTNET_REST,
 } from './config';
-import { ASTRO_NEUTRON_MAINNET, ASTRO_NEUTRON_TESTNET, ASTRO_TERRA2_MAINNET, AXLUSDC_TERRA2_MAINNET, AXLUSDT_TERRA2_MAINNET, STLUNA_TERRA2_MAINNET, USDC_NEUTRON_MAINNET } from './denom';
+import { ASTRO_NEUTRON_MAINNET, ASTRO_NEUTRON_TESTNET, ASTRO_TERRA2_MAINNET, AXLUSDC_TERRA2_MAINNET, AXLUSDT_TERRA2_MAINNET, STLUNA_TERRA2_MAINNET, USDC_NEUTRON_MAINNET, USDT_NEUTRON_MAINNET } from './denom';
 
 export interface ISettings {
   specToken: string;
@@ -90,11 +90,16 @@ export interface ISettings {
   astroportAstroUsdcFarmCompoundProxy?: string;
   astroportNtrnUsdcFarm?: string;
   astroportNtrnUsdcFarmCompoundProxy?: string;
+  astroportNtrnAtomFarm?: string;
+  astroportNtrnAtomFarmCompoundProxy?: string;
+  astroportNeutronUsdcUsdtFarm?: string;
+  astroportNeutronUsdcUsdtFarmCompoundProxy?: string;
   // NEUTRON
   injToken?: string;
   stbToken?: string;
   stblToken?: string;
-  usdcToken: string;
+  usdcToken?: string;
+  usdtToken?: string;
   // TESTNET ONLY
   lcd: string;
   fcd: string;
@@ -244,6 +249,7 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
       mainnet: {
         specToken: '',
         airdrop: '',
+        usdtToken: USDT_NEUTRON_MAINNET,
         usdcToken: USDC_NEUTRON_MAINNET,
         astroToken: ASTRO_NEUTRON_MAINNET,
         astroportRouter: 'neutron1eeyntmsq448c68ez06jsy6h2mtjke5tpuplnwtjfwcdznqmw72kswnlmm0',
@@ -253,7 +259,11 @@ export const networks: Record<string, ISettings> = getCurrentChainBrand() === 'T
         astroportAstroUsdcFarmCompoundProxy: 'neutron1lt0se040ft6qn3unznzjwytxjp8920t053dctzx6n4wk6zp7t68qp8r6z6',
         astroportNtrnUsdcFarm: 'neutron1085xc4thjxpwn7ls9q3du98xmqfqaq8t7wctlua893xrqenncw2ql22ntp',
         astroportNtrnUsdcFarmCompoundProxy: 'neutron10008ey4hpn4px7d4jca9evlwh8kft5newm82pnga3aee27fngrysjmvyf0',
-        lcd: NEUTRON_MAINNET_REST, // TODO
+        astroportNtrnAtomFarm: 'neutron1t5l0lc3n0u7md6p6vqjf3uq5xgaql2hvygfxeluuc9mexddnhpxsffy46y',
+        astroportNtrnAtomFarmCompoundProxy: 'neutron1nhz44e7cldf0qrjxm6la6ddwej0fkfqptp3c0y2jgxgeuxwyhpeq4auw3x',
+        astroportNeutronUsdcUsdtFarm: 'neutron1d2rwxyztmwy9amlcffzexw2z5kv3xg4cgp2u6thgt3pq9ll6asysrapuuq',
+        astroportNeutronUsdcUsdtFarmCompoundProxy: 'neutron13lju3h54d8ntkfskulpl5d40ucgyh6npaz2aspmvgxmevh772gwqcnz8yx',
+        lcd: NEUTRON_MAINNET_REST,
         fcd: '',
         querier: '',
         specAPI: '',

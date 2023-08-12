@@ -150,13 +150,17 @@ export class TxPostComponent implements OnInit {
     if (getCurrentChainBrand() === 'Neutron'){
       this.feeUSD = new BigNumber(this.fee)
       .times(this.info.ntrnUSDPrice)
-      .div(10 ** (this.currency.coinDecimals))
       .toString();
+
+      this.fee2 = new BigNumber(this.userGasLimit)
+      .times(this.terrajs.lcdClient.config.gasPrices[ATOM_NEUTRON_MAINNET])
+      .integerValue(BigNumber.ROUND_UP)
+      .toString();
+
       this.feeUSD2 = new BigNumber(this.fee2)
       .times(this.info.atomUSDPrice)
-      .div(10 ** (this.currency.coinDecimals - 6))
       .toString();
-      // TODO fix this later
+      console.log(this.fee, this.fee2, this.feeUSD, this.feeUSD2);
       this.isEnoughFee = +this.info.tokenBalances[Denom.NTRN] >= +this.fee || +this.info.tokenBalances[ATOM_NEUTRON_MAINNET] >= +this.fee2;
     }
 
