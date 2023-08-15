@@ -201,7 +201,9 @@ export class TxPostComponent implements OnInit {
       if (this.txhash) {
         this.link = getCurrentChainBrand() === 'Terra'
           ? `${this.terrajs.settings.finder}/${this.terrajs.networkName}/tx/${this.txhash}`
-          : `${this.terrajs.settings.finder}/transaction/${this.txhash}`;
+          : getCurrentChainBrand() === 'Injective' ? `${this.terrajs.settings.finder}/transaction/${this.txhash}`
+          : getCurrentChainBrand() === 'Neutron' ? `${this.terrajs.settings.finder}/transactions/${this.txhash}`
+          : '';
       }
       if (!res.success) {
         throw res;
