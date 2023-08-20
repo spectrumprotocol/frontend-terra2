@@ -51,7 +51,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   activeFarm = this.defaultActiveFarm;
   UNIT = CONFIG.UNIT;
   myTvl = 0;
-  height: number;
+  // height: number;
   isGrid: boolean;
   farmInfoDropdownList: string[];
   shouldBeGrid: boolean;
@@ -86,7 +86,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         await this.info.initializeVaultData(connected);
         this.refresh(true);
         this.loading = false;
-        this.height = await this.terrajs.getHeight();
+        // this.height = await this.terrajs.getHeight();
         this.lastSortBy = undefined;
       });
 
