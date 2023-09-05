@@ -4,7 +4,7 @@ import { TokenService } from './api/token.service';
 import { BankService } from './api/bank.service';
 import { PoolResponse } from './api/terraswap_pair/pool_response';
 import { div, plus } from '../libs/math';
-import {CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand, CHAIN_ID_ENUM, NEUTRON_MAINNET_CHAINID} from '../consts/config';
+import {CONFIG, INJECTIVE_TESTNET_CHAINID, getCurrentChainBrand, CHAIN_ID_ENUM, NEUTRON_MAINNET_CHAINID, TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID} from '../consts/config';
 import {
   defaultFarmConfig,
   FARM_INFO_SERVICE,
@@ -860,42 +860,57 @@ export class InfoService {
   }
 
   async retrieveCachedStat(skipPoolResponses = false) {
-    // try {
-    //   const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
-    //   if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.ulunaUSDPrice || !data.ampStablePairs) {
-    //     throw (data);
-    //   }
-    //   this.tokenInfos = data.tokenInfos;
-    //   this.stat = data.stat;
-    //   this.pairInfos = data.pairInfos;
-    //   this.poolInfos = data.poolInfos;
-    //   this.circulation = data.circulation;
-    //   this.marketCap = data.marketCap;
-    //   this.ulunaUSDPrice = data.ulunaUSDPrice;
-    //   this.ampStablePairs = data.ampStablePairs;
-    //   this.compoundStat = data.compoundStat;
-    //   localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
-    //   localStorage.setItem('stat', JSON.stringify(this.stat));
-    //   localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
-    //   localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
-    //   localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
-    //   localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
-    //   localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
-    //   if (!skipPoolResponses) {
-    //     this.poolResponses = data.poolResponses;
-    //     localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
-    //   }
-    //   // no more fallback
-    // } catch (ex) {
-    //   // fallback if api die
-    //   console.error('Error in retrieveCachedStat: fallback local info service data init');
-    //   console.error(ex);
+    const CHAIN_IDS_TO_LOAD_FROM_CACHED_STAT: Set<string> = new Set([TERRA2_MAINNET_CHAINID, TERRA2_TESTNET_CHAINID]);
+    if (CHAIN_IDS_TO_LOAD_FROM_CACHED_STAT.has(CONFIG.CHAIN_ID)){
+      try {
+        const data = await this.httpClient.get<any>(this.terrajs.settings.specAPI + '/data?type=lpVault').toPromise();
+        if (!data.stat || !data.pairInfos || !data.poolInfos || !data.tokenInfos || !data.poolResponses || !data.infoSchemaVersion || !data.ulunaUSDPrice || !data.ampStablePairs) {
+          throw (data);
+        }
+        this.tokenInfos = data.tokenInfos;
+        this.stat = data.stat;
+        this.pairInfos = data.pairInfos;
+        this.poolInfos = data.poolInfos;
+        this.circulation = data.circulation;
+        this.marketCap = data.marketCap;
+        this.ulunaUSDPrice = data.ulunaUSDPrice;
+        this.ampStablePairs = data.ampStablePairs;
+        this.compoundStat = data.compoundStat;
+        localStorage.setItem('tokenInfos', JSON.stringify(this.tokenInfos));
+        localStorage.setItem('stat', JSON.stringify(this.stat));
+        localStorage.setItem('pairInfos', JSON.stringify(this.pairInfos));
+        localStorage.setItem('poolInfos', JSON.stringify(this.poolInfos));
+        localStorage.setItem('infoSchemaVersion', JSON.stringify(data.infoSchemaVersion));
+        localStorage.setItem('ampStablePairs', JSON.stringify(this.ampStablePairs));
+        localStorage.setItem('compoundStat', JSON.stringify(this.compoundStat));
+        if (!skipPoolResponses) {
+          this.poolResponses = data.poolResponses;
+          localStorage.setItem('poolResponses', JSON.stringify(this.poolResponses));
+        }
+        // no more fallback
+      } catch (ex) {
+        // fallback if api die
+        console.error('Error in retrieveCachedStat: fallback local info service data init');
+        console.error(ex);
+        await this.constructStatLocally();
+      } finally {
+        await this.finalStepRetrieveCachedStat();
+      }
+    } else {
+      // TODO compoundStat API?
+      await this.constructStatLocally();
+      await this.finalStepRetrieveCachedStat();
+    }
+  }
+
+  async constructStatLocally(){
     await Promise.all([this.ensureTokenInfos(), this.refreshStat()]);
     localStorage.setItem('infoSchemaVersion', '1');
-    // } finally {
+  }
+
+  async finalStepRetrieveCachedStat(){
     this.loadedChainId = this.terrajs.settings.chainID;
     localStorage.setItem('chainIdData', this.loadedChainId);
-    // }
   }
 
   updateVaults() {
