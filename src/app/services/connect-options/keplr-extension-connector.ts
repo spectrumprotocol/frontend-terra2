@@ -14,6 +14,7 @@ import { EthermintChainIdHelper } from '@keplr-wallet/cosmos';
 import { getEip712TypedDataBasedOnChainId } from '@keplr-wallet/stores/build/account/utils';
 import { InjectiveWasmxV1Beta1Tx } from '@injectivelabs/core-proto-ts';
 import { Any } from '@terra-money/terra.proto/google/protobuf/any';
+import { ModalService } from '../modal.service';
 
 declare global {
   interface Window {
@@ -28,6 +29,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
 
   constructor(
     private lcdClient: LCDClient,
+    private modal: ModalService,
   ) { }
 
   supportFeatures(): TerraWebExtensionFeatures[] {
@@ -35,42 +37,50 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
   }
 
   async open(hostWindow: Window, statesObserver: Observer<WebExtensionStates>) {
-    const chainID = CONFIG.CHAIN_ID;
-    const chainInfo = getChainInfo(chainID);
+    try {
+      const chainID = CONFIG.CHAIN_ID;
+      const chainInfo = getChainInfo(chainID);
 
-    if (hostWindow.keplr && hostWindow.getOfflineSigner && chainInfo) {
-      statesObserver.next({
-        type: WebExtensionStatus.INITIALIZING,
-      });
+      if (hostWindow.keplr && hostWindow.getOfflineSigner && chainInfo) {
+        statesObserver.next({
+          type: WebExtensionStatus.INITIALIZING,
+        });
 
-      await hostWindow.keplr.experimentalSuggestChain(chainInfo);
-      await hostWindow.keplr.enable(chainID);
-      this.signer = hostWindow.getOfflineSigner(chainID);
-      this.key = await hostWindow.keplr.getKey(chainID);
-      const accounts = await this.signer.getAccounts();
+        await hostWindow.keplr.experimentalSuggestChain(chainInfo);
+        await hostWindow.keplr.enable(chainID);
+        this.signer = hostWindow.getOfflineSigner(chainID);
+        this.key = await hostWindow.keplr.getKey(chainID);
+        const accounts = await this.signer.getAccounts();
+        // await this.signer.getAccounts(); can yield error => ERROR Error: Uncaught (in promise): Error: No Ethereum public key. Initialize Ethereum app on Ledger by selecting the chain in the extension
+        // Error: No Ethereum public key. Initialize Ethereum app on Ledger by selecting the chain in the extension
 
-      statesObserver.next({
-        type: WebExtensionStatus.READY,
-        focusedWalletAddress: accounts[0]?.address,
-        wallets: accounts.map(it => ({
-          name: it.address,
-          terraAddress: it.address,
-          design: chainID
-        })),
-        network: {
-          name: chainInfo.chainName.toLowerCase().includes('testnet') ? 'testnet' : 'mainnet',
-          chainID,
-          lcd: chainInfo.rest,
-          walleconnectID: 0,
-        },
-      });
-    } else {
-      statesObserver.next({
-        type: WebExtensionStatus.NO_AVAILABLE,
-        isConnectorExists: true,
-      });
+        statesObserver.next({
+          type: WebExtensionStatus.READY,
+          focusedWalletAddress: accounts[0]?.address,
+          wallets: accounts.map(it => ({
+            name: it.address,
+            terraAddress: it.address,
+            design: chainID
+          })),
+          network: {
+            name: chainInfo.chainName.toLowerCase().includes('testnet') ? 'testnet' : 'mainnet',
+            chainID,
+            lcd: chainInfo.rest,
+            walleconnectID: 0,
+          },
+        });
+      } else {
+        statesObserver.next({
+          type: WebExtensionStatus.NO_AVAILABLE,
+          isConnectorExists: true,
+        });
+      }
+      statesObserver.complete();
+    } catch (e) {
+      console.error('KeplrExtensionConnector open error::', e);
+      await this.modal.alert(e.toString(), {iconType: 'danger'});
     }
-    statesObserver.complete();
+
   }
   close() {
     window.keplr?.disable(CONFIG.CHAIN_ID);
@@ -119,7 +129,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     const signDirect = !this.key.isNanoLedger;
     const modeInfo = signDirect
       ? new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_DIRECT))
-      : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON))
+      : new ModeInfo(new ModeInfo.Single(ModeInfo.SignMode.SIGN_MODE_LEGACY_AMINO_JSON));
     const signerInfo = new SignerInfo(pubkey, accountInfo.getSequenceNumber(), modeInfo);
     const authInfo = new AuthInfo([signerInfo], tx.fee);
     const signDoc = new SignDoc(CONFIG.CHAIN_ID, accountInfo.getAccountNumber(), accountInfo.getSequenceNumber(), authInfo, txBody);
@@ -135,8 +145,6 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
         aminoMsgs: [], protoMsgs: [], rlpTypes: this.getEip712Types(tx.msgs[0])
       });
       const data = signDoc.toAmino();
-      console.log(types);
-      console.log(data)
       const signature = await window.keplr.experimentalSignEIP712CosmosTx_v0(
         CONFIG.CHAIN_ID,
         terraAddress,
@@ -166,7 +174,7 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
           return ProtoTx.encode({
             body: txBodyProto,
             authInfo: authInfo.toProto(),
-            signatures: [Buffer.from(signature.signature.signature, "base64")],
+            signatures: [Buffer.from(signature.signature.signature, 'base64')],
           }).finish();
         }
       } as any;
@@ -192,12 +200,12 @@ export class KeplrExtensionConnector implements TerraWebExtensionConnector {
     if (msg instanceof MsgExecuteContractCompat) {
       return {
         MsgValue: [
-          { name: "sender", type: "string" },
-          { name: "contract", type: "string" },
-          { name: "msg", type: "string" },
-          { name: "funds", type: "string" },
+          { name: 'sender', type: 'string' },
+          { name: 'contract', type: 'string' },
+          { name: 'msg', type: 'string' },
+          { name: 'funds', type: 'string' },
         ]
-      }
+      };
     } else {
       throw new Error('Type not support');
     }

@@ -16,6 +16,7 @@ import { throttleAsync } from 'utils-decorators';
 import { MdbModalService } from 'mdb-angular-ui-kit/modal';
 import { CONFIG, getCurrentChainBrand } from '../consts/config';
 import { getChainInfo } from './connect-options/chain-info';
+import { ModalService } from './modal.service';
 
 export const BLOCK_TIME = CONFIG.CHAIN_ID.startsWith('injective') ? 1100 : 6500; // 6.5s
 const chainInfo = getChainInfo(CONFIG.CHAIN_ID);
@@ -91,6 +92,7 @@ export class TerrajsService implements OnDestroy {
   constructor(
     private httpClient: HttpClient,
     private modalService: MdbModalService,
+    private modal: ModalService
   ) {
     getChainOptions().then(chainOptions => {
       this.walletController = new WalletController({
@@ -193,14 +195,14 @@ export class TerrajsService implements OnDestroy {
           connectCallbackData = {
             identifier,
             type: connect,
-          }
+          };
         }
         if (identifier === 'keplr') {
           const modal = await import('./connect-options/connect-options.component');
           if (!this.lcdClient) {
             await this.initLcdClient();
           }
-          modal.ConnectOptionsComponent.ensureKeplr(window['terraWallets'], [], this.lcdClient);
+          modal.ConnectOptionsComponent.ensureKeplr(window['terraWallets'], [], this.lcdClient, this.modal);
         }
       }
     } else { // CLICK CONNECT

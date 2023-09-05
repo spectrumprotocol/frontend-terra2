@@ -9,6 +9,7 @@ import { NgForm } from '@angular/forms';
 import {CONFIG, getAddressPattern, getAddressPlaceHolder, getCurrentChainBrand} from '../../consts/config';
 import { KeplrExtensionConnector } from './keplr-extension-connector';
 import { LCDClient } from '@terra-money/terra.js';
+import { ModalService } from '../modal.service';
 
 interface InstallableExtension {
   name: string;
@@ -32,20 +33,20 @@ export class ConnectOptionsComponent {
   @ViewChild('formViewOnly') formViewOnly: NgForm;
   isTerra = getCurrentChainBrand() === 'Terra';
 
-  constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>) {
+  constructor(private modalRef: MdbModalRef<ConnectOptionsComponent>, private modal: ModalService) {
     this.setInstallableExtensions();
     const md = new MobileDetect(window.navigator.userAgent);
     this.isPhoneOrTablet = md.phone() !== null || md.tablet() !== null;
   }
 
-  static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[], lcdClient: LCDClient) {
+  static ensureKeplr(extensions: ExtensionInfo[], extensionToInstall: InstallableExtension[], lcdClient: LCDClient, modal: ModalService) {
     if (window.keplr && window.getOfflineSigner) {
       if (!extensions.find(it => it.identifier === 'keplr')) {
         extensions.push({
           name: 'Keplr',
           identifier: 'keplr',
           icon: '/assets/keplr.png',
-          connector: () => new KeplrExtensionConnector(lcdClient)
+          connector: () => new KeplrExtensionConnector(lcdClient, modal)
         });
       }
     } else {
@@ -67,7 +68,7 @@ export class ConnectOptionsComponent {
     } else {
       this.walletExtensions = window['terraWallets'] = [];
     }
-    ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall, this.lcdClient);
+    ConnectOptionsComponent.ensureKeplr(this.walletExtensions, this.walletExtensionsForInstall, this.lcdClient, this.modal);
   }
 
   connect(type: string, identifier: string) {
