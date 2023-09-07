@@ -24,6 +24,7 @@ export class TxPostComponent implements OnInit {
   confirmMsg?: string;
   failed = false;
   failMsg: string;
+  failMsgSolution: string;
   signMsg: Tx;
   UNIT = CONFIG.UNIT;
   txhash: string;
@@ -124,7 +125,6 @@ export class TxPostComponent implements OnInit {
   }
 
   calculateFee() {
-    console.log(this.terrajs.lcdClient.config.gasPrices);
     this.userGasLimit = new BigNumber(this.gasLimit)
       .times(100 + this.gasBuffer).div(170)
       .integerValue(BigNumber.ROUND_UP)
@@ -160,7 +160,6 @@ export class TxPostComponent implements OnInit {
       this.feeUSD2 = new BigNumber(this.fee2)
       .times(this.info.atomUSDPrice)
       .toString();
-      console.log(this.fee, this.fee2, this.feeUSD, this.feeUSD2);
       this.isEnoughFee = +this.info.tokenBalances[Denom.NTRN] >= +this.fee || +this.info.tokenBalances[ATOM_NEUTRON_MAINNET] >= +this.fee2;
     }
 
@@ -232,6 +231,9 @@ export class TxPostComponent implements OnInit {
       this.$gaService.exception('Post:' + (e.data || e.message), false);
       this.failed = true;
       this.failMsg = e.message || 'Error occurred';
+      if (e?.message.includes('(reading \'auth\'')){
+        this.failMsgSolution = 'Please solve the issue by refreshing this page, and try executing transaction again.';
+      }
     } finally {
       this.loading = false;
     }

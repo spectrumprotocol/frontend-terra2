@@ -22,6 +22,7 @@
 <div class="modal-body">
     <div *ngIf="failed">
         {{ failMsg }}
+        <ng-container *ngIf="failMsgSolution"> <br/> {{ failMsgSolution }} </ng-container>
     </div>
     <div *ngIf="!failed && !executed && signMsg">
         <div class="row">
